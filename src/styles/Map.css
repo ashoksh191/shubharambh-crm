@@ -1,0 +1,258 @@
+/* Interactive Map & Inventory System CSS */
+.map-page-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.map-toolbar {
+  background: var(--bg-card);
+  padding: 16px 24px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: var(--bg-card-subtle);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+}
+
+.filter-chip:hover {
+  background: #e2e8f0;
+  color: var(--text-main);
+}
+
+.filter-chip.active {
+  background: var(--primary-forest);
+  color: #ffffff;
+  border-color: var(--primary-forest);
+}
+
+.search-box {
+  position: relative;
+  min-width: 240px;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.search-box input:focus {
+  border-color: var(--primary-forest);
+  box-shadow: 0 0 0 3px rgba(15, 56, 44, 0.1);
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+
+/* Map Canvas Container */
+.map-canvas-wrapper {
+  background: #0d1e17; /* Deep lush background representing the 60-bigha green township */
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-xl);
+  border: 2px solid var(--accent-gold);
+  min-height: 720px;
+}
+
+.map-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #ffffff;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.map-header-bar h3 {
+  color: var(--accent-gold-light);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.map-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.map-ctrl-btn {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.map-ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* SVG Interactive Layout Map */
+.svg-map-viewport {
+  width: 100%;
+  height: 640px;
+  background: radial-gradient(circle at center, #153e31 0%, #0a1f18 100%);
+  border-radius: var(--radius-lg);
+  overflow: auto;
+  position: relative;
+  cursor: grab;
+}
+
+.svg-map-viewport:active {
+  cursor: grabbing;
+}
+
+.map-svg-element {
+  width: 100%;
+  height: 100%;
+  min-width: 750px;
+  min-height: 850px;
+}
+
+/* Plot SVG Styling */
+.svg-plot-rect {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  stroke-width: 1.5;
+}
+
+.svg-plot-rect.status-available {
+  fill: #10b981;
+  stroke: #047857;
+}
+
+.svg-plot-rect.status-available:hover {
+  fill: #34d399;
+  filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.8));
+  stroke-width: 2.5;
+}
+
+.svg-plot-rect.status-booked {
+  fill: #f59e0b;
+  stroke: #b45309;
+}
+
+.svg-plot-rect.status-booked:hover {
+  fill: #fbbf24;
+  filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.8));
+  stroke-width: 2.5;
+}
+
+.svg-plot-rect.status-sold {
+  fill: #ef4444;
+  stroke: #b91c1c;
+}
+
+.svg-plot-rect.status-sold:hover {
+  fill: #f87171;
+  filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.8));
+  stroke-width: 2.5;
+}
+
+.svg-plot-text {
+  font-size: 11px;
+  font-weight: 700;
+  fill: #ffffff;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+  font-family: 'Outfit', sans-serif;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.svg-plot-dim {
+  font-size: 8px;
+  fill: rgba(255, 255, 255, 0.85);
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+/* Block Section Labels */
+.block-banner {
+  fill: rgba(212, 175, 55, 0.15);
+  stroke: var(--accent-gold);
+  stroke-dasharray: 4;
+}
+
+.block-title-text {
+  font-size: 18px;
+  font-weight: 800;
+  fill: var(--accent-gold);
+  letter-spacing: 0.1em;
+  font-family: 'Outfit', sans-serif;
+}
+
+.road-text {
+  font-size: 10px;
+  fill: #94a3b8;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/* Legend Container */
+.map-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.legend-color-box {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+}
+
+.legend-color-box.available { background: var(--status-available); box-shadow: 0 0 6px rgba(16, 185, 129, 0.5); }
+.legend-color-box.booked { background: var(--status-booked); box-shadow: 0 0 6px rgba(245, 158, 11, 0.5); }
+.legend-color-box.sold { background: var(--status-sold); box-shadow: 0 0 6px rgba(239, 68, 68, 0.5); }

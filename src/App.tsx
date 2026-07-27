@@ -1,0 +1,130 @@
+import React, { useState } from 'react';
+import { AppProvider, useApp } from './context/AppContext';
+import { Navbar } from './components/Navigation/Navbar';
+import { InteractiveMap } from './components/Map/InteractiveMap';
+import { AssociateDashboard } from './components/MLM/AssociateDashboard';
+import { FinancialDashboard } from './components/Admin/FinancialDashboard';
+import { USPShowcase } from './components/Public/USPShowcase';
+import { BookingFormModal } from './components/Booking/BookingFormModal';
+import { ReceiptPDF } from './components/Documents/ReceiptPDF';
+import { AgreementBond } from './components/Documents/AgreementBond';
+import { QRVerificationModal } from './components/Documents/QRVerificationModal';
+import type { Plot } from './types';
+import './styles/App.css';
+
+const MainLayout: React.FC = () => {
+  const { plots } = useApp();
+  const [activeTab, setActiveTab] = useState<'map' | 'mlm' | 'finance' | 'usps'>('map');
+
+  // Modal States
+  const [selectedBookingPlot, setSelectedBookingPlot] = useState<Plot | null>(null);
+  const [activeReceiptBookingId, setActiveReceiptBookingId] = useState<string | null>(null);
+  const [activeBondBookingId, setActiveBondBookingId] = useState<string | null>(null);
+  const [activeQRBookingId, setActiveQRBookingId] = useState<string | null>(null);
+
+  // Stats
+  const availableCount = plots.filter((p) => p.status === 'available').length;
+  const bookedCount = plots.filter((p) => p.status === 'booked').length;
+  const soldCount = plots.filter((p) => p.status === 'sold').length;
+
+  return (
+    <div className="app-container">
+      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
+
+      {/* Hero Stats Banner */}
+      <div className="hero-banner">
+        <div className="hero-content">
+          <h2>Shubharambh Green City CRM</h2>
+          <p>Complete 60-Bigha Real Estate Plot Inventory & Multi-Level Sales Management</p>
+        </div>
+
+        <div className="hero-stats">
+          <div className="hero-stat-card">
+            <div className="value" style={{ color: '#6ee7b7' }}>{availableCount}</div>
+            <div className="label">Available (Green)</div>
+          </div>
+          <div className="hero-stat-card">
+            <div className="value" style={{ color: '#fcd34d' }}>{bookedCount}</div>
+            <div className="label">Booked (Yellow)</div>
+          </div>
+          <div className="hero-stat-card">
+            <div className="value" style={{ color: '#fca5a5' }}>{soldCount}</div>
+            <div className="label">Sold Out (Red)</div>
+          </div>
+          <div className="hero-stat-card">
+            <div className="value">{plots.length}</div>
+            <div className="label">Total 60-Bigha Plots</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Body View Content */}
+      <main className="main-content">
+        {activeTab === 'map' && (
+          <InteractiveMap
+            onOpenBooking={(plot) => setSelectedBookingPlot(plot)}
+            onOpenReceipt={(bId) => setActiveReceiptBookingId(bId)}
+            onOpenBond={(bId) => setActiveBondBookingId(bId)}
+          />
+        )}
+
+        {activeTab === 'mlm' && <AssociateDashboard />}
+
+        {activeTab === 'finance' && <FinancialDashboard />}
+
+        {activeTab === 'usps' && <USPShowcase />}
+      </main>
+
+      {/* Modals */}
+      {selectedBookingPlot && (
+        <BookingFormModal
+          plot={selectedBookingPlot}
+          onClose={() => setSelectedBookingPlot(null)}
+          onSuccess={(bId) => {
+            setSelectedBookingPlot(null);
+            setActiveReceiptBookingId(bId);
+          }}
+        />
+      )}
+
+      {activeReceiptBookingId && (
+        <ReceiptPDF
+          bookingId={activeReceiptBookingId}
+          onClose={() => setActiveReceiptBookingId(null)}
+          onOpenVerification={(bId) => setActiveQRBookingId(bId)}
+        />
+      )}
+
+      {activeBondBookingId && (
+        <AgreementBond
+          bookingId={activeBondBookingId}
+          onClose={() => setActiveBondBookingId(null)}
+        />
+      )}
+
+      {activeQRBookingId && (
+        <QRVerificationModal
+          bookingId={activeQRBookingId}
+          onClose={() => setActiveQRBookingId(null)}
+        />
+      )}
+
+      {/* Footer */}
+      <footer className="app-footer">
+        <p>
+          © 2026 <span>Shubharambh Green City</span> CRM & Plot Inventory System. All rights reserved.
+        </p>
+      </footer>
+    </div>
+  );
+};
+
+export const App: React.FC = () => {
+  return (
+    <AppProvider>
+      <MainLayout />
+    </AppProvider>
+  );
+};
+
+export default App;

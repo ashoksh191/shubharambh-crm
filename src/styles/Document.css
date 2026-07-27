@@ -1,0 +1,199 @@
+/* Document Stylesheet for Receipt & Sales Agreement Bond */
+.document-modal-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  max-width: 800px;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--border-color);
+}
+
+.receipt-sheet {
+  background: #ffffff;
+  padding: 40px;
+  color: #0f172a;
+  font-family: 'Inter', sans-serif;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+}
+
+.receipt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 3px double #d4af37;
+  padding-bottom: 20px;
+  margin-bottom: 24px;
+}
+
+.receipt-logo-block {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.receipt-logo-mark {
+  width: 56px;
+  height: 56px;
+  background: #0f382c;
+  color: #d4af37;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 1.5rem;
+  border: 2px solid #d4af37;
+}
+
+.receipt-company-title h1 {
+  color: #0f382c;
+  font-size: 1.6rem;
+  line-height: 1.1;
+  font-weight: 800;
+}
+
+.receipt-company-title p {
+  color: #64748b;
+  font-size: 0.8rem;
+  margin-top: 2px;
+}
+
+.receipt-badge-title {
+  text-align: right;
+}
+
+.receipt-badge-title h2 {
+  color: #d4af37;
+  font-size: 1.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.receipt-badge-title p {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.receipt-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  background: #f8fafc;
+  padding: 16px 20px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 24px;
+}
+
+.receipt-meta-item strong {
+  color: #0f382c;
+  display: inline-block;
+  min-width: 140px;
+}
+
+.receipt-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+}
+
+.receipt-table th {
+  background: #0f382c;
+  color: #ffffff;
+  padding: 12px;
+  text-align: left;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.receipt-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.9rem;
+}
+
+.receipt-footer-sign {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px stroke #e2e8f0;
+}
+
+.qr-code-box {
+  text-align: center;
+  border: 1px solid #cbd5e1;
+  padding: 10px;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.signature-box {
+  text-align: center;
+  min-width: 180px;
+}
+
+.signature-line {
+  border-top: 2px solid #0f382c;
+  margin-top: 40px;
+  padding-top: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0f382c;
+}
+
+/* Agreement Bond Specific Styling */
+.bond-sheet {
+  background: #fffdf5; /* Warm legal parchment color */
+  border: 3px double #d4af37;
+  padding: 40px;
+  color: #1e293b;
+  font-family: 'Times New Roman', Georgia, serif;
+}
+
+.bond-sheet h2 {
+  font-family: 'Times New Roman', Georgia, serif;
+  text-align: center;
+  color: #0f382c;
+  font-size: 1.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #d4af37;
+  padding-bottom: 12px;
+}
+
+.bond-clause {
+  margin-bottom: 16px;
+  line-height: 1.6;
+  font-size: 1rem;
+  text-align: justify;
+}
+
+.bond-clause strong {
+  color: #0f382c;
+}
+
+/* Print Utilities */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .printable-area, .printable-area * {
+    visibility: visible;
+  }
+  .printable-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
