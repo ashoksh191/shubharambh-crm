@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useApp } from '../../context/AppContext';
 import type { Plot, BlockName, PlotStatus } from '../../types';
 import { PlotModal } from './PlotModal';
-import { Search, ZoomIn, ZoomOut, RotateCcw, Filter, MapPin, Grid } from 'lucide-react';
+import { Search, ZoomIn, ZoomOut, RotateCcw, Filter, MapPin, Grid, LayoutGrid, Map as MapIcon } from 'lucide-react';
 import '../../styles/Map.css';
 
 interface InteractiveMapProps {
@@ -22,6 +22,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [zoomLevel, setZoomLevel] = useState(1);
   const [activePlot, setActivePlot] = useState<Plot | null>(null);
+  const [viewMode, setViewMode] = useState<'map' | 'grid'>('map');
 
   // Filter plots
   const filteredPlots = useMemo(() => {
@@ -87,43 +88,90 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           ))}
         </div>
 
-        {/* Search Plot */}
-        <div className="search-box">
-          <Search size={16} className="search-icon" />
-          <input
-            type="text"
-            placeholder="Search Plot No (e.g. A-101)..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+        {/* Search Plot & View Switcher */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <div className="search-box">
+            <Search size={16} className="search-icon" />
+            <input
+              type="text"
+              placeholder="Search Plot No (e.g. A-101)..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: '4px', background: 'var(--bg-card-subtle)', padding: '4px', borderRadius: 'var(--radius-md)' }}>
+            <button
+              className={`filter-chip ${viewMode === 'map' ? 'active' : ''}`}
+              style={{ padding: '6px 12px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '4px' }}
+              onClick={() => setViewMode('map')}
+            >
+              <MapIcon size={14} /> 2D Map
+            </button>
+            <button
+              className={`filter-chip ${viewMode === 'grid' ? 'active' : ''}`}
+              style={{ padding: '6px 12px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '4px' }}
+              onClick={() => setViewMode('grid')}
+            >
+              <LayoutGrid size={14} /> Touch Grid
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Main SVG Interactive Layout Viewport */}
+      {/* Main Interactive Layout Viewport */}
       <div className="map-canvas-wrapper">
         <div className="map-header-bar">
           <h3>
             <MapPin size={20} color="var(--accent-gold)" />
-            Shubharambh Green City — 60-Bigha Master Layout Plan
+            Shubharambh Green City — {viewMode === 'map' ? '60-Bigha Layout Map' : 'Mobile Plot Inventory Grid'}
           </h3>
           <div className="map-controls">
             <span style={{ fontSize: '0.8rem', color: '#94a3b8', marginRight: '8px' }}>
-              Showing {filteredPlots.length} of {plots.length} Plots
+              {filteredPlots.length} Plots
             </span>
-            <button className="map-ctrl-btn" onClick={() => handleZoom(0.15)} title="Zoom In">
-              <ZoomIn size={16} />
-            </button>
-            <button className="map-ctrl-btn" onClick={() => handleZoom(-0.15)} title="Zoom Out">
-              <ZoomOut size={16} />
-            </button>
-            <button className="map-ctrl-btn" onClick={handleResetZoom} title="Reset View">
-              <RotateCcw size={16} />
-            </button>
+            {viewMode === 'map' && (
+              <>
+                <button className="map-ctrl-btn" onClick={() => handleZoom(0.2)} title="Zoom In">
+                  <ZoomIn size={16} /> +
+                </button>
+                <button className="map-ctrl-btn" onClick={() => handleZoom(-0.2)} title="Zoom Out">
+                  <ZoomOut size={16} /> -
+                </button>
+                <button className="map-ctrl-btn" onClick={handleResetZoom} title="Reset View">
+                  <RotateCcw size={16} /> Fit
+                </button>
+              </>
+            )}
           </div>
         </div>
 
-        {/* Scalable Vector SVG Map */}
-        <div className="svg-map-viewport">
+        {viewMode === 'grid' ? (
+          /* Mobile Touch Grid View */
+          <div className="mobile-plot-grid">
+            {filteredPlots.map((plot) => (
+              <div
+                key={plot.id}
+                className={`mobile-plot-card ${plot.status}`}
+                onClick={() => setActivePlot(plot)}
+              >
+                <div className="mobile-plot-card-header">
+                  <span className="mobile-plot-num">{plot.plotNo}</span>
+                  <span className={`badge badge-${plot.status}`}>
+                    {plot.status.charAt(0).toUpperCase() + plot.status.slice(1)}
+                  </span>
+                </div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                  {plot.block} • {plot.facing}
+                </div>
+                <div className="mobile-plot-dim">{plot.dimensions} ({plot.totalArea} sq.ft)</div>
+                <div className="mobile-plot-price">₹{plot.totalPrice.toLocaleString('en-IN')}</div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          /* Scalable Vector SVG Map */
+          <div className="svg-map-viewport">
           <svg
             className="map-svg-element"
             viewBox="0 0 700 950"
@@ -214,6 +262,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
             })}
           </svg>
         </div>
+        )}
 
         {/* Legend */}
         <div className="map-legend">

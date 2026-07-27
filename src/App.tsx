@@ -109,6 +109,40 @@ const MainLayout: React.FC = () => {
         />
       )}
 
+      {/* Mobile Touch Bottom Navigation */}
+      <div className="mobile-bottom-nav">
+        <div className="mobile-bottom-nav-inner">
+          <button
+            className={`mobile-nav-btn ${activeTab === 'map' ? 'active' : ''}`}
+            onClick={() => setActiveTab('map')}
+          >
+            <span style={{ fontSize: '1.2rem' }}>🗺️</span>
+            <span>Map Grid</span>
+          </button>
+          <button
+            className={`mobile-nav-btn ${activeTab === 'mlm' ? 'active' : ''}`}
+            onClick={() => setActiveTab('mlm')}
+          >
+            <span style={{ fontSize: '1.2rem' }}>👥</span>
+            <span>MLM Tree</span>
+          </button>
+          <button
+            className={`mobile-nav-btn ${activeTab === 'finance' ? 'active' : ''}`}
+            onClick={() => setActiveTab('finance')}
+          >
+            <span style={{ fontSize: '1.2rem' }}>💰</span>
+            <span>Finance</span>
+          </button>
+          <button
+            className={`mobile-nav-btn ${activeTab === 'usps' ? 'active' : ''}`}
+            onClick={() => setActiveTab('usps')}
+          >
+            <span style={{ fontSize: '1.2rem' }}>🌟</span>
+            <span>USPs</span>
+          </button>
+        </div>
+      </div>
+
       {/* Footer */}
       <footer className="app-footer">
         <p>

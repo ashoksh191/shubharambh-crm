@@ -256,3 +256,127 @@
 .legend-color-box.available { background: var(--status-available); box-shadow: 0 0 6px rgba(16, 185, 129, 0.5); }
 .legend-color-box.booked { background: var(--status-booked); box-shadow: 0 0 6px rgba(245, 158, 11, 0.5); }
 .legend-color-box.sold { background: var(--status-sold); box-shadow: 0 0 6px rgba(239, 68, 68, 0.5); }
+
+/* Mobile Grid View Cards */
+.mobile-plot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.mobile-plot-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  border: 2px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.mobile-plot-card:active {
+  transform: scale(0.97);
+}
+
+.mobile-plot-card.available {
+  border-color: var(--status-available-border);
+  background: linear-gradient(180deg, #ffffff 0%, var(--status-available-bg) 100%);
+}
+
+.mobile-plot-card.booked {
+  border-color: var(--status-booked-border);
+  background: linear-gradient(180deg, #ffffff 0%, var(--status-booked-bg) 100%);
+}
+
+.mobile-plot-card.sold {
+  border-color: var(--status-sold-border);
+  background: linear-gradient(180deg, #ffffff 0%, var(--status-sold-bg) 100%);
+}
+
+.mobile-plot-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mobile-plot-num {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--primary-forest);
+}
+
+.mobile-plot-dim {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.mobile-plot-price {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+
+/* Mobile Media Queries */
+@media (max-width: 768px) {
+  .map-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .filter-group {
+    justify-content: flex-start;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .filter-chip {
+    padding: 8px 14px;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+  }
+
+  .map-canvas-wrapper {
+    padding: 12px;
+    min-height: 520px;
+    border-radius: var(--radius-lg);
+  }
+
+  .map-header-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .map-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .map-ctrl-btn {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .svg-map-viewport {
+    height: 480px;
+  }
+
+  .mobile-plot-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+}
+
