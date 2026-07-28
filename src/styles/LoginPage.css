@@ -1,60 +1,150 @@
-.login-page-wrapper {
+/* SehatMitra AI Style Login Page CSS */
+.sehat-login-page-container {
   min-height: 100vh;
   width: 100%;
+  background: #0e1a24;
+  color: #f8fafc;
+  font-family: 'Outfit', 'Inter', sans-serif;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+/* Header Logo Bar */
+.sehat-login-header {
+  padding: 20px 36px;
+  display: flex;
   align-items: center;
-  justify-content: center;
-  position: relative;
+  justify-content: space-between;
+}
+
+.sehat-brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sehat-logo-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
   overflow: hidden;
-  background: linear-gradient(135deg, rgba(11, 15, 25, 0.85) 0%, rgba(6, 44, 32, 0.88) 50%, rgba(15, 23, 42, 0.92) 100%),
-              url('./assets/logo_and_entrance.jpg') center/cover no-repeat;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  color: #f3f4f6;
-  padding: 1rem;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  background: #0b171e;
 }
 
-/* Ambient glowing light halos */
-.login-bg-glow-1 {
-  position: absolute;
-  top: -10%;
-  left: -10%;
-  width: 500px;
-  height: 500px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(16, 185, 129, 0.25) 0%, rgba(0, 0, 0, 0) 70%);
-  pointer-events: none;
+.sehat-logo-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.login-bg-glow-2 {
-  position: absolute;
-  bottom: -10%;
-  right: -10%;
-  width: 500px;
-  height: 500px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(245, 158, 11, 0.25) 0%, rgba(0, 0, 0, 0) 70%);
-  pointer-events: none;
+.sehat-brand-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ffffff;
 }
 
-/* Main Dark Glass Card */
-.glass-login-card {
-  position: relative;
-  z-index: 10;
+.sehat-brand-name .highlight-ai {
+  color: #38bdf8;
+}
+
+/* Main Split Screen Body */
+.sehat-login-body {
+  flex: 1;
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 10px 36px 40px 36px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+/* Left Feature Showcase Banner */
+.sehat-left-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.showcase-image-card {
+  width: 100%;
+  max-width: 480px;
+  height: 380px;
+  border-radius: 32px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+  background: #15222b;
+}
+
+.showcase-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.showcase-text-group h2 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #ffffff;
+}
+
+.showcase-cyan-text {
+  color: #38bdf8;
+}
+
+.showcase-text-group p {
+  color: #94a3b8;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin-top: 10px;
+  max-width: 460px;
+}
+
+/* Right Form Wrapper */
+.sehat-right-form-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 16px;
+  width: 100%;
+}
+
+.sehat-back-home-btn {
+  background: transparent;
+  color: #94a3b8;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s ease;
+  margin-bottom: 8px;
+}
+
+.sehat-back-home-btn:hover {
+  color: #38bdf8;
+}
+
+/* Form Card */
+.sehat-form-card {
   width: 100%;
   max-width: 440px;
-  max-height: 88vh;
-  overflow-y: auto;
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1.5px solid rgba(245, 158, 11, 0.4);
+  background: #15222b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 24px;
-  padding: 2rem 1.75rem;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(16, 185, 129, 0.2);
+  padding: 36px 32px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
 }
 
-.glass-login-card.shake-animation {
+.sehat-form-card.shake-animation {
   animation: shakeError 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 }
 
@@ -65,177 +155,174 @@
   40%, 60% { transform: translate3d(6px, 0, 0); }
 }
 
-.brand-header {
-  text-align: center;
-  margin-bottom: 1.25rem;
+.form-card-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 6px;
 }
 
-.brand-header h1 {
-  font-size: 1.6rem;
-  font-weight: 800;
-  margin: 0;
-  letter-spacing: 0.05em;
+.form-card-subtitle {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+/* Google / Fast Sign In Button */
+.sehat-google-btn {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+}
+
+.sehat-google-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #38bdf8;
+}
+
+/* Divider */
+.sehat-divider {
+  text-align: center;
+  margin: 20px 0;
+  position: relative;
+}
+
+.sehat-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.sehat-divider span {
+  position: relative;
+  background: #15222b;
+  padding: 0 12px;
+  color: #64748b;
+  font-size: 0.78rem;
+  text-transform: lowercase;
 }
 
 /* Form Controls */
-.login-form {
+.sehat-login-form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 18px;
 }
 
-.input-field-group {
+.sehat-input-group {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 6px;
 }
 
-.input-field-group label {
-  font-size: 0.82rem;
+.sehat-input-group label {
+  font-size: 0.85rem;
   font-weight: 600;
-  color: #e2e8f0;
+  color: #cbd5e1;
 }
 
-.input-relative {
+.sehat-input-relative {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.field-icon {
+.sehat-field-icon {
   position: absolute;
-  left: 1rem;
-  color: #94a3b8;
-  font-size: 1.1rem;
+  left: 14px;
+  color: #64748b;
   pointer-events: none;
 }
 
-.glass-input {
+.sehat-input {
   width: 100%;
-  padding: 0.75rem 1rem 0.75rem 2.6rem;
-  background: rgba(30, 41, 59, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
+  padding: 12px 14px 12px 42px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
   color: #ffffff;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   outline: none;
   transition: all 0.2s ease;
 }
 
-.glass-input:focus {
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
-  background: rgba(30, 41, 59, 1);
+.sehat-input:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+  background: rgba(15, 23, 42, 0.9);
 }
 
-.password-toggle-btn {
+.sehat-password-toggle {
   position: absolute;
-  right: 0.75rem;
+  right: 14px;
   background: none;
   border: none;
-  color: #9ca3af;
+  color: #64748b;
   cursor: pointer;
-  padding: 0.3rem;
+  font-size: 1rem;
+}
+
+.forgot-pass-row {
   display: flex;
-  align-items: center;
-  font-size: 1.1rem;
+  justify-content: flex-end;
+  margin-top: 4px;
 }
 
-.password-toggle-btn:hover {
-  color: #ffffff;
-}
-
-/* Password Strength Bar */
-.strength-meter-container {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  margin-top: 0.2rem;
-}
-
-.strength-bar-bg {
-  height: 4px;
-  width: 100%;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.strength-bar-fill {
-  height: 100%;
-  transition: width 0.3s ease, background-color 0.3s ease;
-}
-
-.strength-label {
-  font-size: 0.72rem;
-  font-weight: 500;
-  color: #9ca3af;
-  display: flex;
-  justify-content: space-between;
-}
-
-/* Checkbox and Forgot password */
-.form-options-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.82rem;
-}
-
-.remember-checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  color: #9ca3af;
-  cursor: pointer;
-}
-
-.remember-checkbox-label input {
-  accent-color: #10b981;
-  width: 15px;
-  height: 15px;
-}
-
-.forgot-pass-link {
-  color: #10b981;
-  text-decoration: none;
+.sehat-forgot-btn {
   background: none;
   border: none;
+  color: #38bdf8;
   font-size: 0.82rem;
+  font-weight: 600;
   cursor: pointer;
-  font-weight: 500;
 }
 
-.forgot-pass-link:hover {
+.sehat-forgot-btn:hover {
   text-decoration: underline;
 }
 
-/* Submit Button */
-.submit-btn-glow {
+/* Submit Pill Button */
+.sehat-submit-pill-btn {
   width: 100%;
-  padding: 0.85rem;
-  border-radius: 12px;
+  padding: 12px;
+  border-radius: 9999px;
   border: none;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
   color: #ffffff;
-  font-weight: 700;
   font-size: 0.95rem;
+  font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 18px rgba(16, 185, 129, 0.4);
-  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.4);
+  transition: all 0.2s ease;
+  margin-top: 6px;
 }
 
-.submit-btn-glow:hover:not(:disabled) {
+.sehat-submit-pill-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 6px 24px rgba(16, 185, 129, 0.55);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.6);
 }
 
-.submit-btn-glow:disabled {
+.sehat-submit-pill-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
@@ -244,10 +331,27 @@
   background: rgba(239, 68, 68, 0.15);
   border: 1px solid rgba(239, 68, 68, 0.3);
   color: #fca5a5;
-  padding: 0.65rem 0.85rem;
-  border-radius: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
   font-size: 0.82rem;
   display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+  .sehat-login-body {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    padding: 10px 20px;
+  }
+
+  .sehat-left-showcase {
+    display: none;
+  }
+
+  .sehat-right-form-wrapper {
+    align-items: center;
+  }
 }
