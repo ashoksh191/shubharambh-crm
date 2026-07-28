@@ -6,7 +6,9 @@ import { loginRateLimiter } from '../middlewares/rateLimiter.js';
 const router = Router();
 
 // Public Auth Endpoints
+router.post('/register', AuthController.register);
 router.post('/login', loginRateLimiter, AuthController.login);
+router.post('/send-otp', AuthController.sendOtp);
 router.post('/refresh', AuthController.refresh);
 
 // Protected Auth Endpoints

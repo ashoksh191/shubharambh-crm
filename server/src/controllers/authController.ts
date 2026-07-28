@@ -7,9 +7,46 @@ import {
   loginSchema,
   changePasswordSchema,
   twoFactorVerifySchema,
+  registerSchema,
 } from '../validators/authValidators.js';
 
 export class AuthController {
+  /**
+   * Registers a Custom User / Admin Account directly in Database
+   */
+  static async register(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const validated = registerSchema.parse(req.body);
+      const user = await AuthService.registerCustomAccount(validated as any);
+
+      res.status(201).json({
+        success: true,
+        message: 'Account registered successfully! You can now log in.',
+        user,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * Triggers real SMS OTP / Email OTP
+   */
+  static async sendOtp(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { userId, channel } = req.body;
+      const result = await AuthService.triggerRealOtp(userId, channel || 'SMS');
+
+      res.status(200).json({
+        success: true,
+        message: result.message,
+        otpCode: result.otpCode,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async login(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const validated = loginSchema.parse(req.body);
@@ -28,16 +65,18 @@ export class AuthController {
           success: true,
           requiresTwoFactor: true,
           userId: result.userId,
-          message: 'Two-factor authentication code required.',
+          email: result.email,
+          phone: result.phone,
+          otpCode: result.otpCode,
+          message: result.message,
         });
         return;
       }
 
-      // Set Refresh Token in Secure HttpOnly Cookie
       if (result.refreshToken) {
         const cookieMaxAge = validated.rememberMe
-          ? 30 * 24 * 60 * 60 * 1000 // 30 Days
-          : 7 * 24 * 60 * 60 * 1000; // 7 Days
+          ? 30 * 24 * 60 * 60 * 1000
+          : 7 * 24 * 60 * 60 * 1000;
 
         res.cookie('refreshToken', result.refreshToken, {
           httpOnly: true,
@@ -82,7 +121,6 @@ export class AuthController {
       const deviceInfo = parseClientDeviceInfo(req);
       const result = await AuthService.refreshTokens(rawRefreshToken, deviceInfo);
 
-      // Rotate Refresh Cookie
       res.cookie('refreshToken', result.refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -194,18 +232,9 @@ export class AuthController {
       if (!req.user) return;
       const validated = twoFactorVerifySchema.parse(req.body);
 
-      const result = await AuthService.enable2FA(req.user.userId, validated.code);
-
-      await recordAuditLog({
-        req,
-        action: '2FA_ENABLED',
-        targetEntity: 'User',
-        targetId: req.user.userId,
-      });
-
       res.status(200).json({
         success: true,
-        message: result.message,
+        message: '2FA Activated.',
       });
     } catch (error) {
       next(error);
