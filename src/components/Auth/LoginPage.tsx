@@ -181,9 +181,14 @@ export const LoginPage: React.FC = () => {
       {/* Main Glassmorphic Card */}
       <div className={`glass-login-card ${shake ? 'shake-animation' : ''}`}>
         <div className="brand-header">
-          <div className="brand-logo-badge">🏞️</div>
-          <h1>Shubharambh CRM</h1>
-          <p>Mandatory 2-Factor Authentication & Real Mobile SMS OTP</p>
+          <div style={{ margin: '0 auto 0.75rem auto', width: '180px', height: '90px', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(245,158,11,0.3)', boxShadow: '0 8px 20px rgba(0,0,0,0.5)' }}>
+            <img src="./assets/logo_and_entrance.jpg" alt="Shubharambh Banner" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
+          <h1 style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #10b981 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            SHUBHARAMBH
+          </h1>
+          <p style={{ color: '#d1d5db', fontSize: '0.85rem' }}>GREEN CITY TOWNSHIP • VILLAGE HASNAPUR, LUCKNOW</p>
+          <p style={{ color: '#9ca3af', fontSize: '0.75rem', marginTop: '0.2rem' }}>॥ शुभारंभ एक बेहतर भविष्य की ओर ॥</p>
         </div>
 
         {/* Step 1: Passkeys or Standard Credentials */}

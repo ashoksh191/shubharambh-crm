@@ -14,12 +14,16 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
   return (
     <header className="navbar">
       <div className="navbar-inner">
-        {/* Brand Logo */}
+        {/* Official Brand Logo */}
         <a href="#" className="brand-logo" onClick={(e) => { e.preventDefault(); setActiveTab('map'); }}>
-          <div className="brand-icon">SGC</div>
+          <div style={{ width: '42px', height: '42px', borderRadius: '10px', overflow: 'hidden', border: '1px solid rgba(245, 158, 11, 0.4)', background: '#0b0f19', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <img src="./assets/logo_and_entrance.jpg" alt="Shubharambh Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
           <div className="brand-text">
-            <h1>SHUBHARAMBH</h1>
-            <span>Green City CRM & Plot Inventory</span>
+            <h1 style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #10b981 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              SHUBHARAMBH
+            </h1>
+            <span>Green City Township • Lucknow</span>
           </div>
         </a>
 
@@ -29,7 +33,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
             className={`nav-btn ${activeTab === 'map' ? 'active' : ''}`}
             onClick={() => setActiveTab('map')}
           >
-            <Map size={16} /> Interactive Map
+            <Map size={16} /> Architectural Layout Map
           </button>
           <button
             className={`nav-btn ${activeTab === 'mlm' ? 'active' : ''}`}
@@ -37,7 +41,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
           >
             <Users size={16} /> MLM Hierarchy
           </button>
-          
+
           <RoleGuard requiredPermissions="payments:approve">
             <button
               className={`nav-btn ${activeTab === 'finance' ? 'active' : ''}`}
@@ -51,7 +55,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
             className={`nav-btn ${activeTab === 'usps' ? 'active' : ''}`}
             onClick={() => setActiveTab('usps')}
           >
-            <Sparkles size={16} /> Project USPs
+            <Sparkles size={16} /> Project USPs & Gate
           </button>
 
           {/* Security & Active Sessions Tab */}
