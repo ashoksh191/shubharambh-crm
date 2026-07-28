@@ -33,6 +33,7 @@
   background: var(--bg-card-subtle);
   color: var(--text-muted);
   border: 1px solid var(--border-color);
+  cursor: pointer;
 }
 
 .filter-chip:hover {
@@ -75,7 +76,7 @@
 
 /* Map Canvas Container */
 .map-canvas-wrapper {
-  background: #0d1e17; /* Deep lush background representing the 60-bigha green township */
+  background: #0d1e17;
   border-radius: var(--radius-xl);
   padding: 24px;
   position: relative;
@@ -117,6 +118,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  cursor: pointer;
 }
 
 .map-ctrl-btn:hover {
@@ -126,23 +128,17 @@
 /* SVG Interactive Layout Map */
 .svg-map-viewport {
   width: 100%;
-  height: 640px;
+  height: 680px;
   background: radial-gradient(circle at center, #153e31 0%, #0a1f18 100%);
   border-radius: var(--radius-lg);
   overflow: auto;
   position: relative;
-  cursor: grab;
-}
-
-.svg-map-viewport:active {
-  cursor: grabbing;
 }
 
 .map-svg-element {
   width: 100%;
-  height: 100%;
-  min-width: 750px;
-  min-height: 850px;
+  height: auto;
+  min-width: 1250px;
 }
 
 /* Plot SVG Styling */
@@ -197,7 +193,7 @@
 }
 
 .svg-plot-dim {
-  font-size: 8px;
+  font-size: 9px;
   fill: rgba(255, 255, 255, 0.85);
   text-anchor: middle;
   pointer-events: none;
@@ -257,70 +253,77 @@
 .legend-color-box.booked { background: var(--status-booked); box-shadow: 0 0 6px rgba(245, 158, 11, 0.5); }
 .legend-color-box.sold { background: var(--status-sold); box-shadow: 0 0 6px rgba(239, 68, 68, 0.5); }
 
-/* Mobile Grid View Cards */
+/* Mobile & Touch Grid View Cards (Fixed Spacing & Clean Padding) */
 .mobile-plot-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 12px;
-  padding: 12px 0;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
+  padding: 16px 0;
 }
 
 .mobile-plot-card {
-  background: var(--bg-card);
-  border-radius: var(--radius-md);
-  padding: 12px;
-  border: 2px solid var(--border-color);
+  background: rgba(17, 24, 39, 0.95);
+  border-radius: 12px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 8px;
+  gap: 10px;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   position: relative;
   overflow: hidden;
+  min-height: 110px;
 }
 
-.mobile-plot-card:active {
-  transform: scale(0.97);
+.mobile-plot-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
 .mobile-plot-card.available {
-  border-color: var(--status-available-border);
-  background: linear-gradient(180deg, #ffffff 0%, var(--status-available-bg) 100%);
+  border-color: #10b981;
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.15) 0%, rgba(11, 15, 25, 0.95) 100%);
 }
 
 .mobile-plot-card.booked {
-  border-color: var(--status-booked-border);
-  background: linear-gradient(180deg, #ffffff 0%, var(--status-booked-bg) 100%);
+  border-color: #f59e0b;
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.15) 0%, rgba(11, 15, 25, 0.95) 100%);
 }
 
 .mobile-plot-card.sold {
-  border-color: var(--status-sold-border);
-  background: linear-gradient(180deg, #ffffff 0%, var(--status-sold-bg) 100%);
+  border-color: #ef4444;
+  background: linear-gradient(180deg, rgba(239, 68, 68, 0.15) 0%, rgba(11, 15, 25, 0.95) 100%);
 }
 
 .mobile-plot-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 6px;
 }
 
 .mobile-plot-num {
   font-weight: 800;
-  font-size: 1.1rem;
-  color: var(--primary-forest);
+  font-size: 1.15rem;
+  color: #ffffff;
+  letter-spacing: 0.5px;
 }
 
 .mobile-plot-dim {
-  font-size: 0.75rem;
-  color: var(--text-muted);
+  font-size: 0.8rem;
+  color: #9ca3af;
+  font-weight: 500;
 }
 
 .mobile-plot-price {
   font-weight: 700;
-  font-size: 0.9rem;
-  color: var(--text-main);
+  font-size: 0.95rem;
+  color: #6ee7b7;
 }
 
 /* Mobile Media Queries */
@@ -371,12 +374,11 @@
   }
 
   .svg-map-viewport {
-    height: 480px;
+    height: 520px;
   }
 
   .mobile-plot-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
   }
 }
-
