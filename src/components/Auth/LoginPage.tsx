@@ -15,7 +15,7 @@ export const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('Password@123456');
   const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  const [twoFactorCode, setTwoFactorCode] = useState(''); // Kept clean and empty
+  const [twoFactorCode, setTwoFactorCode] = useState('');
   const [mfaChannel, setMfaChannel] = useState<'SMS' | 'EMAIL' | 'TOTP'>('SMS');
 
   // Mandatory 2FA OTP state
@@ -61,14 +61,14 @@ export const LoginPage: React.FC = () => {
   const sendNewOtp = (channel: 'SMS' | 'EMAIL' | 'TOTP') => {
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(code);
-    setTwoFactorCode(''); // Keep input blank for clean typing experience
+    setTwoFactorCode('');
 
     if (channel === 'SMS') {
-      setOtpNotice(`📱 [SMS OTP Sent to registered phone] Please check your mobile. Demo OTP: ${code}`);
+      setOtpNotice(`📱 [SMS OTP Triggered] Your 6-digit Verification Code: ${code}`);
     } else if (channel === 'EMAIL') {
-      setOtpNotice(`📧 [Email OTP Sent to inbox] Please check your email. Demo OTP: ${code}`);
+      setOtpNotice(`📧 [Email OTP Triggered] Your 6-digit Verification Code: ${code}`);
     } else {
-      setOtpNotice(`🔑 [Authenticator App TOTP Active] Enter 6-digit OTP code.`);
+      setOtpNotice(`🔑 [Authenticator App TOTP Active] Your 6-digit Verification Code: ${code}`);
     }
   };
 
@@ -102,7 +102,7 @@ export const LoginPage: React.FC = () => {
 
     if (twoFactorCode !== generatedOtp && twoFactorCode !== '123456') {
       setFailedCount((prev) => prev + 1);
-      setErrorMessage('Invalid 6-digit OTP code. Please enter the code sent to your phone/email.');
+      setErrorMessage('Invalid 6-digit OTP code. Please type the verification code shown in the green box above.');
       triggerShake();
       return;
     }
@@ -308,13 +308,18 @@ export const LoginPage: React.FC = () => {
               <div style={{ fontSize: '2rem', marginBottom: '0.2rem' }}>🔒</div>
               <h3 style={{ margin: 0, color: '#ffffff', fontSize: '1.1rem' }}>2-Factor Authentication Required</h3>
               <p style={{ fontSize: '0.82rem', color: '#9ca3af', margin: '0.2rem 0' }}>
-                Account protected with mandatory 2FA. Enter the 6-digit OTP code to complete login.
+                Account protected with mandatory 2FA. Type the 6-digit OTP code below.
               </p>
             </div>
 
             {otpNotice && (
-              <div style={{ background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.4)', color: '#6ee7b7', padding: '0.65rem 0.85rem', borderRadius: '8px', fontSize: '0.8rem', textAlign: 'center', fontWeight: 600 }}>
-                {otpNotice}
+              <div style={{ background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.4)', color: '#6ee7b7', padding: '0.85rem', borderRadius: '10px', fontSize: '0.85rem', textAlign: 'center' }}>
+                <div style={{ fontWeight: 700, fontSize: '1.2rem', letterSpacing: '2px', margin: '0.3rem 0', color: '#ffffff', background: 'rgba(0,0,0,0.3)', padding: '0.4rem', borderRadius: '6px' }}>
+                  OTP CODE: {generatedOtp}
+                </div>
+                <div style={{ fontSize: '0.78rem', color: '#9ca3af', marginTop: '0.3rem' }}>
+                  💡 (Type this 6-digit OTP code into the box below to log in)
+                </div>
               </div>
             )}
 
@@ -373,7 +378,7 @@ export const LoginPage: React.FC = () => {
             </div>
 
             <div className="input-field-group">
-              <label htmlFor="twoFactorCode">Enter 6-Digit OTP Code</label>
+              <label htmlFor="twoFactorCode">Type the 6-Digit OTP Code</label>
               <div className="input-relative">
                 <span className="field-icon">🔑</span>
                 <input
