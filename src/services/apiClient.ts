@@ -18,7 +18,7 @@ class ApiClient {
     return match ? match[2] : null;
   }
 
-  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  public async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       ...(options.headers as Record<string, string>),
@@ -43,7 +43,6 @@ class ApiClient {
       const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
       if (response.status === 401 && !endpoint.includes('/auth/login') && !endpoint.includes('/auth/refresh')) {
-        // Attempt silent token refresh
         const refreshed = await this.refreshTokenSilently();
         if (refreshed) {
           headers['Authorization'] = `Bearer ${this.accessToken}`;
@@ -84,6 +83,13 @@ class ApiClient {
   }
 
   // Auth endpoints
+  public async register(payload: any) {
+    return this.request<{ success: boolean; user: AuthUser; message?: string }>('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  }
+
   public async login(identifier: string, password: string, rememberMe: boolean = false, twoFactorToken?: string) {
     return this.request<{
       success: boolean;

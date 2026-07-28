@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import type { AppRole } from '../../types/auth';
 import { ForgotPasswordModal } from './ForgotPasswordModal';
+import { RegisterModal } from './RegisterModal';
 import { PasskeyLogin } from './PasskeyLogin';
 import { CaptchaWidget } from './CaptchaWidget';
 import { generateDeviceFingerprint } from '../../utils/fingerprint';
@@ -14,7 +15,7 @@ export const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('Password@123456');
   const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  const [twoFactorCode, setTwoFactorCode] = useState('');
+  const [twoFactorCode, setTwoFactorCode] = useState(''); // Kept clean and empty
   const [mfaChannel, setMfaChannel] = useState<'SMS' | 'EMAIL' | 'TOTP'>('SMS');
 
   // Mandatory 2FA OTP state
@@ -29,6 +30,7 @@ export const LoginPage: React.FC = () => {
   const [shake, setShake] = useState(false);
 
   const [showForgotModal, setShowForgotModal] = useState(false);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
 
   useEffect(() => {
     generateDeviceFingerprint();
@@ -59,13 +61,14 @@ export const LoginPage: React.FC = () => {
   const sendNewOtp = (channel: 'SMS' | 'EMAIL' | 'TOTP') => {
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(code);
-    setTwoFactorCode(code); // Pre-fill for quick demo convenience
+    setTwoFactorCode(''); // Keep input blank for clean typing experience
+
     if (channel === 'SMS') {
-      setOtpNotice(`📱 [SMS OTP Sent to registered phone] Verification Code: ${code}`);
+      setOtpNotice(`📱 [SMS OTP Sent to registered phone] Please check your mobile. Demo OTP: ${code}`);
     } else if (channel === 'EMAIL') {
-      setOtpNotice(`📧 [Email OTP Dispatched to inbox] Verification Code: ${code}`);
+      setOtpNotice(`📧 [Email OTP Sent to inbox] Please check your email. Demo OTP: ${code}`);
     } else {
-      setOtpNotice(`🔑 [Authenticator App TOTP Active] Verification Code: ${code}`);
+      setOtpNotice(`🔑 [Authenticator App TOTP Active] Enter 6-digit OTP code.`);
     }
   };
 
@@ -73,7 +76,6 @@ export const LoginPage: React.FC = () => {
     e.preventDefault();
     setErrorMessage(null);
 
-    // Enforce CAPTCHA if failed attempts >= 3
     if (failedCount >= 3 && !captchaToken) {
       setErrorMessage('Please complete the CAPTCHA verification to proceed.');
       triggerShake();
@@ -89,7 +91,6 @@ export const LoginPage: React.FC = () => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      // Trigger mandatory Step 2: 2FA OTP Verification
       setStep('OTP');
       sendNewOtp(mfaChannel);
     }, 400);
@@ -101,7 +102,7 @@ export const LoginPage: React.FC = () => {
 
     if (twoFactorCode !== generatedOtp && twoFactorCode !== '123456') {
       setFailedCount((prev) => prev + 1);
-      setErrorMessage('Invalid 6-digit OTP code. Please enter the correct code.');
+      setErrorMessage('Invalid 6-digit OTP code. Please enter the code sent to your phone/email.');
       triggerShake();
       return;
     }
@@ -173,13 +174,33 @@ export const LoginPage: React.FC = () => {
         <div className="brand-header">
           <div className="brand-logo-badge">🏞️</div>
           <h1>Shubharambh CRM</h1>
-          <p>Mandatory 2-Factor Authentication & OTP Security System</p>
+          <p>Mandatory 2-Factor Authentication & Mobile OTP Security</p>
         </div>
 
         {/* Step 1: Passkeys or Standard Credentials */}
         {step === 'CREDENTIALS' && (
           <>
             <PasskeyLogin onSuccess={handlePasskeySuccess} onError={(msg) => setErrorMessage(msg)} />
+
+            {/* Create Custom Account / Register Mobile button */}
+            <button
+              type="button"
+              onClick={() => setShowRegisterModal(true)}
+              style={{
+                width: '100%',
+                padding: '0.65rem',
+                borderRadius: '10px',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                background: 'rgba(255, 255, 255, 0.08)',
+                color: '#ffffff',
+                fontWeight: 600,
+                fontSize: '0.85rem',
+                cursor: 'pointer',
+                marginBottom: '0.75rem',
+              }}
+            >
+              ➕ Create Custom Account / Register Mobile
+            </button>
 
             <div style={{ textAlign: 'center', color: '#6b7280', fontSize: '0.78rem', margin: '0.75rem 0' }}>
               ── OR ENTER CREDENTIALS FOR MANDATORY OTP ──
@@ -359,7 +380,7 @@ export const LoginPage: React.FC = () => {
                   id="twoFactorCode"
                   type="text"
                   className="glass-input"
-                  placeholder="000000"
+                  placeholder="Enter 6-digit OTP code"
                   value={twoFactorCode}
                   onChange={(e) => setTwoFactorCode(e.target.value)}
                   maxLength={6}
@@ -385,6 +406,17 @@ export const LoginPage: React.FC = () => {
 
       {showForgotModal && (
         <ForgotPasswordModal onClose={() => setShowForgotModal(false)} />
+      )}
+
+      {showRegisterModal && (
+        <RegisterModal
+          onClose={() => setShowRegisterModal(false)}
+          onSuccess={(newUsr) => {
+            setShowRegisterModal(false);
+            setIdentifier(newUsr.username);
+            alert(`Account registered for ${newUsr.fullName}! You can now log in using username: ${newUsr.username}`);
+          }}
+        />
       )}
     </div>
   );
