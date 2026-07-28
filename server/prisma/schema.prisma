@@ -1,0 +1,129 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  SALES_MANAGER
+  SALES_EXECUTIVE
+  FINANCE
+  ASSOCIATE
+  CUSTOMER_SUPPORT
+  VIEWER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  LOCKED
+  SUSPENDED
+}
+
+model User {
+  id                    String                   @id @default(uuid())
+  email                 String                   @unique
+  username              String                   @unique
+  fullName              String
+  phone                 String?
+  passwordHash          String
+  role                  Role                     @default(VIEWER)
+  status                UserStatus               @default(ACTIVE)
+  emailVerified         Boolean                  @default(false)
+  failedAttempts        Int                      @default(0)
+  lockoutUntil          DateTime?
+  twoFactorEnabled      Boolean                  @default(false)
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @updatedAt
+
+  sessions              Session[]
+  loginHistories        LoginHistory[]
+  auditLogs             AuditLog[]
+  twoFactorAuth         TwoFactorAuth?
+  passwordResetTokens   PasswordResetToken[]
+  emailVerificationTokens EmailVerificationToken[]
+}
+
+model Session {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash     String   @unique
+  ipAddress     String
+  userAgent     String
+  device        String   @default("Desktop")
+  browser       String   @default("Unknown Browser")
+  os            String   @default("Unknown OS")
+  country       String   @default("Unknown")
+  expiresAt     DateTime
+  isRevoked     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model LoginHistory {
+  id            String   @id @default(uuid())
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  username      String
+  ipAddress     String
+  userAgent     String
+  device        String   @default("Desktop")
+  browser       String   @default("Unknown Browser")
+  os            String   @default("Unknown OS")
+  country       String   @default("Unknown")
+  status        String   // "SUCCESS" | "FAILED"
+  failureReason String?
+  createdAt     DateTime @default(now())
+}
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  username     String
+  role         String
+  action       String   // e.g. "PLOT_DELETE", "PAYMENT_APPROVE", "USER_ROLE_CHANGE"
+  targetEntity String   // e.g. "Plot", "Booking", "User"
+  targetId     String?
+  metadata     String?  // JSON string
+  ipAddress    String
+  userAgent    String
+  createdAt    DateTime @default(now())
+}
+
+model TwoFactorAuth {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  secret      String
+  backupCodes String   // Comma separated backup codes
+  isEnabled   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  isUsed    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  isUsed    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}

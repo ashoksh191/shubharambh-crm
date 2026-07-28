@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
+import { AuthProvider } from './context/AuthContext';
+import { ProtectedRoute } from './components/Auth/ProtectedRoute';
+import { RoleGuard } from './components/Auth/RoleGuard';
 import { Navbar } from './components/Navigation/Navbar';
 import { InteractiveMap } from './components/Map/InteractiveMap';
 import { AssociateDashboard } from './components/MLM/AssociateDashboard';
 import { FinancialDashboard } from './components/Admin/FinancialDashboard';
 import { USPShowcase } from './components/Public/USPShowcase';
+import { UserProfileDashboard } from './components/Dashboard/UserProfileDashboard';
+import { AuditLogViewer } from './components/Admin/AuditLogViewer';
 import { BookingFormModal } from './components/Booking/BookingFormModal';
 import { ReceiptPDF } from './components/Documents/ReceiptPDF';
 import { AgreementBond } from './components/Documents/AgreementBond';
@@ -14,7 +19,7 @@ import './styles/App.css';
 
 const MainLayout: React.FC = () => {
   const { plots } = useApp();
-  const [activeTab, setActiveTab] = useState<'map' | 'mlm' | 'finance' | 'usps'>('map');
+  const [activeTab, setActiveTab] = useState<'map' | 'mlm' | 'finance' | 'usps' | 'profile' | 'audit'>('map');
 
   // Modal States
   const [selectedBookingPlot, setSelectedBookingPlot] = useState<Plot | null>(null);
@@ -35,7 +40,7 @@ const MainLayout: React.FC = () => {
       <div className="hero-banner">
         <div className="hero-content">
           <h2>Shubharambh Green City CRM</h2>
-          <p>Complete 60-Bigha Real Estate Plot Inventory & Multi-Level Sales Management</p>
+          <p>Enterprise 60-Bigha Real Estate Inventory & Multi-Level Sales Security Architecture</p>
         </div>
 
         <div className="hero-stats">
@@ -70,9 +75,37 @@ const MainLayout: React.FC = () => {
 
         {activeTab === 'mlm' && <AssociateDashboard />}
 
-        {activeTab === 'finance' && <FinancialDashboard />}
+        {activeTab === 'finance' && (
+          <RoleGuard
+            requiredPermissions="payments:approve"
+            fallback={
+              <div style={{ padding: '3rem', textAlign: 'center', color: '#fca5a5' }}>
+                <h3>⛔ Access Denied</h3>
+                <p>You need the <strong>FINANCE</strong> or <strong>SUPER_ADMIN</strong> role to view payment approvals & financial dashboards.</p>
+              </div>
+            }
+          >
+            <FinancialDashboard />
+          </RoleGuard>
+        )}
 
         {activeTab === 'usps' && <USPShowcase />}
+
+        {activeTab === 'profile' && <UserProfileDashboard />}
+
+        {activeTab === 'audit' && (
+          <RoleGuard
+            requiredPermissions="audit_logs:read"
+            fallback={
+              <div style={{ padding: '3rem', textAlign: 'center', color: '#fca5a5' }}>
+                <h3>⛔ Access Denied</h3>
+                <p>Only <strong>ADMIN</strong> and <strong>SUPER_ADMIN</strong> roles can inspect enterprise security audit trails.</p>
+              </div>
+            }
+          >
+            <AuditLogViewer />
+          </RoleGuard>
+        )}
       </main>
 
       {/* Modals */}
@@ -127,11 +160,11 @@ const MainLayout: React.FC = () => {
             <span>MLM Tree</span>
           </button>
           <button
-            className={`mobile-nav-btn ${activeTab === 'finance' ? 'active' : ''}`}
-            onClick={() => setActiveTab('finance')}
+            className={`mobile-nav-btn ${activeTab === 'profile' ? 'active' : ''}`}
+            onClick={() => setActiveTab('profile')}
           >
-            <span style={{ fontSize: '1.2rem' }}>💰</span>
-            <span>Finance</span>
+            <span style={{ fontSize: '1.2rem' }}>👤</span>
+            <span>Profile</span>
           </button>
           <button
             className={`mobile-nav-btn ${activeTab === 'usps' ? 'active' : ''}`}
@@ -146,7 +179,7 @@ const MainLayout: React.FC = () => {
       {/* Footer */}
       <footer className="app-footer">
         <p>
-          © 2026 <span>Shubharambh Green City</span> CRM & Plot Inventory System. All rights reserved.
+          © 2026 <span>Shubharambh Green City</span> Enterprise Security & Plot Inventory System. All rights reserved.
         </p>
       </footer>
     </div>
@@ -155,9 +188,13 @@ const MainLayout: React.FC = () => {
 
 export const App: React.FC = () => {
   return (
-    <AppProvider>
-      <MainLayout />
-    </AppProvider>
+    <AuthProvider>
+      <AppProvider>
+        <ProtectedRoute>
+          <MainLayout />
+        </ProtectedRoute>
+      </AppProvider>
+    </AuthProvider>
   );
 };
 
