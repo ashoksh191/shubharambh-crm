@@ -20,25 +20,35 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const STORAGE_KEYS = {
-  PLOTS: 'sgc_crm_plots_v0_clean_state',
-  USERS: 'sgc_crm_users_v0_clean_state',
-  BOOKINGS: 'sgc_crm_bookings_v0_clean_state',
-  TRANSACTIONS: 'sgc_crm_transactions_v0_clean_state',
-  CURRENT_USER_ID: 'sgc_crm_current_user_id_v0_clean_state',
+  PLOTS: 'sgc_crm_plots_v980_no_overlap_final_v2',
+  USERS: 'sgc_crm_users_v980_no_overlap_final_v2',
+  BOOKINGS: 'sgc_crm_bookings_v980_no_overlap_final_v2',
+  TRANSACTIONS: 'sgc_crm_transactions_v980_no_overlap_final_v2',
+  CURRENT_USER_ID: 'sgc_crm_current_user_id_v980_no_overlap_final_v2',
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Load initial clean states (0 Booked, 0 Sold, 980 Available)
   const [plots, setPlots] = useState<Plot[]>(() => {
+    // Clear any outdated cache from older keys
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('sgc_crm_plots') && key !== STORAGE_KEYS.PLOTS) {
+        localStorage.removeItem(key);
+      }
+    }
+
     const saved = localStorage.getItem(STORAGE_KEYS.PLOTS);
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length >= 900) {
+        // Force refresh if cached plots have old overlapping coordinates (B-317 y < 2000)
+        const b317 = parsed.find((p: Plot) => p.id === 'B-317');
+        if (Array.isArray(parsed) && parsed.length >= 900 && b317 && b317.y > 2000) {
           return parsed;
         }
       } catch (e) {
-        console.warn('Resetting plots to fresh zero state...');
+        console.warn('Resetting plots to fresh non-overlapping state...');
       }
     }
     return generatePlots();

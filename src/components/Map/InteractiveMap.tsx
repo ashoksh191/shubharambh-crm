@@ -16,13 +16,76 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   onOpenReceipt,
   onOpenBond,
 }) => {
-  const { plots } = useApp();
+  const { plots: rawPlots } = useApp();
   const [selectedBlock, setSelectedBlock] = useState<BlockName | 'All'>('All');
   const [selectedStatus, setSelectedStatus] = useState<PlotStatus | 'All'>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [zoomLevel, setZoomLevel] = useState(1);
   const [activePlot, setActivePlot] = useState<Plot | null>(null);
   const [viewMode, setViewMode] = useState<'blueprint' | 'map' | 'grid'>('blueprint');
+
+  // Dynamically calculate spacious non-overlapping SVG coordinates (12 plots per row, 80px row height)
+  const plots = useMemo(() => {
+    const PLOTS_PER_ROW = 12;
+    const CELL_WIDTH = 104;
+    const CELL_HEIGHT = 80;
+    const PLOT_WIDTH = 94;
+    const PLOT_HEIGHT = 54;
+
+    const blockAOffset = 80;
+    const blockBOffset = 2400;
+    const blockCOffset = 5060;
+
+    const aPlots: Plot[] = [];
+    const bPlots: Plot[] = [];
+    const cPlots: Plot[] = [];
+
+    rawPlots.forEach((p) => {
+      if (p.block === 'Block A') aPlots.push(p);
+      else if (p.block === 'Block B') bPlots.push(p);
+      else cPlots.push(p);
+    });
+
+    const positionedPlots: Plot[] = [];
+
+    aPlots.forEach((p, idx) => {
+      const col = idx % PLOTS_PER_ROW;
+      const row = Math.floor(idx / PLOTS_PER_ROW);
+      positionedPlots.push({
+        ...p,
+        x: 45 + col * CELL_WIDTH,
+        y: blockAOffset + row * CELL_HEIGHT,
+        w: PLOT_WIDTH,
+        h: PLOT_HEIGHT,
+      });
+    });
+
+    bPlots.forEach((p, idx) => {
+      const col = idx % PLOTS_PER_ROW;
+      const row = Math.floor(idx / PLOTS_PER_ROW);
+      positionedPlots.push({
+        ...p,
+        x: 45 + col * CELL_WIDTH,
+        y: blockBOffset + row * CELL_HEIGHT,
+        w: PLOT_WIDTH,
+        h: PLOT_HEIGHT,
+      });
+    });
+
+    cPlots.forEach((p, idx) => {
+      const col = idx % PLOTS_PER_ROW;
+      const row = Math.floor(idx / PLOTS_PER_ROW);
+      positionedPlots.push({
+        ...p,
+        x: 45 + col * CELL_WIDTH,
+        y: blockCOffset + row * CELL_HEIGHT,
+        w: PLOT_WIDTH,
+        h: PLOT_HEIGHT,
+      });
+    });
+
+    return positionedPlots;
+  }, [rawPlots]);
 
   // Filter plots
   const filteredPlots = useMemo(() => {
