@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import type { AppRole } from '../../types/auth';
 import { ForgotPasswordModal } from './ForgotPasswordModal';
 import { RegisterModal } from './RegisterModal';
 import { PasskeyLogin } from './PasskeyLogin';
@@ -12,7 +11,7 @@ import './LoginPage.css';
 const FAST2SMS_API_KEY = 'B57vxDy96JW4dtrlmUasIzQoenHj21Fk8XgRwqTNfYOiEZPpCSKETS7m53od4VMDfwZvsyqN90kYuej1';
 
 export const LoginPage: React.FC = () => {
-  const { login, switchRolePreset } = useAuth();
+  const { login } = useAuth();
 
   const [identifier, setIdentifier] = useState('superadmin');
   const [password, setPassword] = useState('Password@123456');
@@ -64,7 +63,7 @@ export const LoginPage: React.FC = () => {
   const sendNewOtp = async (channel: 'SMS' | 'EMAIL' | 'TOTP') => {
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(code);
-    setTwoFactorCode(code); // Pre-fill generated OTP for seamless zero-friction demo testing
+    setTwoFactorCode(code);
 
     if (channel === 'SMS') {
       const targetPhone = '+919876543210';
@@ -136,51 +135,10 @@ export const LoginPage: React.FC = () => {
     login(userObj.username, 'Password@123456');
   };
 
-  const handlePresetSelect = (role: AppRole, userStr: string) => {
-    switchRolePreset(role);
-    setIdentifier(userStr);
-    setPassword('Password@123456');
-    setErrorMessage(null);
-    setStep('CREDENTIALS');
-  };
-
   return (
     <div className="login-page-wrapper">
       <div className="login-bg-glow-1"></div>
       <div className="login-bg-glow-2"></div>
-
-      {/* Preset Quick Role Switcher Bar */}
-      <div className="role-presets-bar">
-        <div className="role-presets-header">
-          <span>⚡ Enterprise Role Presets (Instant Demo Switcher):</span>
-        </div>
-        <div className="role-badges-group">
-          <button className="role-preset-chip" onClick={() => handlePresetSelect('SUPER_ADMIN', 'superadmin')}>
-            👑 Super Admin
-          </button>
-          <button className="role-preset-chip" onClick={() => handlePresetSelect('ADMIN', 'admin')}>
-            🛡️ Admin
-          </button>
-          <button className="role-preset-chip" onClick={() => handlePresetSelect('SALES_MANAGER', 'salesmanager')}>
-            💼 Sales Manager
-          </button>
-          <button className="role-preset-chip" onClick={() => handlePresetSelect('SALES_EXECUTIVE', 'salesexec')}>
-            🎯 Sales Executive
-          </button>
-          <button className="role-preset-chip" onClick={() => handlePresetSelect('FINANCE', 'finance')}>
-            💰 Finance
-          </button>
-          <button className="role-preset-chip" onClick={() => handlePresetSelect('ASSOCIATE', 'associate')}>
-            🤝 Associate
-          </button>
-          <button className="role-preset-chip" onClick={() => handlePresetSelect('CUSTOMER_SUPPORT', 'support')}>
-            🎧 Support
-          </button>
-          <button className="role-preset-chip" onClick={() => handlePresetSelect('VIEWER', 'viewer')}>
-            👁️ Viewer
-          </button>
-        </div>
-      </div>
 
       {/* Main Glassmorphic Card */}
       <div className={`glass-login-card ${shake ? 'shake-animation' : ''}`}>
@@ -194,58 +152,6 @@ export const LoginPage: React.FC = () => {
           </h1>
         </div>
 
-        {/* Step 1: Passkeys or Standard Credentials */}
-        {step === 'CREDENTIALS' && (
-          <>
-            <PasskeyLogin onSuccess={handlePasskeySuccess} onError={(msg) => setErrorMessage(msg)} />
-
-            {/* Direct Instant Fast Sign In Button */}
-            <button
-              type="button"
-              onClick={handleFastDirectLogin}
-              style={{
-                width: '100%',
-                padding: '0.85rem',
-                borderRadius: '12px',
-                border: 'none',
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                color: '#ffffff',
-                fontWeight: 800,
-                fontSize: '0.95rem',
-                cursor: 'pointer',
-                marginBottom: '0.75rem',
-                boxShadow: '0 6px 20px rgba(16, 185, 129, 0.4)',
-              }}
-            >
-              🚀 Fast Direct Sign In (Instant Access)
-            </button>
-
-            {/* Create Custom Account / Register Mobile button */}
-            <button
-              type="button"
-              onClick={() => setShowRegisterModal(true)}
-              style={{
-                width: '100%',
-                padding: '0.65rem',
-                borderRadius: '10px',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                background: 'rgba(255, 255, 255, 0.08)',
-                color: '#ffffff',
-                fontWeight: 600,
-                fontSize: '0.85rem',
-                cursor: 'pointer',
-                marginBottom: '0.75rem',
-              }}
-            >
-              ➕ Create Custom Account / Register Mobile
-            </button>
-
-            <div style={{ textAlign: 'center', color: '#6b7280', fontSize: '0.78rem', margin: '0.75rem 0' }}>
-              ── OR ENTER CREDENTIALS FOR MANDATORY OTP ──
-            </div>
-          </>
-        )}
-
         {errorMessage && (
           <div className="alert-box-error mb-3">
             <span>⚠️</span>
@@ -254,6 +160,7 @@ export const LoginPage: React.FC = () => {
         )}
 
         {step === 'CREDENTIALS' ? (
+          /* Primary Username & Password Form First */
           <form onSubmit={handleCredentialsSubmit} className="login-form">
             <div className="input-field-group">
               <label htmlFor="identifier">Email or Username</label>
@@ -337,6 +244,53 @@ export const LoginPage: React.FC = () => {
 
             <button type="submit" className="submit-btn-glow" disabled={isLoading}>
               {isLoading ? 'Verifying Password...' : 'Proceed to Mandatory 2FA OTP →'}
+            </button>
+
+            {/* Direct Fast Sign In */}
+            <button
+              type="button"
+              onClick={handleFastDirectLogin}
+              style={{
+                width: '100%',
+                padding: '0.8rem',
+                borderRadius: '12px',
+                border: 'none',
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                color: '#ffffff',
+                fontWeight: 800,
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                marginTop: '0.75rem',
+                boxShadow: '0 6px 20px rgba(16, 185, 129, 0.3)',
+              }}
+            >
+              🚀 Fast Direct Sign In
+            </button>
+
+            {/* Other Login Options Section (Below Primary Form) */}
+            <div style={{ textAlign: 'center', color: '#9ca3af', fontSize: '0.8rem', margin: '1.25rem 0 0.75rem 0', borderTop: '1px dashed rgba(255,255,255,0.15)', paddingTop: '1rem' }}>
+              ── OTHER LOGIN OPTIONS ──
+            </div>
+
+            <PasskeyLogin onSuccess={handlePasskeySuccess} onError={(msg) => setErrorMessage(msg)} />
+
+            <button
+              type="button"
+              onClick={() => setShowRegisterModal(true)}
+              style={{
+                width: '100%',
+                padding: '0.65rem',
+                borderRadius: '10px',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                background: 'rgba(255, 255, 255, 0.08)',
+                color: '#ffffff',
+                fontWeight: 600,
+                fontSize: '0.85rem',
+                cursor: 'pointer',
+                marginTop: '0.5rem',
+              }}
+            >
+              ➕ Create Custom Account / Register Mobile
             </button>
           </form>
         ) : (
