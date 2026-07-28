@@ -22,7 +22,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [zoomLevel, setZoomLevel] = useState(1);
   const [activePlot, setActivePlot] = useState<Plot | null>(null);
-  const [viewMode, setViewMode] = useState<'map' | 'blueprint' | 'grid'>('blueprint');
+  const [viewMode, setViewMode] = useState<'blueprint' | 'map' | 'grid'>('blueprint');
 
   // Filter plots
   const filteredPlots = useMemo(() => {
@@ -47,7 +47,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   }, [plots]);
 
   const handleZoom = (delta: number) => {
-    setZoomLevel((prev) => Math.min(Math.max(0.7, prev + delta), 2.5));
+    setZoomLevel((prev) => Math.min(Math.max(0.6, prev + delta), 2.5));
   };
 
   const handleResetZoom = () => {
@@ -126,12 +126,12 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         </div>
       </div>
 
-      {/* Main Interactive Layout Viewport */}
+      {/* Main Viewport */}
       <div className="map-canvas-wrapper">
         <div className="map-header-bar">
           <h3>
             <MapPin size={20} color="var(--accent-gold)" />
-            Shubharambh Green City — {viewMode === 'blueprint' ? 'Official Master Architectural Layout Blueprint (Ultra Fast)' : viewMode === 'map' ? 'Interactive 60-Bigha Layout Grid' : 'Mobile Plot Inventory Grid'}
+            Shubharambh Green City — {viewMode === 'blueprint' ? 'Official Master Architectural Layout Blueprint' : viewMode === 'map' ? 'Interactive 2D Vector Map (Non-Overlapping)' : 'Mobile Touch Plot Grid'}
           </h3>
           <div className="map-controls">
             <a
@@ -159,7 +159,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         </div>
 
         {viewMode === 'blueprint' ? (
-          /* Official Architect Blueprint Layout Map View (Ultra Fast Compressed 366KB) */
+          /* Official Architect Blueprint Layout Map View */
           <div style={{ width: '100%', minHeight: '650px', background: '#0b0f19', overflow: 'auto', padding: '1rem', position: 'relative', textAlign: 'center' }}>
             <div style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center', transition: 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)', display: 'inline-block', boxShadow: '0 20px 50px rgba(0,0,0,0.7)', borderRadius: '8px', overflow: 'hidden', border: '2px solid rgba(245,158,11,0.4)' }}>
               <img
@@ -195,85 +195,92 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
             ))}
           </div>
         ) : (
-          /* Scalable Vector SVG Map */
-          <div className="svg-map-viewport">
+          /* High Precision Non-Overlapping 2D Vector SVG Map */
+          <div className="svg-map-viewport" style={{ overflow: 'auto', maxHeight: '780px' }}>
             <svg
               className="map-svg-element"
-              viewBox="0 0 700 950"
+              viewBox="0 0 1300 5600"
               style={{
+                width: '100%',
+                height: 'auto',
+                minWidth: '1200px',
                 transform: `scale(${zoomLevel})`,
                 transformOrigin: 'top left',
                 transition: 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
               }}
             >
               <defs>
-                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="1" />
+                <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+                  <path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="1" />
                 </pattern>
               </defs>
               <rect width="100%" height="100%" fill="url(#grid)" />
 
-              {/* BLOCK A SECTION */}
-              <g id="block-a">
-                <rect x="25" y="15" width="650" height="320" className="block-banner" rx="12" />
-                <text x="40" y="38" className="block-title-text">
-                  BLOCK A — PREMIUM BOULEVARD (30'x50', 25'x50', 20'x50')
-                </text>
-                <rect x="35" y="300" width="630" height="24" fill="rgba(148, 163, 184, 0.15)" rx="4" />
-                <text x="350" y="316" className="road-text" textAnchor="middle">
-                  🛣️ 40 FT WIDE MAIN BOULEVARD ROAD
+              {/* BLOCK A BANNER */}
+              <g id="block-a-header">
+                <rect x="25" y="15" width="1240" height="40" fill="rgba(245, 158, 11, 0.15)" stroke="#f59e0b" rx="8" />
+                <text x="40" y="41" fill="#fcd34d" fontSize="16" fontWeight="700">
+                  👑 BLOCK A — PREMIUM BOULEVARD SECTOR (Plots A-1 to A-316 | 30'x50', 25'x50', 20'x50')
                 </text>
               </g>
 
-              {/* BLOCK B SECTION */}
-              <g id="block-b">
-                <rect x="25" y="355" width="650" height="300" className="block-banner" rx="12" />
-                <text x="40" y="378" className="block-title-text">
-                  BLOCK B — CENTRAL PARK & CLUB HOUSE SECTOR (25'x40', 20'x40', 15'x40')
-                </text>
-                <rect x="520" y="420" width="140" height="180" fill="rgba(16, 185, 129, 0.15)" stroke="#10b981" strokeDasharray="3" rx="8" />
-                <text x="590" y="500" fill="#6ee7b7" fontSize="12" fontWeight="700" textAnchor="middle">
-                  🌴 CENTRAL PARK &
-                </text>
-                <text x="590" y="518" fill="#6ee7b7" fontSize="12" fontWeight="700" textAnchor="middle">
-                  🏊 CLUB HOUSE
-                </text>
-                <rect x="35" y="625" width="630" height="20" fill="rgba(148, 163, 184, 0.15)" rx="4" />
-                <text x="350" y="639" className="road-text" textAnchor="middle">
-                  🛣️ 30 FT PARK AVENUE ROAD
+              {/* BLOCK B BANNER */}
+              <g id="block-b-header">
+                <rect x="25" y="1790" width="1240" height="40" fill="rgba(16, 185, 129, 0.15)" stroke="#10b981" rx="8" />
+                <text x="40" y="1816" fill="#6ee7b7" fontSize="16" fontWeight="700">
+                  🌴 BLOCK B — CENTRAL PARK & CLUB HOUSE SECTOR (Plots B-317 to B-680 | 25'x40', 20'x40', 15'x40')
                 </text>
               </g>
 
-              {/* BLOCK C SECTION */}
-              <g id="block-c">
-                <rect x="25" y="665" width="650" height="260" className="block-banner" rx="12" />
-                <text x="40" y="688" className="block-title-text">
-                  BLOCK C — GARDEN RESIDENTIAL SECTOR (25'x40', 20'x40', 15'x40')
+              {/* BLOCK C BANNER */}
+              <g id="block-c-header">
+                <rect x="25" y="3790" width="1240" height="40" fill="rgba(59, 130, 246, 0.15)" stroke="#3b82f6" rx="8" />
+                <text x="40" y="3816" fill="#93c5fd" fontSize="16" fontWeight="700">
+                  🏡 BLOCK C — GARDEN RESIDENTIAL SECTOR (Plots C-681 to C-980 | 25'x40', 20'x40', 15'x40')
                 </text>
               </g>
 
-              {/* Render Plots */}
+              {/* Render All 980 Plots cleanly with ZERO overlap */}
               {plots.map((plot) => {
                 const isFilteredOut = !filteredPlots.some((p) => p.id === plot.id);
-                const opacity = isFilteredOut ? 0.2 : 1;
+                const opacity = isFilteredOut ? 0.15 : 1;
 
                 return (
-                  <g key={plot.id} style={{ opacity, transition: 'opacity 0.2s' }}>
+                  <g key={plot.id} style={{ opacity, transition: 'opacity 0.2s', cursor: 'pointer' }}>
                     <rect
                       x={plot.x}
                       y={plot.y}
                       width={plot.w}
                       height={plot.h}
-                      rx="4"
+                      rx="6"
                       className={`svg-plot-rect status-${plot.status}`}
                       onClick={() => setActivePlot(plot)}
+                      style={{
+                        stroke: plot.status === 'available' ? '#10b981' : plot.status === 'booked' ? '#f59e0b' : '#ef4444',
+                        strokeWidth: 1.5,
+                      }}
                     >
                       <title>{`Plot ${plot.plotNo} (${plot.block})\nDimensions: ${plot.dimensions}\nArea: ${plot.totalArea} sq.ft\nPrice: ₹${plot.totalPrice.toLocaleString('en-IN')}\nStatus: ${plot.status.toUpperCase()}`}</title>
                     </rect>
-                    <text x={plot.x + plot.w / 2} y={plot.y + plot.h / 2 - 6} className="svg-plot-text">
+                    {/* Plot Number Text */}
+                    <text
+                      x={plot.x + plot.w / 2}
+                      y={plot.y + plot.h / 2 - 4}
+                      fill="#ffffff"
+                      fontSize="11"
+                      fontWeight="700"
+                      textAnchor="middle"
+                    >
                       {plot.plotNo}
                     </text>
-                    <text x={plot.x + plot.w / 2} y={plot.y + plot.h / 2 + 8} className="svg-plot-dim">
+                    {/* Plot Dimensions */}
+                    <text
+                      x={plot.x + plot.w / 2}
+                      y={plot.y + plot.h / 2 + 10}
+                      fill="#9ca3af"
+                      fontSize="9"
+                      textAnchor="middle"
+                    >
                       {plot.dimensions}
                     </text>
                   </g>

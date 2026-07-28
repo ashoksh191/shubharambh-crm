@@ -121,13 +121,18 @@ export const INITIAL_USERS: User[] = [
 ];
 
 /**
- * Generates Clean 980-Plot Inventory in 100% Available State (0 Booked, 0 Sold)
+ * Generates the complete 980-Plot Inventory with Spacious Grid Offsets to prevent any overlapping.
  * Block A: A-1 to A-316 (30'x50', 25'x50', 20'x50')
  * Block B: B-317 to B-680 (25'x40', 20'x40', 15'x40')
  * Block C: C-681 to C-980 (25'x40', 20'x40', 15'x40')
  */
 export function generatePlots(): Plot[] {
   const plots: Plot[] = [];
+  const PLOTS_PER_ROW = 12; // 12 plots per row for ultra clean spacing
+  const CELL_WIDTH = 100;
+  const CELL_HEIGHT = 65;
+  const PLOT_WIDTH = 90;
+  const PLOT_HEIGHT = 52;
 
   // 1. BLOCK A (Plots A-1 to A-316)
   const blockASpecs = [
@@ -141,8 +146,8 @@ export function generatePlots(): Plot[] {
     const spec = blockASpecs[num % blockASpecs.length];
     const isCorner = num % 12 === 0 || num % 12 === 1;
 
-    const col = (num - 1) % 16;
-    const row = Math.floor((num - 1) / 16);
+    const col = (num - 1) % PLOTS_PER_ROW;
+    const row = Math.floor((num - 1) / PLOTS_PER_ROW);
 
     plots.push({
       id: `A-${num}`,
@@ -154,13 +159,13 @@ export function generatePlots(): Plot[] {
       totalArea: spec.area,
       ratePerSqFt: spec.rate,
       totalPrice: spec.area * spec.rate,
-      status: 'available', // Clean 0 Booked, 0 Sold
+      status: 'available',
       facing: isCorner ? 'Corner' : (num % 2 === 0 ? 'East' : 'North'),
       roadWidth: num < 100 ? '40 Ft Main Boulevard Road' : '30 Ft Sector Road',
-      x: 35 + col * 40,
-      y: 45 + row * 40,
-      w: 36,
-      h: 36,
+      x: 45 + col * CELL_WIDTH,
+      y: 65 + row * CELL_HEIGHT,
+      w: PLOT_WIDTH,
+      h: PLOT_HEIGHT,
     });
   }
 
@@ -171,14 +176,16 @@ export function generatePlots(): Plot[] {
     { dim: "15' x 40'", w: 15, l: 40, area: 600, rate: 1000 },
   ];
 
+  const blockBYStart = 1850; // Spacious vertical separation below Block A
+
   for (let num = 317; num <= 680; num++) {
     const plotNo = `B-${num}`;
     const spec = blockBSpecs[num % blockBSpecs.length];
     const isCorner = num % 10 === 0 || num % 10 === 1;
 
     const index = num - 317;
-    const col = index % 16;
-    const row = Math.floor(index / 16);
+    const col = index % PLOTS_PER_ROW;
+    const row = Math.floor(index / PLOTS_PER_ROW);
 
     plots.push({
       id: `B-${num}`,
@@ -190,13 +197,13 @@ export function generatePlots(): Plot[] {
       totalArea: spec.area,
       ratePerSqFt: spec.rate,
       totalPrice: spec.area * spec.rate,
-      status: 'available', // Clean 0 Booked, 0 Sold
+      status: 'available',
       facing: isCorner ? 'Corner' : (num % 2 === 0 ? 'South' : 'West'),
       roadWidth: '30 Ft Park Avenue Road',
-      x: 35 + col * 40,
-      y: 380 + row * 38,
-      w: 36,
-      h: 34,
+      x: 45 + col * CELL_WIDTH,
+      y: blockBYStart + row * CELL_HEIGHT,
+      w: PLOT_WIDTH,
+      h: PLOT_HEIGHT,
     });
   }
 
@@ -207,14 +214,16 @@ export function generatePlots(): Plot[] {
     { dim: "15' x 40'", w: 15, l: 40, area: 600, rate: 900 },
   ];
 
+  const blockCYStart = 3850; // Spacious vertical separation below Block B
+
   for (let num = 681; num <= 980; num++) {
     const plotNo = `C-${num}`;
     const spec = blockCSpecs[num % blockCSpecs.length];
     const isCorner = num % 10 === 0 || num % 10 === 1;
 
     const index = num - 681;
-    const col = index % 16;
-    const row = Math.floor(index / 16);
+    const col = index % PLOTS_PER_ROW;
+    const row = Math.floor(index / PLOTS_PER_ROW);
 
     plots.push({
       id: `C-${num}`,
@@ -226,13 +235,13 @@ export function generatePlots(): Plot[] {
       totalArea: spec.area,
       ratePerSqFt: spec.rate,
       totalPrice: spec.area * spec.rate,
-      status: 'available', // Clean 0 Booked, 0 Sold
+      status: 'available',
       facing: isCorner ? 'Corner' : (num % 2 === 0 ? 'East' : 'North'),
       roadWidth: '25 Ft Internal Sector Road',
-      x: 35 + col * 40,
-      y: 690 + row * 38,
-      w: 36,
-      h: 34,
+      x: 45 + col * CELL_WIDTH,
+      y: blockCYStart + row * CELL_HEIGHT,
+      w: PLOT_WIDTH,
+      h: PLOT_HEIGHT,
     });
   }
 
@@ -240,5 +249,4 @@ export function generatePlots(): Plot[] {
 }
 
 export const INITIAL_BOOKINGS: Booking[] = [];
-
 export const INITIAL_TRANSACTIONS: Transaction[] = [];
