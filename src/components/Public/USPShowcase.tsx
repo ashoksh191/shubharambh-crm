@@ -10,6 +10,8 @@ export const USPShowcase: React.FC = () => {
           <img
             src="./assets/logo_and_entrance.jpg"
             alt="Shubharambh Green City Grand Entrance Gate"
+            loading="eager"
+            decoding="async"
             style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
           />
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'linear-gradient(to top, rgba(11,15,25,0.95), transparent)', padding: '2rem 1.5rem 1rem 1.5rem' }}>
@@ -80,8 +82,10 @@ export const USPShowcase: React.FC = () => {
 
         <div style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)', background: '#000000' }}>
           <img
-            src="./assets/layout_map_hd.png"
+            src="./assets/layout_map_fast.jpg"
             alt="Shubharambh Master Layout Blueprint"
+            loading="lazy"
+            decoding="async"
             style={{ width: '100%', height: 'auto', display: 'block' }}
           />
         </div>

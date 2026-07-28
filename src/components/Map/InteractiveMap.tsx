@@ -131,7 +131,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         <div className="map-header-bar">
           <h3>
             <MapPin size={20} color="var(--accent-gold)" />
-            Shubharambh Green City — {viewMode === 'blueprint' ? 'Official Master Architectural Layout Blueprint (300 DPI HD)' : viewMode === 'map' ? 'Interactive 60-Bigha Layout Grid' : 'Mobile Plot Inventory Grid'}
+            Shubharambh Green City — {viewMode === 'blueprint' ? 'Official Master Architectural Layout Blueprint (Ultra Fast)' : viewMode === 'map' ? 'Interactive 60-Bigha Layout Grid' : 'Mobile Plot Inventory Grid'}
           </h3>
           <div className="map-controls">
             <a
@@ -159,12 +159,14 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         </div>
 
         {viewMode === 'blueprint' ? (
-          /* Official Architect Blueprint Layout Map View (300 DPI HD) */
+          /* Official Architect Blueprint Layout Map View (Ultra Fast Compressed 366KB) */
           <div style={{ width: '100%', minHeight: '650px', background: '#0b0f19', overflow: 'auto', padding: '1rem', position: 'relative', textAlign: 'center' }}>
             <div style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center', transition: 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)', display: 'inline-block', boxShadow: '0 20px 50px rgba(0,0,0,0.7)', borderRadius: '8px', overflow: 'hidden', border: '2px solid rgba(245,158,11,0.4)' }}>
               <img
-                src="./assets/layout_map_hd.png"
+                src="./assets/layout_map_fast.jpg"
                 alt="Shubharambh Green City Official Layout Blueprint Plan"
+                loading="eager"
+                decoding="async"
                 style={{ maxWidth: '100%', height: 'auto', display: 'block' }}
               />
             </div>
