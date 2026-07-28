@@ -20,18 +20,28 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const STORAGE_KEYS = {
-  PLOTS: 'sgc_crm_plots_v1',
-  USERS: 'sgc_crm_users_v1',
-  BOOKINGS: 'sgc_crm_bookings_v1',
-  TRANSACTIONS: 'sgc_crm_transactions_v1',
-  CURRENT_USER_ID: 'sgc_crm_current_user_id_v1',
+  PLOTS: 'sgc_crm_plots_v980_final',
+  USERS: 'sgc_crm_users_v980_final',
+  BOOKINGS: 'sgc_crm_bookings_v980_final',
+  TRANSACTIONS: 'sgc_crm_transactions_v980_final',
+  CURRENT_USER_ID: 'sgc_crm_current_user_id_v980_final',
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Load initial states from LocalStorage or seed data
   const [plots, setPlots] = useState<Plot[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.PLOTS);
-    return saved ? JSON.parse(saved) : generatePlots();
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length >= 900) {
+          return parsed;
+        }
+      } catch (e) {
+        console.warn('Failed to parse cached plots, regenerating 980 inventory...');
+      }
+    }
+    return generatePlots();
   });
 
   const [users, setUsers] = useState<User[]>(() => {
@@ -97,8 +107,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   ): Booking => {
     const newBookingId = `BK-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}`;
     const today = new Date().toISOString().split('T')[0];
-    
-    // Calculate 90 days (3 months) registry due date as per SRS
+
     const dueDate = new Date();
     dueDate.setDate(dueDate.getDate() + 90);
     const registryDueDate = dueDate.toISOString().split('T')[0];
@@ -127,7 +136,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       verificationStatus: 'pending',
     };
 
-    // Update Plot Status to 'booked' (Yellow/Orange)
     setPlots((prevPlots) =>
       prevPlots.map((p) =>
         p.id === bookingData.plotId
@@ -158,24 +166,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     );
 
     if (isApproved) {
-      // Find booking & plot
       const booking = bookings.find((b) => b.bookingId === txn.bookingId);
       if (booking) {
-        // Update booking status
         setBookings((prev) =>
           prev.map((b) =>
             b.bookingId === booking.bookingId ? { ...b, status: 'sold' } : b
           )
         );
 
-        // Update plot status to 'sold' (Red)
         setPlots((prev) =>
           prev.map((p) =>
             p.id === booking.plotId ? { ...p, status: 'sold' } : p
           )
         );
 
-        // Update associate earnings (5% commission model)
         const commissionAmount = booking.totalAmount * 0.05;
         setUsers((prev) =>
           prev.map((u) => {
@@ -202,14 +206,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     const bookingIdToCancel = targetPlot.bookingId;
 
-    // Reset plot to 'available' (Green)
     setPlots((prev) =>
       prev.map((p) =>
         p.id === plotId ? { ...p, status: 'available', bookingId: undefined } : p
       )
     );
 
-    // Mark booking as cancelled
     setBookings((prev) =>
       prev.map((b) =>
         b.bookingId === bookingIdToCancel ? { ...b, status: 'cancelled' } : b
@@ -217,7 +219,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     );
   };
 
-  // Module 2: Associate Onboarding with unique Associate ID generator
+  // Module 2: Associate Onboarding
   const registerAssociate = (
     name: string,
     phone: string,
@@ -244,7 +246,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       commissionPending: 0,
     };
 
-    // Update parent's downlineIds
     setUsers((prev) => {
       const updated = prev.map((u) => {
         if (u.id === parentId) {
@@ -262,12 +263,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const resetAllData = () => {
-    localStorage.removeItem(STORAGE_KEYS.PLOTS);
-    localStorage.removeItem(STORAGE_KEYS.USERS);
-    localStorage.removeItem(STORAGE_KEYS.BOOKINGS);
-    localStorage.removeItem(STORAGE_KEYS.TRANSACTIONS);
-    localStorage.removeItem(STORAGE_KEYS.CURRENT_USER_ID);
-
+    localStorage.clear();
     setPlots(generatePlots());
     setUsers(INITIAL_USERS);
     setBookings(INITIAL_BOOKINGS);
