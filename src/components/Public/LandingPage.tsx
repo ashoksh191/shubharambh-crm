@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
+import { useAuth } from '../../context/AuthContext';
 import {
   Shield,
   MapPin,
@@ -15,16 +16,20 @@ import {
   Trees,
   Car,
   FileCheck,
-  Send
+  Send,
+  LogIn,
+  Sun
 } from 'lucide-react';
 import '../../styles/LandingPage.css';
 
 interface LandingPageProps {
   onNavigateToMap: () => void;
+  onOpenLogin?: () => void;
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpenLogin }) => {
   const { plots } = useApp();
+  const { user: authUser, logout } = useAuth();
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [siteVisitForm, setSiteVisitForm] = useState({
     name: '',
@@ -46,6 +51,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap }) => 
     }, 4000);
   };
 
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   const faqs = [
     {
       q: 'Subharambh Green City plot rates kya hain?',
@@ -57,7 +69,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap }) => 
     },
     {
       q: 'Site Visit ke liye cab / transport facility available hai?',
-      a: 'Haan! Hum Lucknow aur Amethi se FREE Pick & Drop facility provide karte hain. Aap screen par diye gaye form se ya phone call karke Free Site Visit book kar sakte hain.',
+      a: 'Haan! Hum Lucknow aur Amethi se FREE Pick & Drop facility provide karte hain. Aap screen par दिए gaye form se ya phone call karke Free Site Visit book kar sakte hain.',
     },
     {
       q: 'Kya Plots par Bank Loan ki suvidha hai?',
@@ -71,6 +83,52 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap }) => 
 
   return (
     <div className="lovable-landing-container">
+      {/* Top Header Navbar (SehatMitra Style) */}
+      <header className="sehat-navbar">
+        <div className="sehat-navbar-inner">
+          <div className="sehat-brand">
+            <div className="sehat-logo-icon">
+              <img src="./assets/logo_and_entrance.jpg" alt="Shubharambh Logo" />
+            </div>
+            <span className="sehat-brand-title">Shubharambh Green City</span>
+          </div>
+
+          <nav className="sehat-nav-menu">
+            <a href="#features" onClick={(e) => { e.preventDefault(); scrollToSection('features'); }}>Features</a>
+            <a href="#how-it-works" onClick={(e) => { e.preventDefault(); scrollToSection('how-it-works'); }}>How it works</a>
+            <a href="#government" onClick={(e) => { e.preventDefault(); scrollToSection('government'); }}>Legal & Registry</a>
+            <a href="#stories" onClick={(e) => { e.preventDefault(); scrollToSection('stories'); }}>Stories</a>
+            <a href="#faq" onClick={(e) => { e.preventDefault(); scrollToSection('faq'); }}>FAQ</a>
+          </nav>
+
+          <div className="sehat-nav-actions">
+            <button className="sehat-theme-btn" title="Toggle Theme">
+              <Sun size={18} />
+            </button>
+
+            {authUser ? (
+              <button className="sehat-signin-btn" onClick={logout} title="Sign Out">
+                <LogIn size={16} /> Sign out ({authUser.role})
+              </button>
+            ) : (
+              <button
+                className="sehat-signin-btn"
+                onClick={() => {
+                  if (onOpenLogin) onOpenLogin();
+                  else window.location.href = '#login';
+                }}
+              >
+                Sign in
+              </button>
+            )}
+
+            <button className="sehat-get-started-btn" onClick={onNavigateToMap}>
+              Get Started
+            </button>
+          </div>
+        </div>
+      </header>
+
       {/* Top Floating Announcement */}
       <div className="announcement-banner">
         <span>🎉 <strong>SPECIAL LAUNCH OFFER:</strong> Get 40 Ft Main Boulevard Plots at ₹1,200/sq.ft • Free Site Visit Available Today!</span>
@@ -278,7 +336,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap }) => 
       </section>
 
       {/* Customer Testimonials / Happy Buyers */}
-      <section className="testimonials-section">
+      <section className="testimonials-section" id="stories">
         <div className="section-header">
           <span className="section-badge">CUSTOMER STORIES</span>
           <h2>Suno Unki Zubani Jinhone Shubharambh Ko Chuna</h2>

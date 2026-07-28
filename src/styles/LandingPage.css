@@ -7,6 +7,132 @@
   overflow-x: hidden;
 }
 
+/* SehatMitra Style Top Header Navbar */
+.sehat-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px 24px;
+}
+
+.sehat-navbar-inner {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.sehat-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sehat-logo-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  background: #0f172a;
+}
+
+.sehat-logo-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sehat-brand-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.sehat-nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.sehat-nav-menu a {
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 0.925rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.sehat-nav-menu a:hover {
+  color: #38bdf8;
+}
+
+.sehat-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.sehat-theme-btn {
+  background: transparent;
+  color: #94a3b8;
+  border: none;
+  padding: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.sehat-theme-btn:hover {
+  color: #f59e0b;
+}
+
+.sehat-signin-btn {
+  background: transparent;
+  color: #f8fafc;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.2s ease;
+}
+
+.sehat-signin-btn:hover {
+  color: #38bdf8;
+}
+
+.sehat-get-started-btn {
+  background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+  color: #ffffff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 9999px;
+  font-size: 0.925rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.4);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sehat-get-started-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.6);
+}
+
 /* Announcement Banner */
 .announcement-banner {
   background: linear-gradient(90deg, #059669 0%, #10b981 50%, #047857 100%);
@@ -757,6 +883,10 @@
 
 /* Responsive Media Queries */
 @media (max-width: 992px) {
+  .sehat-nav-menu {
+    display: none;
+  }
+
   .hero-section {
     grid-template-columns: 1fr;
     gap: 30px;
@@ -774,6 +904,14 @@
 }
 
 @media (max-width: 600px) {
+  .sehat-navbar-inner {
+    padding: 0 4px;
+  }
+
+  .sehat-brand-title {
+    font-size: 0.95rem;
+  }
+
   .hero-headline {
     font-size: 2rem;
   }
