@@ -10,6 +10,7 @@ import { FinancialDashboard } from './components/Admin/FinancialDashboard';
 import { USPShowcase } from './components/Public/USPShowcase';
 import { UserProfileDashboard } from './components/Dashboard/UserProfileDashboard';
 import { AuditLogViewer } from './components/Admin/AuditLogViewer';
+import { PendingApprovals } from './components/Admin/PendingApprovals';
 import { BookingFormModal } from './components/Booking/BookingFormModal';
 import { ReceiptPDF } from './components/Documents/ReceiptPDF';
 import { AgreementBond } from './components/Documents/AgreementBond';
@@ -19,7 +20,7 @@ import './styles/App.css';
 
 const MainLayout: React.FC = () => {
   const { plots } = useApp();
-  const [activeTab, setActiveTab] = useState<'map' | 'mlm' | 'finance' | 'usps' | 'profile' | 'audit'>('map');
+  const [activeTab, setActiveTab] = useState<'map' | 'mlm' | 'finance' | 'usps' | 'profile' | 'audit' | 'approvals'>('map');
 
   // Modal States
   const [selectedBookingPlot, setSelectedBookingPlot] = useState<Plot | null>(null);
@@ -40,7 +41,7 @@ const MainLayout: React.FC = () => {
       <div className="hero-banner">
         <div className="hero-content">
           <h2>Shubharambh Green City CRM</h2>
-          <p>Enterprise 60-Bigha Real Estate Inventory & Multi-Level Sales Security Architecture</p>
+          <p>Advanced Enterprise Identity & Passkeys Security Infrastructure</p>
         </div>
 
         <div className="hero-stats">
@@ -92,6 +93,20 @@ const MainLayout: React.FC = () => {
         {activeTab === 'usps' && <USPShowcase />}
 
         {activeTab === 'profile' && <UserProfileDashboard />}
+
+        {activeTab === 'approvals' && (
+          <RoleGuard
+            requiredPermissions="users:manage_roles"
+            fallback={
+              <div style={{ padding: '3rem', textAlign: 'center', color: '#fca5a5' }}>
+                <h3>⛔ Access Denied</h3>
+                <p>Only <strong>ADMIN</strong> and <strong>SUPER_ADMIN</strong> roles can review pending user registration requests.</p>
+              </div>
+            }
+          >
+            <PendingApprovals />
+          </RoleGuard>
+        )}
 
         {activeTab === 'audit' && (
           <RoleGuard
@@ -179,7 +194,7 @@ const MainLayout: React.FC = () => {
       {/* Footer */}
       <footer className="app-footer">
         <p>
-          © 2026 <span>Shubharambh Green City</span> Enterprise Security & Plot Inventory System. All rights reserved.
+          © 2026 <span>Shubharambh Green City</span> Advanced Enterprise Security System. All rights reserved.
         </p>
       </footer>
     </div>

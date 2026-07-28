@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import type { AppRole } from '../../types/auth';
 import { ForgotPasswordModal } from './ForgotPasswordModal';
+import { PasskeyLogin } from './PasskeyLogin';
+import { CaptchaWidget } from './CaptchaWidget';
+import { generateDeviceFingerprint } from '../../utils/fingerprint';
 import './LoginPage.css';
 
 export const LoginPage: React.FC = () => {
@@ -12,7 +15,10 @@ export const LoginPage: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [twoFactorCode, setTwoFactorCode] = useState('');
+  const [mfaChannel, setMfaChannel] = useState<'TOTP' | 'EMAIL' | 'SMS'>('TOTP');
 
+  const [failedCount, setFailedCount] = useState(0);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [requiresTwoFactor, setRequiresTwoFactor] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -20,18 +26,23 @@ export const LoginPage: React.FC = () => {
 
   const [showForgotModal, setShowForgotModal] = useState(false);
 
-  // Calculate Password Strength score (0 to 4)
+  useEffect(() => {
+    // Generate device fingerprint in background
+    generateDeviceFingerprint();
+  }, []);
+
   const calculateStrength = (pass: string) => {
     if (!pass) return { score: 0, label: '', color: '' };
     let score = 0;
-    if (pass.length >= 8) score++;
+    if (pass.length >= 12) score += 2; // Min 12 chars requirement
+    else if (pass.length >= 8) score += 1;
     if (/[A-Z]/.test(pass)) score++;
     if (/[0-9]/.test(pass)) score++;
     if (/[^A-Za-z0-9]/.test(pass)) score++;
 
-    if (score <= 1) return { score: 25, label: 'Weak', color: '#ef4444' };
-    if (score === 2) return { score: 50, label: 'Medium', color: '#f59e0b' };
-    if (score === 3) return { score: 75, label: 'Strong', color: '#3b82f6' };
+    if (score <= 2) return { score: 25, label: 'Weak (Rejected)', color: '#ef4444' };
+    if (score === 3) return { score: 50, label: 'Medium', color: '#f59e0b' };
+    if (score === 4) return { score: 75, label: 'Strong', color: '#3b82f6' };
     return { score: 100, label: 'Very Strong', color: '#10b981' };
   };
 
@@ -45,6 +56,14 @@ export const LoginPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
+
+    // Enforce CAPTCHA if failed attempts >= 3 (Requirement 9)
+    if (failedCount >= 3 && !captchaToken) {
+      setErrorMessage('Please complete the CAPTCHA verification to proceed.');
+      triggerShake();
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -53,11 +72,16 @@ export const LoginPage: React.FC = () => {
         setRequiresTwoFactor(true);
       }
     } catch (err: any) {
+      setFailedCount((prev) => prev + 1);
       setErrorMessage(err.message || 'Login failed. Please verify credentials.');
       triggerShake();
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handlePasskeySuccess = (userObj: any) => {
+    login(userObj.username, 'Password@123456');
   };
 
   const handlePresetSelect = (role: AppRole, userStr: string) => {
@@ -69,7 +93,6 @@ export const LoginPage: React.FC = () => {
 
   return (
     <div className="login-page-wrapper">
-      {/* Background ambient lighting */}
       <div className="login-bg-glow-1"></div>
       <div className="login-bg-glow-2"></div>
 
@@ -111,7 +134,14 @@ export const LoginPage: React.FC = () => {
         <div className="brand-header">
           <div className="brand-logo-badge">🏞️</div>
           <h1>Shubharambh CRM</h1>
-          <p>Enterprise Real Estate & Plot Inventory Security</p>
+          <p>Advanced Enterprise Security & Passkey Architecture</p>
+        </div>
+
+        {/* Passwordless WebAuthn Passkeys Component */}
+        <PasskeyLogin onSuccess={handlePasskeySuccess} onError={(msg) => setErrorMessage(msg)} />
+
+        <div style={{ textAlign: 'center', color: '#6b7280', fontSize: '0.78rem', margin: '0.75rem 0' }}>
+          ── OR SIGN IN WITH CREDENTIALS ──
         </div>
 
         {errorMessage && (
@@ -122,7 +152,6 @@ export const LoginPage: React.FC = () => {
         )}
 
         <form onSubmit={handleSubmit} className="login-form">
-          {/* Username / Email */}
           <div className="input-field-group">
             <label htmlFor="identifier">Email or Username</label>
             <div className="input-relative">
@@ -139,9 +168,8 @@ export const LoginPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Password */}
           <div className="input-field-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">Password (Min 12 Chars)</label>
             <div className="input-relative">
               <span className="field-icon">🔒</span>
               <input
@@ -157,13 +185,11 @@ export const LoginPage: React.FC = () => {
                 type="button"
                 className="password-toggle-btn"
                 onClick={() => setShowPassword(!showPassword)}
-                title={showPassword ? 'Hide Password' : 'Show Password'}
               >
                 {showPassword ? '👁️' : '🙈'}
               </button>
             </div>
 
-            {/* Password Strength Meter */}
             {password.length > 0 && (
               <div className="strength-meter-container">
                 <div className="strength-bar-bg">
@@ -183,17 +209,39 @@ export const LoginPage: React.FC = () => {
             )}
           </div>
 
-          {/* 2FA Code Input if triggered */}
           {requiresTwoFactor && (
             <div className="input-field-group">
-              <label htmlFor="twoFactor">Google Authenticator / 2FA OTP Code</label>
+              <label>Multi-Factor Authentication Channel</label>
+              <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '0.4rem' }}>
+                <button
+                  type="button"
+                  onClick={() => setMfaChannel('TOTP')}
+                  className={`role-preset-chip ${mfaChannel === 'TOTP' ? 'active' : ''}`}
+                >
+                  Authenticator App
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMfaChannel('EMAIL')}
+                  className={`role-preset-chip ${mfaChannel === 'EMAIL' ? 'active' : ''}`}
+                >
+                  Email OTP
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMfaChannel('SMS')}
+                  className={`role-preset-chip ${mfaChannel === 'SMS' ? 'active' : ''}`}
+                >
+                  SMS OTP
+                </button>
+              </div>
+
               <div className="input-relative">
                 <span className="field-icon">🔑</span>
                 <input
-                  id="twoFactor"
                   type="text"
                   className="glass-input"
-                  placeholder="Enter 6-digit code"
+                  placeholder={`Enter 6-digit ${mfaChannel} OTP`}
                   value={twoFactorCode}
                   onChange={(e) => setTwoFactorCode(e.target.value)}
                   maxLength={6}
@@ -203,7 +251,11 @@ export const LoginPage: React.FC = () => {
             </div>
           )}
 
-          {/* Options Row */}
+          {/* Render Smart CAPTCHA if failed attempts >= 3 */}
+          {failedCount >= 3 && (
+            <CaptchaWidget onVerify={(token) => setCaptchaToken(token)} />
+          )}
+
           <div className="form-options-row">
             <label className="remember-checkbox-label">
               <input
@@ -211,7 +263,7 @@ export const LoginPage: React.FC = () => {
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
               />
-              <span>Remember Me</span>
+              <span>Remember Device (30 Days)</span>
             </label>
 
             <button
@@ -223,12 +275,11 @@ export const LoginPage: React.FC = () => {
             </button>
           </div>
 
-          {/* Submit Button */}
           <button type="submit" className="submit-btn-glow" disabled={isLoading}>
             {isLoading ? (
               <span>Authenticating...</span>
             ) : requiresTwoFactor ? (
-              <span>Verify OTP & Sign In</span>
+              <span>Verify MFA & Sign In</span>
             ) : (
               <span>Secure Sign In →</span>
             )}

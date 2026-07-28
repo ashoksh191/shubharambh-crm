@@ -14,6 +14,7 @@ import authRoutes from './routes/authRoutes.js';
 import sessionRoutes from './routes/sessionRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import auditRoutes from './routes/auditRoutes.js';
+import approvalRoutes from './routes/approvalRoutes.js';
 
 const app = express();
 
@@ -35,7 +36,7 @@ app.use(csrfTokenGenerator);
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'UP',
-    service: 'Shubharambh Green City CRM Auth Server',
+    service: 'Shubharambh Green City CRM Advanced Security Server',
     environment: config.nodeEnv,
     timestamp: new Date().toISOString(),
   });
@@ -46,6 +47,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/sessions', verifyCsrfToken, sessionRoutes);
 app.use('/api/users', verifyCsrfToken, userRoutes);
 app.use('/api/audit', verifyCsrfToken, auditRoutes);
+app.use('/api/approvals', verifyCsrfToken, approvalRoutes);
 
 // Global 404 Handler
 app.use('*', (req, res) => {
@@ -62,7 +64,7 @@ app.use(globalErrorHandler);
 // Start Express Server
 const PORT = config.port;
 app.listen(PORT, () => {
-  logger.info(`🚀 Enterprise Auth Server running on http://localhost:${PORT}`);
+  logger.info(`🚀 Enterprise Security Engine running on http://localhost:${PORT}`);
   logger.info(`🛡️ Environment: ${config.nodeEnv} | CORS Client: ${config.clientUrl}`);
 });
 

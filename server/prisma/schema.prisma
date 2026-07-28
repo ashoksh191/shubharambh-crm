@@ -19,10 +19,12 @@ enum Role {
 }
 
 enum UserStatus {
+  PENDING_APPROVAL
   ACTIVE
   INACTIVE
   LOCKED
   SUSPENDED
+  DEACTIVATED
 }
 
 model User {
@@ -38,6 +40,10 @@ model User {
   failedAttempts        Int                      @default(0)
   lockoutUntil          DateTime?
   twoFactorEnabled      Boolean                  @default(false)
+  forceMfa              Boolean                  @default(false)
+  allowMultipleSessions Boolean                  @default(true)
+  maxConcurrentSessions Int                      @default(5)
+  passwordChangedAt     DateTime                 @default(now())
   createdAt             DateTime                 @default(now())
   updatedAt             DateTime                 @updatedAt
 
@@ -47,6 +53,50 @@ model User {
   twoFactorAuth         TwoFactorAuth?
   passwordResetTokens   PasswordResetToken[]
   emailVerificationTokens EmailVerificationToken[]
+  webAuthnCredentials   WebAuthnCredential[]
+  trustedDevices        TrustedDevice[]
+  passwordHistories     PasswordHistory[]
+  riskLogs              RiskLog[]
+}
+
+model WebAuthnCredential {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  credentialId String   @unique
+  publicKey    String
+  counter      Int      @default(0)
+  transports   String?
+  createdAt    DateTime @default(now())
+}
+
+model TrustedDevice {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deviceHash String   @unique
+  deviceName String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+}
+
+model PasswordHistory {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+model RiskLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  ipAddress  String
+  riskScore  Int
+  riskLevel  String   // "LOW" | "MEDIUM" | "HIGH" | "CRITICAL"
+  factors    String   // JSON string array of risk factors
+  createdAt  DateTime @default(now())
 }
 
 model Session {
@@ -83,26 +133,27 @@ model LoginHistory {
 }
 
 model AuditLog {
-  id           String   @id @default(uuid())
-  userId       String?
-  user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  username     String
-  role         String
-  action       String   // e.g. "PLOT_DELETE", "PAYMENT_APPROVE", "USER_ROLE_CHANGE"
-  targetEntity String   // e.g. "Plot", "Booking", "User"
-  targetId     String?
-  metadata     String?  // JSON string
-  ipAddress    String
-  userAgent    String
-  createdAt    DateTime @default(now())
+  id               String   @id @default(uuid())
+  userId           String?
+  user             User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  username         String
+  role             String
+  action           String   // e.g. "PLOT_DELETE", "PAYMENT_APPROVE", "USER_ROLE_CHANGE"
+  targetEntity     String   // e.g. "Plot", "Booking", "User"
+  targetId         String?
+  encryptedPayload String?  // AES-256 encrypted payload
+  metadata         String?  // JSON string
+  ipAddress        String
+  userAgent        String
+  createdAt        DateTime @default(now())
 }
 
 model TwoFactorAuth {
   id          String   @id @default(uuid())
   userId      String   @unique
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  secret      String
-  backupCodes String   // Comma separated backup codes
+  secret      String   // Encrypted AES-256 secret
+  backupCodes String   // Encrypted AES-256 comma-separated backup codes
   isEnabled   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

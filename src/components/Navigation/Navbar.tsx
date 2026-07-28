@@ -1,11 +1,11 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Map, Users, DollarSign, Sparkles, Shield, User, FileText, LogOut } from 'lucide-react';
+import { Map, Users, DollarSign, Sparkles, Shield, User, FileText, CheckSquare, LogOut } from 'lucide-react';
 import { RoleGuard } from '../Auth/RoleGuard';
 
 interface NavbarProps {
-  activeTab: 'map' | 'mlm' | 'finance' | 'usps' | 'profile' | 'audit';
-  setActiveTab: (tab: 'map' | 'mlm' | 'finance' | 'usps' | 'profile' | 'audit') => void;
+  activeTab: 'map' | 'mlm' | 'finance' | 'usps' | 'profile' | 'audit' | 'approvals';
+  setActiveTab: (tab: 'map' | 'mlm' | 'finance' | 'usps' | 'profile' | 'audit' | 'approvals') => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
@@ -61,6 +61,16 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
           >
             <User size={16} /> Security Profile
           </button>
+
+          {/* Pending Registration Approvals Tab */}
+          <RoleGuard requiredPermissions="users:manage_roles">
+            <button
+              className={`nav-btn ${activeTab === 'approvals' ? 'active' : ''}`}
+              onClick={() => setActiveTab('approvals')}
+            >
+              <CheckSquare size={16} /> Approvals
+            </button>
+          </RoleGuard>
 
           {/* Audit Trail Tab for Admins */}
           <RoleGuard requiredPermissions="audit_logs:read">
