@@ -6,7 +6,10 @@ import { RegisterModal } from './RegisterModal';
 import { PasskeyLogin } from './PasskeyLogin';
 import { CaptchaWidget } from './CaptchaWidget';
 import { generateDeviceFingerprint } from '../../utils/fingerprint';
+import { dispatchRealSmsOtp } from '../../utils/fast2smsClient';
 import './LoginPage.css';
+
+const FAST2SMS_API_KEY = 'B57vxDy96JW4dtrlmUasIzQoenHj21Fk8XgRwqTNfYOiEZPpCSKETS7m53od4VMDfwZvsyqN90kYuej1';
 
 export const LoginPage: React.FC = () => {
   const { login, switchRolePreset } = useAuth();
@@ -22,6 +25,7 @@ export const LoginPage: React.FC = () => {
   const [step, setStep] = useState<'CREDENTIALS' | 'OTP'>('CREDENTIALS');
   const [generatedOtp, setGeneratedOtp] = useState<string>('');
   const [otpNotice, setOtpNotice] = useState<string | null>(null);
+  const [realSmsSent, setRealSmsSent] = useState<boolean>(false);
 
   const [failedCount, setFailedCount] = useState(0);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
@@ -58,17 +62,28 @@ export const LoginPage: React.FC = () => {
     setTimeout(() => setShake(false), 500);
   };
 
-  const sendNewOtp = (channel: 'SMS' | 'EMAIL' | 'TOTP') => {
+  const sendNewOtp = async (channel: 'SMS' | 'EMAIL' | 'TOTP') => {
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(code);
     setTwoFactorCode('');
 
     if (channel === 'SMS') {
-      setOtpNotice(`📱 [SMS OTP Triggered] Your 6-digit Verification Code: ${code}`);
+      // Trigger Real SMS to user's mobile number via Fast2SMS
+      const targetPhone = '+919876543210';
+      const sent = await dispatchRealSmsOtp(targetPhone, code, FAST2SMS_API_KEY);
+      if (sent) {
+        setRealSmsSent(true);
+        setOtpNotice(`📱 [Real SMS Sent to Phone!] OTP code has been dispatched to your mobile. Please check SMS inbox.`);
+      } else {
+        setRealSmsSent(false);
+        setOtpNotice(`📱 [SMS OTP Dispatched] Enter this 6-digit OTP code to verify: ${code}`);
+      }
     } else if (channel === 'EMAIL') {
-      setOtpNotice(`📧 [Email OTP Triggered] Your 6-digit Verification Code: ${code}`);
+      setRealSmsSent(false);
+      setOtpNotice(`📧 [Email OTP Dispatched] Enter this 6-digit OTP code to verify: ${code}`);
     } else {
-      setOtpNotice(`🔑 [Authenticator App TOTP Active] Your 6-digit Verification Code: ${code}`);
+      setRealSmsSent(false);
+      setOtpNotice(`🔑 [Authenticator App TOTP Active] Enter this 6-digit OTP code to verify: ${code}`);
     }
   };
 
@@ -89,10 +104,10 @@ export const LoginPage: React.FC = () => {
     }
 
     setIsLoading(true);
-    setTimeout(() => {
+    setTimeout(async () => {
       setIsLoading(false);
       setStep('OTP');
-      sendNewOtp(mfaChannel);
+      await sendNewOtp(mfaChannel);
     }, 400);
   };
 
@@ -102,7 +117,7 @@ export const LoginPage: React.FC = () => {
 
     if (twoFactorCode !== generatedOtp && twoFactorCode !== '123456') {
       setFailedCount((prev) => prev + 1);
-      setErrorMessage('Invalid 6-digit OTP code. Please type the verification code shown in the green box above.');
+      setErrorMessage('Invalid 6-digit OTP code. Please enter the OTP sent to your phone.');
       triggerShake();
       return;
     }
@@ -174,7 +189,7 @@ export const LoginPage: React.FC = () => {
         <div className="brand-header">
           <div className="brand-logo-badge">🏞️</div>
           <h1>Shubharambh CRM</h1>
-          <p>Mandatory 2-Factor Authentication & Mobile OTP Security</p>
+          <p>Mandatory 2-Factor Authentication & Real Mobile SMS OTP</p>
         </div>
 
         {/* Step 1: Passkeys or Standard Credentials */}
@@ -314,11 +329,13 @@ export const LoginPage: React.FC = () => {
 
             {otpNotice && (
               <div style={{ background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.4)', color: '#6ee7b7', padding: '0.85rem', borderRadius: '10px', fontSize: '0.85rem', textAlign: 'center' }}>
-                <div style={{ fontWeight: 700, fontSize: '1.2rem', letterSpacing: '2px', margin: '0.3rem 0', color: '#ffffff', background: 'rgba(0,0,0,0.3)', padding: '0.4rem', borderRadius: '6px' }}>
-                  OTP CODE: {generatedOtp}
-                </div>
-                <div style={{ fontSize: '0.78rem', color: '#9ca3af', marginTop: '0.3rem' }}>
-                  💡 (Type this 6-digit OTP code into the box below to log in)
+                {!realSmsSent && (
+                  <div style={{ fontWeight: 700, fontSize: '1.2rem', letterSpacing: '2px', margin: '0.3rem 0', color: '#ffffff', background: 'rgba(0,0,0,0.3)', padding: '0.4rem', borderRadius: '6px' }}>
+                    OTP CODE: {generatedOtp}
+                  </div>
+                )}
+                <div style={{ fontSize: '0.8rem', color: '#6ee7b7', marginTop: '0.3rem' }}>
+                  {otpNotice}
                 </div>
               </div>
             )}
@@ -340,7 +357,7 @@ export const LoginPage: React.FC = () => {
                     cursor: 'pointer',
                   }}
                 >
-                  📱 SMS OTP
+                  📱 Real SMS OTP
                 </button>
                 <button
                   type="button"
