@@ -1,11 +1,11 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Map, Users, DollarSign, Sparkles, Shield, User, FileText, CheckSquare, LogOut } from 'lucide-react';
+import { Map, Users, DollarSign, Sparkles, Shield, User, FileText, CheckSquare, LogOut, Globe } from 'lucide-react';
 import { RoleGuard } from '../Auth/RoleGuard';
 
 interface NavbarProps {
-  activeTab: 'map' | 'mlm' | 'finance' | 'usps' | 'profile' | 'audit' | 'approvals';
-  setActiveTab: (tab: 'map' | 'mlm' | 'finance' | 'usps' | 'profile' | 'audit' | 'approvals') => void;
+  activeTab: 'landing' | 'map' | 'mlm' | 'finance' | 'usps' | 'profile' | 'audit' | 'approvals';
+  setActiveTab: (tab: 'landing' | 'map' | 'mlm' | 'finance' | 'usps' | 'profile' | 'audit' | 'approvals') => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
@@ -15,7 +15,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
     <header className="navbar">
       <div className="navbar-inner">
         {/* Official Brand Logo */}
-        <a href="#" className="brand-logo" onClick={(e) => { e.preventDefault(); setActiveTab('map'); }}>
+        <a href="#" className="brand-logo" onClick={(e) => { e.preventDefault(); setActiveTab('landing'); }}>
           <div style={{ width: '42px', height: '42px', borderRadius: '10px', overflow: 'hidden', border: '1px solid rgba(245, 158, 11, 0.4)', background: '#0b0f19', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <img src="./assets/logo_and_entrance.jpg" alt="Shubharambh Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
@@ -29,6 +29,12 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
 
         {/* Module Navigation Tabs */}
         <nav className="nav-links">
+          <button
+            className={`nav-btn ${activeTab === 'landing' ? 'active' : ''}`}
+            onClick={() => setActiveTab('landing')}
+          >
+            <Globe size={16} /> Landing Page
+          </button>
           <button
             className={`nav-btn ${activeTab === 'map' ? 'active' : ''}`}
             onClick={() => setActiveTab('map')}
