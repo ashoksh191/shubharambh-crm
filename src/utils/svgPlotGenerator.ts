@@ -1,16 +1,28 @@
+import plotsJsonData from '../data/plots.json';
 import type { Plot } from '../types';
 import type { EnhancedPlot, EnhancedPlotStatus, PlotCategory, PlotHistoryStage } from '../types/propertyMap';
 
-export const enhancePlotData = (rawPlots: Plot[]): EnhancedPlot[] => {
-  const PLOTS_PER_ROW = 12;
-  const CELL_WIDTH = 110;
-  const CELL_HEIGHT = 80;
-  const PLOT_WIDTH = 98;
-  const PLOT_HEIGHT = 56;
+export interface PlotJsonEntry {
+  plotNo: string;
+  block: 'Block A' | 'Block B' | 'Block C';
+  points: [number, number][];
+  dimensions: string;
+  size: number;
+  price: number;
+  status: EnhancedPlotStatus;
+  facing: string;
+  category: PlotCategory;
+  owner: string;
+  bookingAmount: number;
+  description: string;
+}
 
-  const blockAOffset = 180;
-  const blockBOffset = 2500;
-  const blockCOffset = 5200;
+export const loadPlotsFromJson = (): Record<string, PlotJsonEntry> => {
+  return plotsJsonData as unknown as Record<string, PlotJsonEntry>;
+};
+
+export const enhancePlotData = (rawPlots: Plot[]): EnhancedPlot[] => {
+  const plotsJson = loadPlotsFromJson();
 
   const defaultAmenities = [
     { name: 'Shri Ganesha Temple', category: 'Temple' as const, distance: '100 Meters', icon: '🛕' },
@@ -53,37 +65,29 @@ export const enhancePlotData = (rawPlots: Plot[]): EnhancedPlot[] => {
     },
   ];
 
-  return rawPlots.map((p, idx) => {
-    let blockOffset = blockAOffset;
-    let localIdx = idx;
+  return rawPlots.map((p) => {
+    const jsonEntry = plotsJson[p.plotNo];
 
-    if (p.block === 'Block B') {
-      blockOffset = blockBOffset;
-      localIdx = idx - 316;
-    } else if (p.block === 'Block C') {
-      blockOffset = blockCOffset;
-      localIdx = idx - 680;
+    let x = p.x;
+    let y = p.y;
+    let w = p.w || 98;
+    let h = p.h || 56;
+    let pointsStr = `${x},${y} ${x + w},${y} ${x + w},${y + h} ${x},${y + h}`;
+
+    if (jsonEntry && Array.isArray(jsonEntry.points)) {
+      pointsStr = jsonEntry.points.map(([px, py]) => `${px},${py}`).join(' ');
+      x = jsonEntry.points[0][0];
+      y = jsonEntry.points[0][1];
+      w = jsonEntry.points[1][0] - jsonEntry.points[0][0];
+      h = jsonEntry.points[2][1] - jsonEntry.points[1][1];
     }
-
-    const col = Math.max(0, localIdx % PLOTS_PER_ROW);
-    const row = Math.floor(Math.max(0, localIdx) / PLOTS_PER_ROW);
-
-    const x = 50 + col * CELL_WIDTH;
-    const y = blockOffset + row * CELL_HEIGHT;
-
-    const points = `${x},${y} ${x + PLOT_WIDTH},${y} ${x + PLOT_WIDTH},${y + PLOT_HEIGHT} ${x},${y + PLOT_HEIGHT}`;
 
     let enhancedStatus: EnhancedPlotStatus = 'available';
     if (p.status === 'booked') enhancedStatus = 'booked';
     else if (p.status === 'sold') enhancedStatus = 'sold';
-    else if (idx % 23 === 0) enhancedStatus = 'reserved';
-    else if (idx % 41 === 0) enhancedStatus = 'unreleased';
+    else if (jsonEntry?.status) enhancedStatus = jsonEntry.status;
 
-    let category: PlotCategory = 'Residential';
-    if (idx < 20 || p.plotNo.includes('Comm')) category = 'Commercial';
-    else if (col === 0 || col === PLOTS_PER_ROW - 1) category = 'Corner';
-    else if (row === 0 || p.facing === 'Corner') category = 'Park Facing';
-    else if (row === 1) category = 'Road Facing';
+    const category = jsonEntry?.category || (p.plotNo.includes('A-') ? 'Residential' : 'Park Facing');
 
     const history = [
       {
@@ -143,13 +147,13 @@ export const enhancePlotData = (rawPlots: Plot[]): EnhancedPlot[] => {
       ...p,
       x,
       y,
-      w: PLOT_WIDTH,
-      h: PLOT_HEIGHT,
-      svgPathPoints: points,
+      w,
+      h,
+      svgPathPoints: pointsStr,
       enhancedStatus,
       category,
       plcRate: category === 'Corner' ? 10 : category === 'Park Facing' ? 7.5 : category === 'Commercial' ? 15 : 0,
-      description: `Premium ${category} Plot in ${p.block} facing ${p.facing}. Direct access to ${p.roadWidth} Wide Road.`,
+      description: jsonEntry?.description || `Premium ${category} Plot in ${p.block} facing ${p.facing}. Direct access to ${p.roadWidth} Wide Road.`,
       amenities: defaultAmenities,
       history,
       documents: defaultDocs,
