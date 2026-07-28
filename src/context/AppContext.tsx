@@ -20,15 +20,15 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const STORAGE_KEYS = {
-  PLOTS: 'sgc_crm_plots_v980_final',
-  USERS: 'sgc_crm_users_v980_final',
-  BOOKINGS: 'sgc_crm_bookings_v980_final',
-  TRANSACTIONS: 'sgc_crm_transactions_v980_final',
-  CURRENT_USER_ID: 'sgc_crm_current_user_id_v980_final',
+  PLOTS: 'sgc_crm_plots_v0_clean_state',
+  USERS: 'sgc_crm_users_v0_clean_state',
+  BOOKINGS: 'sgc_crm_bookings_v0_clean_state',
+  TRANSACTIONS: 'sgc_crm_transactions_v0_clean_state',
+  CURRENT_USER_ID: 'sgc_crm_current_user_id_v0_clean_state',
 };
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Load initial states from LocalStorage or seed data
+  // Load initial clean states (0 Booked, 0 Sold, 980 Available)
   const [plots, setPlots] = useState<Plot[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.PLOTS);
     if (saved) {
@@ -38,7 +38,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           return parsed;
         }
       } catch (e) {
-        console.warn('Failed to parse cached plots, regenerating 980 inventory...');
+        console.warn('Resetting plots to fresh zero state...');
       }
     }
     return generatePlots();
@@ -266,8 +266,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     localStorage.clear();
     setPlots(generatePlots());
     setUsers(INITIAL_USERS);
-    setBookings(INITIAL_BOOKINGS);
-    setTransactions(INITIAL_TRANSACTIONS);
+    setBookings([]);
+    setTransactions([]);
     setCurrentUserIdState('SGC-ADM01');
   };
 
