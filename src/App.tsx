@@ -4,7 +4,6 @@ import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/Auth/ProtectedRoute';
 import { RoleGuard } from './components/Auth/RoleGuard';
 import { Navbar } from './components/Navigation/Navbar';
-import { LandingPage } from './components/Public/LandingPage';
 import { InteractiveMap } from './components/Map/InteractiveMap';
 import { AssociateDashboard } from './components/MLM/AssociateDashboard';
 import { FinancialDashboard } from './components/Admin/FinancialDashboard';
@@ -21,7 +20,7 @@ import './styles/App.css';
 
 const MainLayout: React.FC = () => {
   const { plots } = useApp();
-  const [activeTab, setActiveTab] = useState<'landing' | 'map' | 'mlm' | 'finance' | 'usps' | 'profile' | 'audit' | 'approvals'>('landing');
+  const [activeTab, setActiveTab] = useState<'map' | 'mlm' | 'finance' | 'usps' | 'profile' | 'audit' | 'approvals'>('map');
 
   // Modal States
   const [selectedBookingPlot, setSelectedBookingPlot] = useState<Plot | null>(null);
@@ -38,41 +37,35 @@ const MainLayout: React.FC = () => {
     <div className="app-container">
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {/* Hero Stats Banner (Show on non-landing views) */}
-      {activeTab !== 'landing' && (
-        <div className="hero-banner">
-          <div className="hero-content">
-            <h2>Shubharambh Green City CRM</h2>
-            <p>Advanced Enterprise Identity & Passkeys Security Infrastructure</p>
-          </div>
+      {/* Hero Stats Banner */}
+      <div className="hero-banner">
+        <div className="hero-content">
+          <h2>Shubharambh Green City CRM</h2>
+          <p>Advanced Enterprise Identity & Passkeys Security Infrastructure</p>
+        </div>
 
-          <div className="hero-stats">
-            <div className="hero-stat-card">
-              <div className="value" style={{ color: '#6ee7b7' }}>{availableCount}</div>
-              <div className="label">Available (Green)</div>
-            </div>
-            <div className="hero-stat-card">
-              <div className="value" style={{ color: '#fcd34d' }}>{bookedCount}</div>
-              <div className="label">Booked (Yellow)</div>
-            </div>
-            <div className="hero-stat-card">
-              <div className="value" style={{ color: '#fca5a5' }}>{soldCount}</div>
-              <div className="label">Sold Out (Red)</div>
-            </div>
-            <div className="hero-stat-card">
-              <div className="value">{plots.length}</div>
-              <div className="label">Total 60-Bigha Plots</div>
-            </div>
+        <div className="hero-stats">
+          <div className="hero-stat-card">
+            <div className="value" style={{ color: '#6ee7b7' }}>{availableCount}</div>
+            <div className="label">Available (Green)</div>
+          </div>
+          <div className="hero-stat-card">
+            <div className="value" style={{ color: '#fcd34d' }}>{bookedCount}</div>
+            <div className="label">Booked (Yellow)</div>
+          </div>
+          <div className="hero-stat-card">
+            <div className="value" style={{ color: '#fca5a5' }}>{soldCount}</div>
+            <div className="label">Sold Out (Red)</div>
+          </div>
+          <div className="hero-stat-card">
+            <div className="value">{plots.length}</div>
+            <div className="label">Total 60-Bigha Plots</div>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* Body View Content */}
+      {/* Body View Content (Main Working Portal Only) */}
       <main className="main-content">
-        {activeTab === 'landing' && (
-          <LandingPage onNavigateToMap={() => setActiveTab('map')} />
-        )}
-
         {activeTab === 'map' && (
           <InteractiveMap
             onOpenBooking={(plot) => setSelectedBookingPlot(plot)}
@@ -168,13 +161,6 @@ const MainLayout: React.FC = () => {
       <div className="mobile-bottom-nav">
         <div className="mobile-bottom-nav-inner">
           <button
-            className={`mobile-nav-btn ${activeTab === 'landing' ? 'active' : ''}`}
-            onClick={() => setActiveTab('landing')}
-          >
-            <span style={{ fontSize: '1.2rem' }}>🌐</span>
-            <span>Home</span>
-          </button>
-          <button
             className={`mobile-nav-btn ${activeTab === 'map' ? 'active' : ''}`}
             onClick={() => setActiveTab('map')}
           >
@@ -194,6 +180,13 @@ const MainLayout: React.FC = () => {
           >
             <span style={{ fontSize: '1.2rem' }}>👤</span>
             <span>Profile</span>
+          </button>
+          <button
+            className={`mobile-nav-btn ${activeTab === 'usps' ? 'active' : ''}`}
+            onClick={() => setActiveTab('usps')}
+          >
+            <span style={{ fontSize: '1.2rem' }}>🌟</span>
+            <span>USPs</span>
           </button>
         </div>
       </div>
