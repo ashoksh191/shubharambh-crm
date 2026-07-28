@@ -25,7 +25,6 @@ export const LoginPage: React.FC = () => {
   const [step, setStep] = useState<'CREDENTIALS' | 'OTP'>('CREDENTIALS');
   const [generatedOtp, setGeneratedOtp] = useState<string>('');
   const [otpNotice, setOtpNotice] = useState<string | null>(null);
-  const [realSmsSent, setRealSmsSent] = useState<boolean>(false);
 
   const [failedCount, setFailedCount] = useState(0);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
@@ -68,22 +67,17 @@ export const LoginPage: React.FC = () => {
     setTwoFactorCode('');
 
     if (channel === 'SMS') {
-      // Trigger Real SMS to user's mobile number via Fast2SMS
       const targetPhone = '+919876543210';
-      const sent = await dispatchRealSmsOtp(targetPhone, code, FAST2SMS_API_KEY);
-      if (sent) {
-        setRealSmsSent(true);
-        setOtpNotice(`📱 [Real SMS Sent to Phone!] OTP code has been dispatched to your mobile. Please check SMS inbox.`);
+      const result = await dispatchRealSmsOtp(targetPhone, code, FAST2SMS_API_KEY);
+      if (result.success) {
+        setOtpNotice(`📱 [Real SMS Sent!] Code sent to your mobile SIM.`);
       } else {
-        setRealSmsSent(false);
-        setOtpNotice(`📱 [SMS OTP Dispatched] Enter this 6-digit OTP code to verify: ${code}`);
+        setOtpNotice(result.message);
       }
     } else if (channel === 'EMAIL') {
-      setRealSmsSent(false);
-      setOtpNotice(`📧 [Email OTP Dispatched] Enter this 6-digit OTP code to verify: ${code}`);
+      setOtpNotice(`📧 [Email OTP Dispatched] Enter the 6-digit OTP code to verify.`);
     } else {
-      setRealSmsSent(false);
-      setOtpNotice(`🔑 [Authenticator App TOTP Active] Enter this 6-digit OTP code to verify: ${code}`);
+      setOtpNotice(`🔑 [Authenticator App TOTP Active] Enter 6-digit OTP code.`);
     }
   };
 
@@ -117,7 +111,7 @@ export const LoginPage: React.FC = () => {
 
     if (twoFactorCode !== generatedOtp && twoFactorCode !== '123456') {
       setFailedCount((prev) => prev + 1);
-      setErrorMessage('Invalid 6-digit OTP code. Please enter the OTP sent to your phone.');
+      setErrorMessage('Invalid 6-digit OTP code. Please enter the 6-digit code shown above.');
       triggerShake();
       return;
     }
@@ -329,12 +323,10 @@ export const LoginPage: React.FC = () => {
 
             {otpNotice && (
               <div style={{ background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.4)', color: '#6ee7b7', padding: '0.85rem', borderRadius: '10px', fontSize: '0.85rem', textAlign: 'center' }}>
-                {!realSmsSent && (
-                  <div style={{ fontWeight: 700, fontSize: '1.2rem', letterSpacing: '2px', margin: '0.3rem 0', color: '#ffffff', background: 'rgba(0,0,0,0.3)', padding: '0.4rem', borderRadius: '6px' }}>
-                    OTP CODE: {generatedOtp}
-                  </div>
-                )}
-                <div style={{ fontSize: '0.8rem', color: '#6ee7b7', marginTop: '0.3rem' }}>
+                <div style={{ fontWeight: 700, fontSize: '1.2rem', letterSpacing: '2px', margin: '0.3rem 0', color: '#ffffff', background: 'rgba(0,0,0,0.3)', padding: '0.4rem', borderRadius: '6px' }}>
+                  OTP CODE: {generatedOtp}
+                </div>
+                <div style={{ fontSize: '0.78rem', color: '#6ee7b7', marginTop: '0.3rem' }}>
                   {otpNotice}
                 </div>
               </div>
