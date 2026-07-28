@@ -120,138 +120,135 @@ export const INITIAL_USERS: User[] = [
   },
 ];
 
-// Helper to generate 60+ realistic plots across Block A, B, C
+/**
+ * Generates the complete 980-Plot Inventory matching the Official Master Blueprint Layout
+ * Block A: A-1 to A-316 (30'x50', 25'x50', 20'x50')
+ * Block B: B-317 to B-680 (25'x40', 20'x40', 15'x40')
+ * Block C: C-681 to C-980 (25'x40', 20'x40', 15'x40')
+ */
 export function generatePlots(): Plot[] {
   const plots: Plot[] = [];
 
-  // Block A (Premium Road Facing & Main Sector)
-  // Sizes: 30'x50' (1500 sqft), 25'x50' (1250 sqft), 20'x50' (1000 sqft)
-  // Rate: ₹1,200 / sq.ft
-  const blockASizes = [
+  // 1. BLOCK A (Plots A-1 to A-316)
+  const blockASpecs = [
     { dim: "30' x 50'", w: 30, l: 50, area: 1500, rate: 1200 },
     { dim: "25' x 50'", w: 25, l: 50, area: 1250, rate: 1200 },
     { dim: "20' x 50'", w: 20, l: 50, area: 1000, rate: 1200 },
   ];
 
-  let count = 101;
-  for (let row = 0; row < 3; row++) {
-    for (let col = 0; col < 8; col++) {
-      const spec = blockASizes[(row + col) % blockASizes.length];
-      const isCorner = col === 0 || col === 7;
-      const plotId = `A-${count}`;
-      
-      // Determine initial status distribution
-      let status: 'available' | 'booked' | 'sold' = 'available';
-      if (col % 4 === 1 || col % 4 === 3) status = 'sold';
-      if (col % 4 === 2) status = 'booked';
+  for (let num = 1; num <= 316; num++) {
+    const plotNo = num === 13 ? 'A-12A' : `A-${num}`;
+    const spec = blockASpecs[num % blockASpecs.length];
+    const isCorner = num % 12 === 0 || num % 12 === 1;
 
-      plots.push({
-        id: plotId,
-        plotNo: `A-${count}`,
-        block: 'Block A',
-        dimensions: spec.dim,
-        width: spec.w,
-        length: spec.l,
-        totalArea: spec.area,
-        ratePerSqFt: spec.rate,
-        totalPrice: spec.area * spec.rate,
-        status: status,
-        facing: isCorner ? 'Corner' : (row % 2 === 0 ? 'East' : 'North'),
-        roadWidth: '40 Ft Main Boulevard',
-        x: 40 + col * 75,
-        y: 40 + row * 100,
-        w: 65,
-        h: 85,
-        bookingId: status !== 'available' ? `BK-2026-${100 + count}` : undefined,
-      });
-      count++;
-    }
+    let status: 'available' | 'booked' | 'sold' = 'available';
+    if (num % 5 === 0) status = 'sold';
+    else if (num % 7 === 0) status = 'booked';
+
+    const col = (num - 1) % 16;
+    const row = Math.floor((num - 1) / 16);
+
+    plots.push({
+      id: `A-${num}`,
+      plotNo: plotNo,
+      block: 'Block A',
+      dimensions: spec.dim,
+      width: spec.w,
+      length: spec.l,
+      totalArea: spec.area,
+      ratePerSqFt: spec.rate,
+      totalPrice: spec.area * spec.rate,
+      status,
+      facing: isCorner ? 'Corner' : (num % 2 === 0 ? 'East' : 'North'),
+      roadWidth: num < 100 ? '40 Ft Main Boulevard Road' : '30 Ft Sector Road',
+      x: 35 + col * 40,
+      y: 45 + row * 40,
+      w: 36,
+      h: 36,
+      bookingId: status !== 'available' ? `BK-2026-${1000 + num}` : undefined,
+    });
   }
 
-  // Block B (Park View & Central Sector)
-  // Sizes: 25'x40' (1000 sqft), 20'x40' (800 sqft), 15'x40' (600 sqft)
-  // Rate: ₹1,000 / sq.ft
-  const blockBSizes = [
+  // 2. BLOCK B (Plots B-317 to B-680)
+  const blockBSpecs = [
     { dim: "25' x 40'", w: 25, l: 40, area: 1000, rate: 1000 },
     { dim: "20' x 40'", w: 20, l: 40, area: 800, rate: 1000 },
     { dim: "15' x 40'", w: 15, l: 40, area: 600, rate: 1000 },
   ];
 
-  count = 201;
-  for (let row = 0; row < 3; row++) {
-    for (let col = 0; col < 8; col++) {
-      const spec = blockBSizes[(row + col) % blockBSizes.length];
-      const isCorner = col === 0 || col === 7;
-      const plotId = `B-${count}`;
+  for (let num = 317; num <= 680; num++) {
+    const plotNo = `B-${num}`;
+    const spec = blockBSpecs[num % blockBSpecs.length];
+    const isCorner = num % 10 === 0 || num % 10 === 1;
 
-      let status: 'available' | 'booked' | 'sold' = 'available';
-      if ((row + col) % 3 === 0) status = 'sold';
-      if ((row + col) % 3 === 1) status = 'booked';
+    let status: 'available' | 'booked' | 'sold' = 'available';
+    if (num % 6 === 0) status = 'sold';
+    else if (num % 8 === 0) status = 'booked';
 
-      plots.push({
-        id: plotId,
-        plotNo: `B-${count}`,
-        block: 'Block B',
-        dimensions: spec.dim,
-        width: spec.w,
-        length: spec.l,
-        totalArea: spec.area,
-        ratePerSqFt: spec.rate,
-        totalPrice: spec.area * spec.rate,
-        status: status,
-        facing: isCorner ? 'Corner' : (row % 2 === 0 ? 'South' : 'West'),
-        roadWidth: '30 Ft Park Avenue',
-        x: 40 + col * 75,
-        y: 380 + row * 90,
-        w: 65,
-        h: 75,
-        bookingId: status !== 'available' ? `BK-2026-${100 + count}` : undefined,
-      });
-      count++;
-    }
+    const index = num - 317;
+    const col = index % 16;
+    const row = Math.floor(index / 16);
+
+    plots.push({
+      id: `B-${num}`,
+      plotNo: plotNo,
+      block: 'Block B',
+      dimensions: spec.dim,
+      width: spec.w,
+      length: spec.l,
+      totalArea: spec.area,
+      ratePerSqFt: spec.rate,
+      totalPrice: spec.area * spec.rate,
+      status,
+      facing: isCorner ? 'Corner' : (num % 2 === 0 ? 'South' : 'West'),
+      roadWidth: '30 Ft Park Avenue Road',
+      x: 35 + col * 40,
+      y: 380 + row * 38,
+      w: 36,
+      h: 34,
+      bookingId: status !== 'available' ? `BK-2026-${1000 + num}` : undefined,
+    });
   }
 
-  // Block C (Club House & Garden View Sector)
-  // Sizes: 25'x40' (1000 sqft), 20'x40' (800 sqft), 15'x40' (600 sqft)
-  // Rate: ₹900 / sq.ft
-  const blockCSizes = [
+  // 3. BLOCK C (Plots C-681 to C-980)
+  const blockCSpecs = [
     { dim: "25' x 40'", w: 25, l: 40, area: 1000, rate: 900 },
     { dim: "20' x 40'", w: 20, l: 40, area: 800, rate: 900 },
     { dim: "15' x 40'", w: 15, l: 40, area: 600, rate: 900 },
   ];
 
-  count = 301;
-  for (let row = 0; row < 3; row++) {
-    for (let col = 0; col < 8; col++) {
-      const spec = blockCSizes[(row + col) % blockCSizes.length];
-      const isCorner = col === 0 || col === 7;
-      const plotId = `C-${count}`;
+  for (let num = 681; num <= 980; num++) {
+    const plotNo = `C-${num}`;
+    const spec = blockCSpecs[num % blockCSpecs.length];
+    const isCorner = num % 10 === 0 || num % 10 === 1;
 
-      let status: 'available' | 'booked' | 'sold' = 'available';
-      if (col % 3 === 0) status = 'sold';
-      if (col % 5 === 2) status = 'booked';
+    let status: 'available' | 'booked' | 'sold' = 'available';
+    if (num % 4 === 0) status = 'sold';
+    else if (num % 9 === 0) status = 'booked';
 
-      plots.push({
-        id: plotId,
-        plotNo: `C-${count}`,
-        block: 'Block C',
-        dimensions: spec.dim,
-        width: spec.w,
-        length: spec.l,
-        totalArea: spec.area,
-        ratePerSqFt: spec.rate,
-        totalPrice: spec.area * spec.rate,
-        status: status,
-        facing: isCorner ? 'Corner' : (col % 2 === 0 ? 'East' : 'North'),
-        roadWidth: '30 Ft Internal Sector Road',
-        x: 40 + col * 75,
-        y: 690 + row * 90,
-        w: 65,
-        h: 75,
-        bookingId: status !== 'available' ? `BK-2026-${100 + count}` : undefined,
-      });
-      count++;
-    }
+    const index = num - 681;
+    const col = index % 16;
+    const row = Math.floor(index / 16);
+
+    plots.push({
+      id: `C-${num}`,
+      plotNo: plotNo,
+      block: 'Block C',
+      dimensions: spec.dim,
+      width: spec.w,
+      length: spec.l,
+      totalArea: spec.area,
+      ratePerSqFt: spec.rate,
+      totalPrice: spec.area * spec.rate,
+      status,
+      facing: isCorner ? 'Corner' : (num % 2 === 0 ? 'East' : 'North'),
+      roadWidth: '25 Ft Internal Sector Road',
+      x: 35 + col * 40,
+      y: 690 + row * 38,
+      w: 36,
+      h: 34,
+      bookingId: status !== 'available' ? `BK-2026-${1000 + num}` : undefined,
+    });
   }
 
   return plots;
@@ -260,8 +257,8 @@ export function generatePlots(): Plot[] {
 export const INITIAL_BOOKINGS: Booking[] = [
   {
     bookingId: 'BK-2026-202',
-    plotId: 'A-102',
-    plotNo: 'A-102',
+    plotId: 'A-5',
+    plotNo: 'A-5',
     block: 'Block A',
     customerName: 'Sunil Sharma',
     customerPhone: '+91 98765 11223',
@@ -281,8 +278,8 @@ export const INITIAL_BOOKINGS: Booking[] = [
   },
   {
     bookingId: 'BK-2026-203',
-    plotId: 'A-103',
-    plotNo: 'A-103',
+    plotId: 'A-7',
+    plotNo: 'A-7',
     block: 'Block A',
     customerName: 'Meenakshi Sundaram',
     customerPhone: '+91 97112 33445',
@@ -302,8 +299,8 @@ export const INITIAL_BOOKINGS: Booking[] = [
   },
   {
     bookingId: 'BK-2026-210',
-    plotId: 'B-202',
-    plotNo: 'B-202',
+    plotId: 'B-324',
+    plotNo: 'B-324',
     block: 'Block B',
     customerName: 'Deepak Joshi',
     customerPhone: '+91 99554 43322',
@@ -327,7 +324,7 @@ export const INITIAL_TRANSACTIONS: Transaction[] = [
   {
     txnId: 'TXN-901',
     bookingId: 'BK-2026-202',
-    plotId: 'A-102',
+    plotId: 'A-5',
     customerName: 'Sunil Sharma',
     amount: 300000,
     utrNumber: 'UTR998877112233',
@@ -339,7 +336,7 @@ export const INITIAL_TRANSACTIONS: Transaction[] = [
   {
     txnId: 'TXN-902',
     bookingId: 'BK-2026-203',
-    plotId: 'A-103',
+    plotId: 'A-7',
     customerName: 'Meenakshi Sundaram',
     amount: 250000,
     utrNumber: 'UTR334455667788',
@@ -350,7 +347,7 @@ export const INITIAL_TRANSACTIONS: Transaction[] = [
   {
     txnId: 'TXN-903',
     bookingId: 'BK-2026-210',
-    plotId: 'B-202',
+    plotId: 'B-324',
     customerName: 'Deepak Joshi',
     amount: 200000,
     utrNumber: 'UTR556677889900',
