@@ -131,7 +131,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         <div className="map-header-bar">
           <h3>
             <MapPin size={20} color="var(--accent-gold)" />
-            Shubharambh Green City — {viewMode === 'blueprint' ? 'Official Master Architectural Layout Blueprint' : viewMode === 'map' ? 'Interactive 2D Vector Map (Non-Overlapping)' : 'Mobile Touch Plot Grid'}
+            Shubharambh Green City — {viewMode === 'blueprint' ? 'Official Master Architectural Layout Blueprint' : viewMode === 'map' ? 'Interactive 2D Vector Map (Ultra Spaced)' : 'Mobile Touch Plot Grid'}
           </h3>
           <div className="map-controls">
             <a
@@ -199,11 +199,11 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
           <div className="svg-map-viewport" style={{ overflow: 'auto', maxHeight: '780px' }}>
             <svg
               className="map-svg-element"
-              viewBox="0 0 1300 5600"
+              viewBox="0 0 1350 7200"
               style={{
                 width: '100%',
                 height: 'auto',
-                minWidth: '1200px',
+                minWidth: '1250px',
                 transform: `scale(${zoomLevel})`,
                 transformOrigin: 'top left',
                 transition: 'transform 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -218,24 +218,24 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
 
               {/* BLOCK A BANNER */}
               <g id="block-a-header">
-                <rect x="25" y="15" width="1240" height="40" fill="rgba(245, 158, 11, 0.15)" stroke="#f59e0b" rx="8" />
-                <text x="40" y="41" fill="#fcd34d" fontSize="16" fontWeight="700">
+                <rect x="25" y="15" width="1280" height="45" fill="rgba(245, 158, 11, 0.15)" stroke="#f59e0b" rx="8" />
+                <text x="40" y="44" fill="#fcd34d" fontSize="16" fontWeight="700">
                   👑 BLOCK A — PREMIUM BOULEVARD SECTOR (Plots A-1 to A-316 | 30'x50', 25'x50', 20'x50')
                 </text>
               </g>
 
               {/* BLOCK B BANNER */}
               <g id="block-b-header">
-                <rect x="25" y="1790" width="1240" height="40" fill="rgba(16, 185, 129, 0.15)" stroke="#10b981" rx="8" />
-                <text x="40" y="1816" fill="#6ee7b7" fontSize="16" fontWeight="700">
+                <rect x="25" y="2330" width="1280" height="45" fill="rgba(16, 185, 129, 0.15)" stroke="#10b981" rx="8" />
+                <text x="40" y="2359" fill="#6ee7b7" fontSize="16" fontWeight="700">
                   🌴 BLOCK B — CENTRAL PARK & CLUB HOUSE SECTOR (Plots B-317 to B-680 | 25'x40', 20'x40', 15'x40')
                 </text>
               </g>
 
               {/* BLOCK C BANNER */}
               <g id="block-c-header">
-                <rect x="25" y="3790" width="1240" height="40" fill="rgba(59, 130, 246, 0.15)" stroke="#3b82f6" rx="8" />
-                <text x="40" y="3816" fill="#93c5fd" fontSize="16" fontWeight="700">
+                <rect x="25" y="4990" width="1280" height="45" fill="rgba(59, 130, 246, 0.15)" stroke="#3b82f6" rx="8" />
+                <text x="40" y="5019" fill="#93c5fd" fontSize="16" fontWeight="700">
                   🏡 BLOCK C — GARDEN RESIDENTIAL SECTOR (Plots C-681 to C-980 | 25'x40', 20'x40', 15'x40')
                 </text>
               </g>

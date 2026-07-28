@@ -121,18 +121,18 @@ export const INITIAL_USERS: User[] = [
 ];
 
 /**
- * Generates the complete 980-Plot Inventory with Spacious Grid Offsets to prevent any overlapping.
+ * Generates the complete 980-Plot Inventory with Spacious Non-Overlapping Grid Calculations
  * Block A: A-1 to A-316 (30'x50', 25'x50', 20'x50')
  * Block B: B-317 to B-680 (25'x40', 20'x40', 15'x40')
  * Block C: C-681 to C-980 (25'x40', 20'x40', 15'x40')
  */
 export function generatePlots(): Plot[] {
   const plots: Plot[] = [];
-  const PLOTS_PER_ROW = 12; // 12 plots per row for ultra clean spacing
-  const CELL_WIDTH = 100;
-  const CELL_HEIGHT = 65;
-  const PLOT_WIDTH = 90;
-  const PLOT_HEIGHT = 52;
+  const PLOTS_PER_ROW = 12;
+  const CELL_WIDTH = 102;
+  const CELL_HEIGHT = 80;
+  const PLOT_WIDTH = 92;
+  const PLOT_HEIGHT = 54;
 
   // 1. BLOCK A (Plots A-1 to A-316)
   const blockASpecs = [
@@ -163,20 +163,21 @@ export function generatePlots(): Plot[] {
       facing: isCorner ? 'Corner' : (num % 2 === 0 ? 'East' : 'North'),
       roadWidth: num < 100 ? '40 Ft Main Boulevard Road' : '30 Ft Sector Road',
       x: 45 + col * CELL_WIDTH,
-      y: 65 + row * CELL_HEIGHT,
+      y: 75 + row * CELL_HEIGHT,
       w: PLOT_WIDTH,
       h: PLOT_HEIGHT,
     });
   }
 
   // 2. BLOCK B (Plots B-317 to B-680)
+  // Block A ends at y = 75 + (27 rows * 80) = 2235px.
+  // Set Block B start y at 2400px (leaving 165px margin for road & banner).
+  const blockBYStart = 2400;
   const blockBSpecs = [
     { dim: "25' x 40'", w: 25, l: 40, area: 1000, rate: 1000 },
     { dim: "20' x 40'", w: 20, l: 40, area: 800, rate: 1000 },
     { dim: "15' x 40'", w: 15, l: 40, area: 600, rate: 1000 },
   ];
-
-  const blockBYStart = 1850; // Spacious vertical separation below Block A
 
   for (let num = 317; num <= 680; num++) {
     const plotNo = `B-${num}`;
@@ -208,13 +209,14 @@ export function generatePlots(): Plot[] {
   }
 
   // 3. BLOCK C (Plots C-681 to C-980)
+  // Block B ends at y = 2400 + (31 rows * 80) = 4880px.
+  // Set Block C start y at 5060px (leaving 180px margin for road & banner).
+  const blockCYStart = 5060;
   const blockCSpecs = [
     { dim: "25' x 40'", w: 25, l: 40, area: 1000, rate: 900 },
     { dim: "20' x 40'", w: 20, l: 40, area: 800, rate: 900 },
     { dim: "15' x 40'", w: 15, l: 40, area: 600, rate: 900 },
   ];
-
-  const blockCYStart = 3850; // Spacious vertical separation below Block B
 
   for (let num = 681; num <= 980; num++) {
     const plotNo = `C-${num}`;
