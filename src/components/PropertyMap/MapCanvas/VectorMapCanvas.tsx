@@ -24,12 +24,12 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = ({
 }) => {
   const transformRef = useRef<ReactZoomPanPinchRef>(null);
   const [showBlueprintBg, setShowBlueprintBg] = useState(true);
-  const [polygonOpacity, setPolygonOpacity] = useState(0.45);
+  const [polygonOpacity, setPolygonOpacity] = useState(0.5);
 
   const handleZoomToPlot = (plot: EnhancedPlot) => {
     if (transformRef.current) {
       const { setTransform } = transformRef.current;
-      setTransform(-plot.x * 1.2 + 400, -plot.y * 1.2 + 250, 1.8, 400, 'easeOut');
+      setTransform(-plot.x * 1.1 + 350, -plot.y * 1.1 + 200, 1.5, 300, 'easeOut');
     }
   };
 
@@ -37,19 +37,20 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = ({
     if (searchedPlot) {
       handleZoomToPlot(searchedPlot);
     }
-  }, [searchedPlot]);
+  }, [searchedPlot?.id]);
 
   return (
     <div
       style={{
         position: 'relative',
         width: '100%',
-        height: '780px',
+        height: '750px',
         background: '#0b0f19',
         borderRadius: '20px',
         overflow: 'hidden',
         border: '2px solid rgba(245, 158, 11, 0.4)',
         boxShadow: '0 25px 60px rgba(0,0,0,0.6)',
+        userSelect: 'none',
       }}
     >
       {/* Floating Legend */}
@@ -93,7 +94,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = ({
         </button>
 
         <button
-          onClick={() => setPolygonOpacity(polygonOpacity === 0.45 ? 0.75 : polygonOpacity === 0.75 ? 0.2 : 0.45)}
+          onClick={() => setPolygonOpacity(polygonOpacity === 0.5 ? 0.8 : polygonOpacity === 0.8 ? 0.25 : 0.5)}
           style={{
             background: 'rgba(255,255,255,0.05)',
             color: '#ffffff',
@@ -117,11 +118,12 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = ({
       <TransformWrapper
         ref={transformRef}
         initialScale={1}
-        minScale={0.5}
-        maxScale={4}
-        wheel={{ step: 0.1 }}
-        doubleClick={{ mode: 'zoomIn' }}
-        panning={{ velocityDisabled: false }}
+        minScale={0.4}
+        maxScale={3.5}
+        wheel={{ step: 0.05 }}
+        doubleClick={{ mode: 'reset' }}
+        panning={{ velocityDisabled: true }}
+        limitToBounds={false}
       >
         {({ zoomIn, zoomOut, resetTransform }) => (
           <>
@@ -142,14 +144,14 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = ({
               }}
             >
               <button
-                onClick={() => zoomIn(0.3)}
+                onClick={() => zoomIn(0.2)}
                 style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', padding: '8px 12px', borderRadius: '8px', cursor: 'pointer', fontWeight: 700 }}
                 title="Zoom In (+)"
               >
                 <ZoomIn size={16} />
               </button>
               <button
-                onClick={() => zoomOut(0.3)}
+                onClick={() => zoomOut(0.2)}
                 style={{ background: 'rgba(255,255,255,0.08)', border: 'none', color: '#fff', padding: '8px 12px', borderRadius: '8px', cursor: 'pointer', fontWeight: 700 }}
                 title="Zoom Out (-)"
               >
