@@ -31,33 +31,31 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
             onOpenLogin={() => setShowLoginModal(true)}
           />
 
-          {/* Clean Login Modal Popup */}
+          {/* Clean High-Performance Sign In Modal Popup */}
           {showLoginModal && (
             <div
               style={{
                 position: 'fixed',
                 inset: 0,
                 zIndex: 99999,
-                backgroundColor: 'rgba(11, 15, 25, 0.85)',
-                backdropFilter: 'blur(12px)',
+                backgroundColor: 'rgba(11, 15, 25, 0.92)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '20px',
-                overflowY: 'auto',
+                padding: '16px',
               }}
             >
-              <div style={{ position: 'relative', width: '100%', maxWidth: '480px' }}>
+              <div style={{ position: 'relative', width: '100%', maxWidth: '440px' }}>
                 {/* Close Button */}
                 <button
                   onClick={() => setShowLoginModal(false)}
                   style={{
                     position: 'absolute',
-                    top: '-45px',
+                    top: '-42px',
                     right: 0,
-                    background: 'rgba(255, 255, 255, 0.15)',
+                    background: 'rgba(255, 255, 255, 0.2)',
                     color: '#ffffff',
-                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    border: '1px solid rgba(255, 255, 255, 0.4)',
                     borderRadius: '50%',
                     width: '36px',
                     height: '36px',
@@ -65,6 +63,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
                     alignItems: 'center',
                     justifyContent: 'center',
                     cursor: 'pointer',
+                    zIndex: 100,
                   }}
                   title="Close Sign In Modal"
                 >

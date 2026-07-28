@@ -6,7 +6,7 @@ import { PasskeyLogin } from './PasskeyLogin';
 import { CaptchaWidget } from './CaptchaWidget';
 import { generateDeviceFingerprint } from '../../utils/fingerprint';
 import { dispatchRealSmsOtp } from '../../utils/fast2smsClient';
-import './LoginPage.css';
+import '../../styles/LoginPage.css';
 
 const FAST2SMS_API_KEY = 'B57vxDy96JW4dtrlmUasIzQoenHj21Fk8XgRwqTNfYOiEZPpCSKETS7m53od4VMDfwZvsyqN90kYuej1';
 
@@ -101,7 +101,7 @@ export const LoginPage: React.FC = () => {
       setIsLoading(false);
       setStep('OTP');
       await sendNewOtp(mfaChannel);
-    }, 300);
+    }, 200);
   };
 
   const handleOtpVerify = async (e: React.FormEvent) => {
@@ -142,12 +142,40 @@ export const LoginPage: React.FC = () => {
 
       {/* Main Glassmorphic Card */}
       <div className={`glass-login-card ${shake ? 'shake-animation' : ''}`}>
-        {/* Clean Logo Header Without Address Line */}
+        {/* Un-cropped High Definition Ganesha Entrance Logo */}
         <div className="brand-header">
-          <div style={{ margin: '0 auto 0.75rem auto', width: '180px', height: '90px', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(245,158,11,0.3)', boxShadow: '0 8px 20px rgba(0,0,0,0.5)' }}>
-            <img src="./assets/logo_and_entrance.jpg" alt="Shubharambh Banner" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <div
+            style={{
+              margin: '0 auto 0.5rem auto',
+              width: '220px',
+              height: '100px',
+              borderRadius: '14px',
+              overflow: 'hidden',
+              border: '1.5px solid rgba(245,158,11,0.5)',
+              background: '#0b0f19',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.6)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '6px',
+            }}
+          >
+            <img
+              src="./assets/logo_and_entrance.jpg"
+              alt="Shubharambh Entrance Banner Logo"
+              style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '8px' }}
+            />
           </div>
-          <h1 style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #10b981 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <h1
+            style={{
+              background: 'linear-gradient(135deg, #f59e0b 0%, #10b981 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              fontSize: '1.6rem',
+              marginTop: '0.4rem',
+              fontWeight: 800,
+            }}
+          >
             SHUBHARAMBH
           </h1>
         </div>
@@ -160,7 +188,7 @@ export const LoginPage: React.FC = () => {
         )}
 
         {step === 'CREDENTIALS' ? (
-          /* Primary Username & Password Form First */
+          /* Primary Username & Password Form */
           <form onSubmit={handleCredentialsSubmit} className="login-form">
             <div className="input-field-group">
               <label htmlFor="identifier">Email or Username</label>
@@ -260,7 +288,7 @@ export const LoginPage: React.FC = () => {
                 fontWeight: 800,
                 fontSize: '0.9rem',
                 cursor: 'pointer',
-                marginTop: '0.75rem',
+                marginTop: '0.6rem',
                 boxShadow: '0 6px 20px rgba(16, 185, 129, 0.3)',
               }}
             >
@@ -268,7 +296,7 @@ export const LoginPage: React.FC = () => {
             </button>
 
             {/* Other Login Options Section (Below Primary Form) */}
-            <div style={{ textAlign: 'center', color: '#9ca3af', fontSize: '0.8rem', margin: '1.25rem 0 0.75rem 0', borderTop: '1px dashed rgba(255,255,255,0.15)', paddingTop: '1rem' }}>
+            <div style={{ textAlign: 'center', color: '#9ca3af', fontSize: '0.8rem', margin: '1rem 0 0.6rem 0', borderTop: '1px dashed rgba(255,255,255,0.15)', paddingTop: '0.8rem' }}>
               ── OTHER LOGIN OPTIONS ──
             </div>
 
