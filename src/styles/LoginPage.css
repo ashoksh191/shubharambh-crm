@@ -1,8 +1,8 @@
-/* SehatMitra AI Style Login Page CSS */
+/* Matching Landing Page Theme for Login System */
 .sehat-login-page-container {
   min-height: 100vh;
   width: 100%;
-  background: #0e1a24;
+  background: #0f172a;
   color: #f8fafc;
   font-family: 'Outfit', 'Inter', sans-serif;
   display: flex;
@@ -11,12 +11,15 @@
   box-sizing: border-box;
 }
 
-/* Header Logo Bar */
+/* Header Navbar Matching Landing Page */
 .sehat-login-header {
-  padding: 20px 36px;
+  padding: 16px 36px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .sehat-brand-logo {
@@ -26,12 +29,12 @@
 }
 
 .sehat-logo-icon {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: 10px;
   overflow: hidden;
-  border: 1px solid rgba(56, 189, 248, 0.4);
-  background: #0b171e;
+  border: 1.5px solid rgba(245, 158, 11, 0.5);
+  background: #0f172a;
 }
 
 .sehat-logo-icon img {
@@ -44,10 +47,13 @@
   font-size: 1.25rem;
   font-weight: 800;
   color: #ffffff;
+  letter-spacing: -0.01em;
 }
 
 .sehat-brand-name .highlight-ai {
-  color: #38bdf8;
+  background: linear-gradient(135deg, #10b981 0%, #f59e0b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* Main Split Screen Body */
@@ -56,7 +62,7 @@
   max-width: 1280px;
   width: 100%;
   margin: 0 auto;
-  padding: 10px 36px 40px 36px;
+  padding: 20px 36px 40px 36px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 60px;
@@ -67,18 +73,18 @@
 .sehat-left-showcase {
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 24px;
 }
 
 .showcase-image-card {
   width: 100%;
   max-width: 480px;
-  height: 380px;
-  border-radius: 32px;
+  height: 360px;
+  border-radius: 28px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
-  background: #15222b;
+  border: 2px solid rgba(245, 158, 11, 0.4);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+  background: #0f172a;
 }
 
 .showcase-img {
@@ -95,12 +101,14 @@
 }
 
 .showcase-cyan-text {
-  color: #38bdf8;
+  background: linear-gradient(135deg, #10b981 0%, #38bdf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .showcase-text-group p {
   color: #94a3b8;
-  font-size: 1.05rem;
+  font-size: 1rem;
   line-height: 1.6;
   margin-top: 10px;
   max-width: 460px;
@@ -116,32 +124,36 @@
 }
 
 .sehat-back-home-btn {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.05);
   color: #94a3b8;
-  border: none;
-  font-size: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 6px;
-  transition: color 0.2s ease;
+  transition: all 0.2s ease;
   margin-bottom: 8px;
 }
 
 .sehat-back-home-btn:hover {
-  color: #38bdf8;
+  color: #ffffff;
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
 }
 
-/* Form Card */
+/* Form Card (Matching Landing Page Cards) */
 .sehat-form-card {
   width: 100%;
   max-width: 440px;
-  background: #15222b;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #1e293b;
+  border: 1.5px solid rgba(245, 158, 11, 0.35);
   border-radius: 24px;
   padding: 36px 32px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 30px rgba(16, 185, 129, 0.15);
 }
 
 .sehat-form-card.shake-animation {
@@ -169,16 +181,16 @@
   margin-bottom: 24px;
 }
 
-/* Google / Fast Sign In Button */
+/* Fast Direct Sign In Button */
 .sehat-google-btn {
   width: 100%;
   padding: 12px 16px;
   border-radius: 9999px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.04);
-  color: #ffffff;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -188,8 +200,9 @@
 }
 
 .sehat-google-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: #38bdf8;
+  background: rgba(16, 185, 129, 0.2);
+  border-color: #10b981;
+  transform: translateY(-1px);
 }
 
 /* Divider */
@@ -211,7 +224,7 @@
 
 .sehat-divider span {
   position: relative;
-  background: #15222b;
+  background: #1e293b;
   padding: 0 12px;
   color: #64748b;
   font-size: 0.78rem;
@@ -246,15 +259,15 @@
 .sehat-field-icon {
   position: absolute;
   left: 14px;
-  color: #64748b;
+  color: #94a3b8;
   pointer-events: none;
 }
 
 .sehat-input {
   width: 100%;
   padding: 12px 14px 12px 42px;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 9999px;
   color: #ffffff;
   font-size: 0.9rem;
@@ -263,9 +276,9 @@
 }
 
 .sehat-input:focus {
-  border-color: #38bdf8;
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
-  background: rgba(15, 23, 42, 0.9);
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+  background: rgba(15, 23, 42, 1);
 }
 
 .sehat-password-toggle {
@@ -273,7 +286,7 @@
   right: 14px;
   background: none;
   border: none;
-  color: #64748b;
+  color: #94a3b8;
   cursor: pointer;
   font-size: 1rem;
 }
@@ -287,7 +300,7 @@
 .sehat-forgot-btn {
   background: none;
   border: none;
-  color: #38bdf8;
+  color: #10b981;
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
@@ -297,29 +310,29 @@
   text-decoration: underline;
 }
 
-/* Submit Pill Button */
+/* Submit Pill Button (Matching Landing Page Green Gradient) */
 .sehat-submit-pill-btn {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   border-radius: 9999px;
   border: none;
-  background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
   color: #ffffff;
-  font-size: 0.95rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 800;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.4);
-  transition: all 0.2s ease;
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   margin-top: 6px;
 }
 
 .sehat-submit-pill-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.6);
 }
 
 .sehat-submit-pill-btn:disabled {
@@ -344,7 +357,7 @@
   .sehat-login-body {
     grid-template-columns: 1fr;
     gap: 30px;
-    padding: 10px 20px;
+    padding: 20px;
   }
 
   .sehat-left-showcase {
