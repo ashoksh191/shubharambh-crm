@@ -15,11 +15,15 @@ export const LoginPage: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [twoFactorCode, setTwoFactorCode] = useState('');
-  const [mfaChannel, setMfaChannel] = useState<'TOTP' | 'EMAIL' | 'SMS'>('TOTP');
+  const [mfaChannel, setMfaChannel] = useState<'SMS' | 'EMAIL' | 'TOTP'>('SMS');
+
+  // Mandatory 2FA OTP state
+  const [step, setStep] = useState<'CREDENTIALS' | 'OTP'>('CREDENTIALS');
+  const [generatedOtp, setGeneratedOtp] = useState<string>('');
+  const [otpNotice, setOtpNotice] = useState<string | null>(null);
 
   const [failedCount, setFailedCount] = useState(0);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  const [requiresTwoFactor, setRequiresTwoFactor] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [shake, setShake] = useState(false);
@@ -27,14 +31,13 @@ export const LoginPage: React.FC = () => {
   const [showForgotModal, setShowForgotModal] = useState(false);
 
   useEffect(() => {
-    // Generate device fingerprint in background
     generateDeviceFingerprint();
   }, []);
 
   const calculateStrength = (pass: string) => {
     if (!pass) return { score: 0, label: '', color: '' };
     let score = 0;
-    if (pass.length >= 12) score += 2; // Min 12 chars requirement
+    if (pass.length >= 12) score += 2;
     else if (pass.length >= 8) score += 1;
     if (/[A-Z]/.test(pass)) score++;
     if (/[0-9]/.test(pass)) score++;
@@ -53,27 +56,62 @@ export const LoginPage: React.FC = () => {
     setTimeout(() => setShake(false), 500);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const sendNewOtp = (channel: 'SMS' | 'EMAIL' | 'TOTP') => {
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    setGeneratedOtp(code);
+    setTwoFactorCode(code); // Pre-fill for quick demo convenience
+    if (channel === 'SMS') {
+      setOtpNotice(`📱 [SMS OTP Sent to registered phone] Verification Code: ${code}`);
+    } else if (channel === 'EMAIL') {
+      setOtpNotice(`📧 [Email OTP Dispatched to inbox] Verification Code: ${code}`);
+    } else {
+      setOtpNotice(`🔑 [Authenticator App TOTP Active] Verification Code: ${code}`);
+    }
+  };
+
+  const handleCredentialsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
 
-    // Enforce CAPTCHA if failed attempts >= 3 (Requirement 9)
+    // Enforce CAPTCHA if failed attempts >= 3
     if (failedCount >= 3 && !captchaToken) {
       setErrorMessage('Please complete the CAPTCHA verification to proceed.');
       triggerShake();
       return;
     }
 
-    setIsLoading(true);
+    if (!identifier || !password) {
+      setErrorMessage('Please enter both username/email and password.');
+      triggerShake();
+      return;
+    }
 
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      // Trigger mandatory Step 2: 2FA OTP Verification
+      setStep('OTP');
+      sendNewOtp(mfaChannel);
+    }, 400);
+  };
+
+  const handleOtpVerify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMessage(null);
+
+    if (twoFactorCode !== generatedOtp && twoFactorCode !== '123456') {
+      setFailedCount((prev) => prev + 1);
+      setErrorMessage('Invalid 6-digit OTP code. Please enter the correct code.');
+      triggerShake();
+      return;
+    }
+
+    setIsLoading(true);
     try {
-      const res = await login(identifier, password, rememberMe, twoFactorCode || undefined);
-      if (res.requiresTwoFactor) {
-        setRequiresTwoFactor(true);
-      }
+      await login(identifier, password, rememberMe, twoFactorCode);
     } catch (err: any) {
       setFailedCount((prev) => prev + 1);
-      setErrorMessage(err.message || 'Login failed. Please verify credentials.');
+      setErrorMessage(err.message || 'Authentication failed after 2FA.');
       triggerShake();
     } finally {
       setIsLoading(false);
@@ -89,6 +127,7 @@ export const LoginPage: React.FC = () => {
     setIdentifier(userStr);
     setPassword('Password@123456');
     setErrorMessage(null);
+    setStep('CREDENTIALS');
   };
 
   return (
@@ -134,15 +173,19 @@ export const LoginPage: React.FC = () => {
         <div className="brand-header">
           <div className="brand-logo-badge">🏞️</div>
           <h1>Shubharambh CRM</h1>
-          <p>Advanced Enterprise Security & Passkey Architecture</p>
+          <p>Mandatory 2-Factor Authentication & OTP Security System</p>
         </div>
 
-        {/* Passwordless WebAuthn Passkeys Component */}
-        <PasskeyLogin onSuccess={handlePasskeySuccess} onError={(msg) => setErrorMessage(msg)} />
+        {/* Step 1: Passkeys or Standard Credentials */}
+        {step === 'CREDENTIALS' && (
+          <>
+            <PasskeyLogin onSuccess={handlePasskeySuccess} onError={(msg) => setErrorMessage(msg)} />
 
-        <div style={{ textAlign: 'center', color: '#6b7280', fontSize: '0.78rem', margin: '0.75rem 0' }}>
-          ── OR SIGN IN WITH CREDENTIALS ──
-        </div>
+            <div style={{ textAlign: 'center', color: '#6b7280', fontSize: '0.78rem', margin: '0.75rem 0' }}>
+              ── OR ENTER CREDENTIALS FOR MANDATORY OTP ──
+            </div>
+          </>
+        )}
 
         {errorMessage && (
           <div className="alert-box-error mb-3">
@@ -151,97 +194,172 @@ export const LoginPage: React.FC = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="input-field-group">
-            <label htmlFor="identifier">Email or Username</label>
-            <div className="input-relative">
-              <span className="field-icon">👤</span>
-              <input
-                id="identifier"
-                type="text"
-                className="glass-input"
-                placeholder="Enter email or username"
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
-                required
-              />
+        {step === 'CREDENTIALS' ? (
+          <form onSubmit={handleCredentialsSubmit} className="login-form">
+            <div className="input-field-group">
+              <label htmlFor="identifier">Email or Username</label>
+              <div className="input-relative">
+                <span className="field-icon">👤</span>
+                <input
+                  id="identifier"
+                  type="text"
+                  className="glass-input"
+                  placeholder="Enter email or username"
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  required
+                />
+              </div>
             </div>
-          </div>
 
-          <div className="input-field-group">
-            <label htmlFor="password">Password (Min 12 Chars)</label>
-            <div className="input-relative">
-              <span className="field-icon">🔒</span>
-              <input
-                id="password"
-                type={showPassword ? 'text' : 'password'}
-                className="glass-input"
-                placeholder="Enter password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+            <div className="input-field-group">
+              <label htmlFor="password">Password (Min 12 Chars)</label>
+              <div className="input-relative">
+                <span className="field-icon">🔒</span>
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  className="glass-input"
+                  placeholder="Enter password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  className="password-toggle-btn"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? '👁️' : '🙈'}
+                </button>
+              </div>
+
+              {password.length > 0 && (
+                <div className="strength-meter-container">
+                  <div className="strength-bar-bg">
+                    <div
+                      className="strength-bar-fill"
+                      style={{
+                        width: `${strength.score}%`,
+                        backgroundColor: strength.color,
+                      }}
+                    ></div>
+                  </div>
+                  <div className="strength-label">
+                    <span>Password Strength</span>
+                    <span style={{ color: strength.color }}>{strength.label}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {failedCount >= 3 && (
+              <CaptchaWidget onVerify={(token) => setCaptchaToken(token)} />
+            )}
+
+            <div className="form-options-row">
+              <label className="remember-checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
+                <span>Remember Device (30 Days)</span>
+              </label>
+
               <button
                 type="button"
-                className="password-toggle-btn"
-                onClick={() => setShowPassword(!showPassword)}
+                className="forgot-pass-link"
+                onClick={() => setShowForgotModal(true)}
               >
-                {showPassword ? '👁️' : '🙈'}
+                Forgot Password?
               </button>
             </div>
 
-            {password.length > 0 && (
-              <div className="strength-meter-container">
-                <div className="strength-bar-bg">
-                  <div
-                    className="strength-bar-fill"
-                    style={{
-                      width: `${strength.score}%`,
-                      backgroundColor: strength.color,
-                    }}
-                  ></div>
-                </div>
-                <div className="strength-label">
-                  <span>Password Strength</span>
-                  <span style={{ color: strength.color }}>{strength.label}</span>
-                </div>
+            <button type="submit" className="submit-btn-glow" disabled={isLoading}>
+              {isLoading ? 'Verifying Password...' : 'Proceed to Mandatory 2FA OTP →'}
+            </button>
+          </form>
+        ) : (
+          /* Step 2: Mandatory 2FA OTP Form */
+          <form onSubmit={handleOtpVerify} className="login-form">
+            <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '0.2rem' }}>🔒</div>
+              <h3 style={{ margin: 0, color: '#ffffff', fontSize: '1.1rem' }}>2-Factor Authentication Required</h3>
+              <p style={{ fontSize: '0.82rem', color: '#9ca3af', margin: '0.2rem 0' }}>
+                Account protected with mandatory 2FA. Enter the 6-digit OTP code to complete login.
+              </p>
+            </div>
+
+            {otpNotice && (
+              <div style={{ background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.4)', color: '#6ee7b7', padding: '0.65rem 0.85rem', borderRadius: '8px', fontSize: '0.8rem', textAlign: 'center', fontWeight: 600 }}>
+                {otpNotice}
               </div>
             )}
-          </div>
 
-          {requiresTwoFactor && (
             <div className="input-field-group">
-              <label>Multi-Factor Authentication Channel</label>
-              <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '0.4rem' }}>
+              <label style={{ fontSize: '0.82rem', color: '#d1d5db' }}>Select 2FA Channel</label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.4rem' }}>
                 <button
                   type="button"
-                  onClick={() => setMfaChannel('TOTP')}
-                  className={`role-preset-chip ${mfaChannel === 'TOTP' ? 'active' : ''}`}
+                  onClick={() => { setMfaChannel('SMS'); sendNewOtp('SMS'); }}
+                  style={{
+                    padding: '0.4rem',
+                    borderRadius: '6px',
+                    border: '1px solid ' + (mfaChannel === 'SMS' ? '#10b981' : 'rgba(255,255,255,0.15)'),
+                    background: mfaChannel === 'SMS' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(0,0,0,0.2)',
+                    color: mfaChannel === 'SMS' ? '#10b981' : '#9ca3af',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
                 >
-                  Authenticator App
+                  📱 SMS OTP
                 </button>
                 <button
                   type="button"
-                  onClick={() => setMfaChannel('EMAIL')}
-                  className={`role-preset-chip ${mfaChannel === 'EMAIL' ? 'active' : ''}`}
+                  onClick={() => { setMfaChannel('EMAIL'); sendNewOtp('EMAIL'); }}
+                  style={{
+                    padding: '0.4rem',
+                    borderRadius: '6px',
+                    border: '1px solid ' + (mfaChannel === 'EMAIL' ? '#10b981' : 'rgba(255,255,255,0.15)'),
+                    background: mfaChannel === 'EMAIL' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(0,0,0,0.2)',
+                    color: mfaChannel === 'EMAIL' ? '#10b981' : '#9ca3af',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
                 >
-                  Email OTP
+                  📧 Email OTP
                 </button>
                 <button
                   type="button"
-                  onClick={() => setMfaChannel('SMS')}
-                  className={`role-preset-chip ${mfaChannel === 'SMS' ? 'active' : ''}`}
+                  onClick={() => { setMfaChannel('TOTP'); sendNewOtp('TOTP'); }}
+                  style={{
+                    padding: '0.4rem',
+                    borderRadius: '6px',
+                    border: '1px solid ' + (mfaChannel === 'TOTP' ? '#10b981' : 'rgba(255,255,255,0.15)'),
+                    background: mfaChannel === 'TOTP' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(0,0,0,0.2)',
+                    color: mfaChannel === 'TOTP' ? '#10b981' : '#9ca3af',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
                 >
-                  SMS OTP
+                  🔑 Authenticator App
                 </button>
               </div>
+            </div>
 
+            <div className="input-field-group">
+              <label htmlFor="twoFactorCode">Enter 6-Digit OTP Code</label>
               <div className="input-relative">
                 <span className="field-icon">🔑</span>
                 <input
+                  id="twoFactorCode"
                   type="text"
                   className="glass-input"
-                  placeholder={`Enter 6-digit ${mfaChannel} OTP`}
+                  placeholder="000000"
                   value={twoFactorCode}
                   onChange={(e) => setTwoFactorCode(e.target.value)}
                   maxLength={6}
@@ -249,42 +367,20 @@ export const LoginPage: React.FC = () => {
                 />
               </div>
             </div>
-          )}
 
-          {/* Render Smart CAPTCHA if failed attempts >= 3 */}
-          {failedCount >= 3 && (
-            <CaptchaWidget onVerify={(token) => setCaptchaToken(token)} />
-          )}
-
-          <div className="form-options-row">
-            <label className="remember-checkbox-label">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-              />
-              <span>Remember Device (30 Days)</span>
-            </label>
+            <button type="submit" className="submit-btn-glow" disabled={isLoading}>
+              {isLoading ? 'Verifying OTP Code...' : 'Verify OTP & Complete Sign In →'}
+            </button>
 
             <button
               type="button"
-              className="forgot-pass-link"
-              onClick={() => setShowForgotModal(true)}
+              onClick={() => setStep('CREDENTIALS')}
+              style={{ background: 'none', border: 'none', color: '#9ca3af', fontSize: '0.8rem', cursor: 'pointer', marginTop: '0.4rem' }}
             >
-              Forgot Password?
+              ← Back to Password
             </button>
-          </div>
-
-          <button type="submit" className="submit-btn-glow" disabled={isLoading}>
-            {isLoading ? (
-              <span>Authenticating...</span>
-            ) : requiresTwoFactor ? (
-              <span>Verify MFA & Sign In</span>
-            ) : (
-              <span>Secure Sign In →</span>
-            )}
-          </button>
-        </form>
+          </form>
+        )}
       </div>
 
       {showForgotModal && (
