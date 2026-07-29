@@ -51,6 +51,8 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = ({
         border: '2px solid rgba(245, 158, 11, 0.4)',
         boxShadow: '0 25px 60px rgba(0,0,0,0.6)',
         userSelect: 'none',
+        willChange: 'transform',
+        transform: 'translateZ(0)',
       }}
     >
       {/* Floating Legend */}
@@ -169,7 +171,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = ({
             {/* Transform Canvas Surface */}
             <TransformComponent
               wrapperStyle={{ width: '100%', height: '100%' }}
-              contentStyle={{ width: '100%', height: '100%' }}
+              contentStyle={{ width: '100%', height: '100%', willChange: 'transform' }}
             >
               <svg
                 viewBox="0 0 1450 7300"
@@ -178,6 +180,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = ({
                   height: '100%',
                   minWidth: '1350px',
                   display: 'block',
+                  shapeRendering: 'geometricPrecision',
                 }}
               >
                 <defs>

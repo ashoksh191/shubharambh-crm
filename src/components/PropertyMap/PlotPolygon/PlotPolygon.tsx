@@ -9,12 +9,12 @@ interface PlotPolygonProps {
   onHover: (plot: EnhancedPlot | null, e?: React.MouseEvent) => void;
 }
 
-const STATUS_COLORS: Record<EnhancedPlotStatus, { fill: string; stroke: string; label: string }> = {
-  available: { fill: 'rgba(16, 185, 129, 0.25)', stroke: '#10b981', label: 'Available' },
-  reserved: { fill: 'rgba(245, 158, 11, 0.35)', stroke: '#f59e0b', label: 'Reserved' },
-  booked: { fill: 'rgba(59, 130, 246, 0.35)', stroke: '#3b82f6', label: 'Booked' },
-  sold: { fill: 'rgba(239, 68, 68, 0.35)', stroke: '#ef4444', label: 'Sold' },
-  unreleased: { fill: 'rgba(100, 116, 139, 0.35)', stroke: '#64748b', label: 'Not Released' },
+const STATUS_COLORS: Record<EnhancedPlotStatus, { fill: string; stroke: string }> = {
+  available: { fill: 'rgba(16, 185, 129, 0.25)', stroke: '#10b981' },
+  reserved: { fill: 'rgba(245, 158, 11, 0.35)', stroke: '#f59e0b' },
+  booked: { fill: 'rgba(59, 130, 246, 0.35)', stroke: '#3b82f6' },
+  sold: { fill: 'rgba(239, 68, 68, 0.35)', stroke: '#ef4444' },
+  unreleased: { fill: 'rgba(100, 116, 139, 0.35)', stroke: '#64748b' },
 };
 
 export const PlotPolygon: React.FC<PlotPolygonProps> = memo(({
@@ -28,14 +28,14 @@ export const PlotPolygon: React.FC<PlotPolygonProps> = memo(({
 
   return (
     <g
-      className={`plot-polygon-group ${isSelected ? 'selected' : ''} ${isSearched ? 'searched-pulse' : ''}`}
+      className={`plot-polygon-group ${isSelected ? 'selected' : ''}`}
       onClick={(e) => {
         e.stopPropagation();
         onSelect(plot);
       }}
       onMouseEnter={(e) => onHover(plot, e)}
       onMouseLeave={() => onHover(null)}
-      style={{ cursor: 'pointer', transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)' }}
+      style={{ cursor: 'pointer' }}
     >
       {/* Background Polygon */}
       <polygon
@@ -45,12 +45,15 @@ export const PlotPolygon: React.FC<PlotPolygonProps> = memo(({
         strokeWidth={isSelected ? 3.5 : isSearched ? 3 : 1.5}
         rx="4"
         style={{
-          transition: 'all 0.2s ease',
-          filter: isSelected ? 'drop-shadow(0 0 8px rgba(56, 189, 248, 0.8))' : isSearched ? 'drop-shadow(0 0 10px rgba(245, 158, 11, 0.9))' : 'none',
+          filter: isSelected
+            ? 'drop-shadow(0 0 8px rgba(56, 189, 248, 0.8))'
+            : isSearched
+            ? 'drop-shadow(0 0 10px rgba(245, 158, 11, 0.9))'
+            : 'none',
         }}
       />
 
-      {/* Plot Badge / Number */}
+      {/* Plot Number */}
       <text
         x={plot.x + plot.w / 2}
         y={plot.y + plot.h / 2 - 3}
@@ -63,7 +66,7 @@ export const PlotPolygon: React.FC<PlotPolygonProps> = memo(({
         {plot.plotNo}
       </text>
 
-      {/* Area / Size Subtext */}
+      {/* Dimensions Subtext */}
       <text
         x={plot.x + plot.w / 2}
         y={plot.y + plot.h / 2 + 10}
@@ -76,7 +79,7 @@ export const PlotPolygon: React.FC<PlotPolygonProps> = memo(({
         {plot.dimensions}
       </text>
 
-      {/* Pulsing Highlight Ring for Searched or Selected Plot */}
+      {/* Searched or Selected Highlight Ring */}
       {(isSelected || isSearched) && (
         <rect
           x={plot.x - 3}
@@ -88,10 +91,16 @@ export const PlotPolygon: React.FC<PlotPolygonProps> = memo(({
           stroke={isSelected ? '#38bdf8' : '#f59e0b'}
           strokeWidth="2"
           strokeDasharray="4 4"
-          className="plot-pulse-ring"
         />
       )}
     </g>
+  );
+}, (prevProps, nextProps) => {
+  return (
+    prevProps.plot.id === nextProps.plot.id &&
+    prevProps.plot.enhancedStatus === nextProps.plot.enhancedStatus &&
+    prevProps.isSelected === nextProps.isSelected &&
+    prevProps.isSearched === nextProps.isSearched
   );
 });
 

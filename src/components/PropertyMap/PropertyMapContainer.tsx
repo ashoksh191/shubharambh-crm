@@ -22,7 +22,7 @@ export const PropertyMapContainer: React.FC<PropertyMapContainerProps> = ({
 }) => {
   const { plots: rawPlots } = useApp();
 
-  // Enhance raw plots into rich vector plots
+  // Cache enhanced plots once to avoid heavy recalculations
   const [enhancedPlots, setEnhancedPlots] = useState<EnhancedPlot[]>(() => enhancePlotData(rawPlots));
 
   const [selectedPlot, setSelectedPlot] = useState<EnhancedPlot | null>(null);
@@ -45,7 +45,7 @@ export const PropertyMapContainer: React.FC<PropertyMapContainerProps> = ({
     maxArea: 10000,
   });
 
-  // Calculate Filtered Plots
+  // Calculate Filtered Plots with high performance memoization
   const filteredPlots = useMemo(() => {
     return enhancedPlots.filter((p) => {
       if (filters.block !== 'All' && p.block !== filters.block) return false;
@@ -57,7 +57,7 @@ export const PropertyMapContainer: React.FC<PropertyMapContainerProps> = ({
     });
   }, [enhancedPlots, filters, searchQuery]);
 
-  // Inventory Metric Counts
+  // Inventory Metric Counts memoized
   const statusCounts = useMemo(() => {
     const counts: Record<EnhancedPlotStatus, number> = {
       available: 0,
@@ -72,32 +72,38 @@ export const PropertyMapContainer: React.FC<PropertyMapContainerProps> = ({
     return counts;
   }, [enhancedPlots]);
 
+  // Optimized Hover Handler (Lightweight callback)
   const handleHoverPlot = useCallback((plot: EnhancedPlot | null, e?: React.MouseEvent) => {
-    setHoveredPlot(plot);
-    if (e) {
+    if (plot && e) {
+      setHoveredPlot(plot);
       setTooltipPos({ x: e.clientX, y: e.clientY });
     } else {
+      setHoveredPlot(null);
       setTooltipPos(null);
     }
   }, []);
 
-  const handleUpdatePlotStatus = (plotId: string, newStatus: EnhancedPlotStatus) => {
+  const handleSelectPlot = useCallback((plot: EnhancedPlot) => {
+    setSelectedPlot(plot);
+  }, []);
+
+  const handleUpdatePlotStatus = useCallback((plotId: string, newStatus: EnhancedPlotStatus) => {
     setEnhancedPlots((prev) =>
       prev.map((p) => (p.id === plotId ? { ...p, enhancedStatus: newStatus } : p))
     );
     if (selectedPlot?.id === plotId) {
       setSelectedPlot((prev) => (prev ? { ...prev, enhancedStatus: newStatus } : null));
     }
-  };
+  }, [selectedPlot]);
 
-  const handleUpdatePlotPrice = (plotId: string, newPrice: number) => {
+  const handleUpdatePlotPrice = useCallback((plotId: string, newPrice: number) => {
     setEnhancedPlots((prev) =>
       prev.map((p) => (p.id === plotId ? { ...p, totalPrice: newPrice } : p))
     );
     if (selectedPlot?.id === plotId) {
       setSelectedPlot((prev) => (prev ? { ...prev, totalPrice: newPrice } : null));
     }
-  };
+  }, [selectedPlot]);
 
   return (
     <div className="property-map-wrapper" style={{ padding: '24px 32px', maxWidth: '1440px', margin: '0 auto' }}>
@@ -175,13 +181,13 @@ export const PropertyMapContainer: React.FC<PropertyMapContainerProps> = ({
         />
       </div>
 
-      {/* Vector SVG Infinite Zoom Canvas Surface */}
+      {/* Vector SVG Canvas Surface with GPU Acceleration */}
       <VectorMapCanvas
         plots={filteredPlots}
         selectedPlot={selectedPlot}
         searchedPlot={searchedPlot}
         statusCounts={statusCounts}
-        onSelectPlot={(plot) => setSelectedPlot(plot)}
+        onSelectPlot={handleSelectPlot}
         onHoverPlot={handleHoverPlot}
       />
 
