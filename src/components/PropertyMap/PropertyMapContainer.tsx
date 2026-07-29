@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { enhancePlotData } from '../../utils/svgPlotGenerator';
 import type { EnhancedPlot, FilterState, EnhancedPlotStatus } from '../../types/propertyMap';
@@ -8,6 +8,8 @@ import { PlotTooltip } from './Tooltip/PlotTooltip';
 import { MapFilters } from './Filters/MapFilters';
 import { MapSearch } from './Search/MapSearch';
 import { BookingFormModal } from '../Booking/BookingFormModal';
+import { AdminPlotEditorModal } from './Admin/AdminPlotEditorModal';
+import { fetchPlotsFromApi } from '../../services/api';
 import { Download, Compass } from 'lucide-react';
 import '../../styles/Map.css';
 
@@ -22,7 +24,6 @@ export const PropertyMapContainer: React.FC<PropertyMapContainerProps> = ({
 }) => {
   const { plots: rawPlots } = useApp();
 
-  // Cache enhanced plots once to avoid heavy recalculations
   const [enhancedPlots, setEnhancedPlots] = useState<EnhancedPlot[]>(() => enhancePlotData(rawPlots));
 
   const [selectedPlot, setSelectedPlot] = useState<EnhancedPlot | null>(null);
@@ -32,6 +33,29 @@ export const PropertyMapContainer: React.FC<PropertyMapContainerProps> = ({
 
   const [searchQuery, setSearchQuery] = useState('');
   const [bookingModalPlot, setBookingModalPlot] = useState<EnhancedPlot | null>(null);
+  const [adminEditorPlot, setAdminEditorPlot] = useState<EnhancedPlot | null>(null);
+
+  // Fetch backend API plots if available
+  useEffect(() => {
+    fetchPlotsFromApi().then((apiPlots) => {
+      if (apiPlots && Array.isArray(apiPlots) && apiPlots.length > 0) {
+        setEnhancedPlots((prev) =>
+          prev.map((p) => {
+            const match = apiPlots.find((ap: any) => ap.plotNo === p.plotNo);
+            return match
+              ? {
+                  ...p,
+                  totalPrice: match.price || p.totalPrice,
+                  enhancedStatus: match.status || p.enhancedStatus,
+                  owner: match.owner || p.owner,
+                  description: match.description || p.description,
+                }
+              : p;
+          })
+        );
+      }
+    });
+  }, []);
 
   // Filter State
   const [filters, setFilters] = useState<FilterState>({
@@ -72,7 +96,7 @@ export const PropertyMapContainer: React.FC<PropertyMapContainerProps> = ({
     return counts;
   }, [enhancedPlots]);
 
-  // Optimized Hover Handler (Lightweight callback)
+  // Optimized Hover Handler
   const handleHoverPlot = useCallback((plot: EnhancedPlot | null, e?: React.MouseEvent) => {
     if (plot && e) {
       setHoveredPlot(plot);
@@ -124,7 +148,7 @@ export const PropertyMapContainer: React.FC<PropertyMapContainerProps> = ({
             Official Master Architectural Layout Blueprint
           </h2>
           <p style={{ color: '#94a3b8', fontSize: '0.92rem', margin: '4px 0 0 0' }}>
-            Interactive Vector SVG Property Engine • Village Hasnapur, Amethi (Lucknow Road)
+            GIS Vector SVG Interactive Engine • Google Maps & Apple Maps Digital Standard
           </p>
         </div>
 
@@ -204,6 +228,7 @@ export const PropertyMapContainer: React.FC<PropertyMapContainerProps> = ({
         }}
         onUpdateStatus={handleUpdatePlotStatus}
         onUpdatePrice={handleUpdatePlotPrice}
+        onOpenAdminEditor={(p) => setAdminEditorPlot(p)}
       />
 
       {/* Booking Modal */}
@@ -214,6 +239,22 @@ export const PropertyMapContainer: React.FC<PropertyMapContainerProps> = ({
           onSuccess={() => {
             handleUpdatePlotStatus(bookingModalPlot.id, 'booked');
             setBookingModalPlot(null);
+          }}
+        />
+      )}
+
+      {/* Admin Plot Editor Modal */}
+      {adminEditorPlot && (
+        <AdminPlotEditorModal
+          plot={adminEditorPlot}
+          onClose={() => setAdminEditorPlot(null)}
+          onSaveSuccess={(updated) => {
+            setEnhancedPlots((prev) =>
+              prev.map((p) => (p.id === updated.id ? updated : p))
+            );
+            if (selectedPlot?.id === updated.id) {
+              setSelectedPlot(updated);
+            }
           }}
         />
       )}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import type { EnhancedPlot, EnhancedPlotStatus } from '../../../types/propertyMap';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Clock, ShieldCheck, MapPin, Download, Share2, PhoneCall, FileText, Sparkles, User, Settings } from 'lucide-react';
+import { X, Clock, ShieldCheck, MapPin, Download, Share2, PhoneCall, FileText, Sparkles, User, Settings, ExternalLink, Calendar, MessageSquare, Edit3 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 
 interface PlotDrawerProps {
@@ -10,6 +10,7 @@ interface PlotDrawerProps {
   onBookPlot: (plot: EnhancedPlot) => void;
   onUpdateStatus?: (plotId: string, newStatus: EnhancedPlotStatus) => void;
   onUpdatePrice?: (plotId: string, newPrice: number) => void;
+  onOpenAdminEditor?: (plot: EnhancedPlot) => void;
 }
 
 export const PlotDrawer: React.FC<PlotDrawerProps> = ({
@@ -17,12 +18,11 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
   onClose,
   onBookPlot,
   onUpdateStatus,
-  onUpdatePrice,
+  onOpenAdminEditor,
 }) => {
   const { user: authUser } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'amenities' | 'history' | 'documents' | 'admin'>('overview');
-  const [editPrice, setEditPrice] = useState<number>(plot?.totalPrice || 0);
-  const [showPriceEdit, setShowPriceEdit] = useState(false);
+  const [activeTab, setActiveTab] = useState<'overview' | 'gallery' | 'amenities' | 'history' | 'documents' | 'admin'>('overview');
+  const [activeImageIdx, setActiveImageIdx] = useState(0);
 
   if (!plot) return null;
 
@@ -35,6 +35,23 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
   };
 
   const statusColor = STATUS_COLORS[plot.enhancedStatus] || '#10b981';
+
+  const galleryImages = [
+    'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&auto=format&fit=crop&q=80',
+    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&auto=format&fit=crop&q=80',
+  ];
+
+  const handleWhatsApp = () => {
+    const text = encodeURIComponent(
+      `Hello Shubharambh Green City Sales Team! I am interested in Plot ${plot.plotNo} (${plot.dimensions}, ${plot.totalArea} sq.ft) in ${plot.block}. Please share details.`
+    );
+    window.open(`https://wa.me/919876543210?text=${text}`, '_blank');
+  };
+
+  const handleGoogleMaps = () => {
+    window.open('https://maps.google.com/?q=26.8467,80.9462', '_blank');
+  };
 
   const handleShare = () => {
     if (navigator.share) {
@@ -70,8 +87,8 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'rgba(11, 15, 25, 0.65)',
-            backdropFilter: 'blur(6px)',
+            background: 'rgba(11, 15, 25, 0.7)',
+            backdropFilter: 'blur(8px)',
             pointerEvents: 'auto',
           }}
         />
@@ -81,16 +98,17 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
           initial={{ x: '100%' }}
           animate={{ x: 0 }}
           exit={{ x: '100%' }}
-          transition={{ type: 'spring', damping: 25, stiffness: 220 }}
+          transition={{ type: 'spring', damping: 26, stiffness: 240 }}
           style={{
             position: 'relative',
             zIndex: 10,
             width: '100%',
-            maxWidth: '520px',
+            maxWidth: '540px',
             height: '100vh',
-            background: '#0f172a',
+            background: 'rgba(15, 23, 42, 0.95)',
+            backdropFilter: 'blur(20px)',
             borderLeft: `2px solid ${statusColor}`,
-            boxShadow: '-20px 0 60px rgba(0, 0, 0, 0.6)',
+            boxShadow: '-20px 0 60px rgba(0, 0, 0, 0.7)',
             color: '#f8fafc',
             display: 'flex',
             flexDirection: 'column',
@@ -103,7 +121,7 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
             style={{
               padding: '24px 28px',
               borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-              background: '#15222b',
+              background: 'linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
@@ -111,7 +129,7 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
           >
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <h2 style={{ fontSize: '1.6rem', fontWeight: 800, margin: 0, color: '#ffffff' }}>
+                <h2 style={{ fontSize: '1.7rem', fontWeight: 800, margin: 0, color: '#ffffff' }}>
                   Plot {plot.plotNo}
                 </h2>
                 <span
@@ -119,7 +137,7 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
                     background: `${statusColor}22`,
                     color: statusColor,
                     border: `1px solid ${statusColor}`,
-                    padding: '3px 10px',
+                    padding: '3px 12px',
                     borderRadius: '9999px',
                     fontSize: '0.75rem',
                     fontWeight: 800,
@@ -128,29 +146,58 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
                 >
                   {plot.enhancedStatus}
                 </span>
+
+                {plot.category === 'Corner' && (
+                  <span style={{ background: 'rgba(245,158,11,0.2)', color: '#f59e0b', border: '1px solid #f59e0b', padding: '2px 8px', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 700 }}>
+                    ⭐ Corner Plot
+                  </span>
+                )}
               </div>
               <p style={{ color: '#94a3b8', fontSize: '0.85rem', margin: '4px 0 0 0' }}>
                 {plot.block} • {plot.category} Sector • {plot.roadWidth} Main Boulevard
               </p>
             </div>
 
-            <button
-              onClick={onClose}
-              style={{
-                background: 'rgba(255, 255, 255, 0.1)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                color: '#ffffff',
-                width: '36px',
-                height: '36px',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-              }}
-            >
-              <X size={18} />
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {(authUser?.role === 'SUPER_ADMIN' || authUser?.role === 'ADMIN') && onOpenAdminEditor && (
+                <button
+                  onClick={() => onOpenAdminEditor(plot)}
+                  style={{
+                    background: 'rgba(245, 158, 11, 0.2)',
+                    border: '1px solid #f59e0b',
+                    color: '#f59e0b',
+                    padding: '6px 10px',
+                    borderRadius: '8px',
+                    fontSize: '0.78rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                  }}
+                >
+                  <Edit3 size={14} /> Edit
+                </button>
+              )}
+
+              <button
+                onClick={onClose}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  color: '#ffffff',
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                }}
+              >
+                <X size={18} />
+              </button>
+            </div>
           </div>
 
           {/* Navigation Tabs */}
@@ -164,7 +211,7 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
               overflowX: 'auto',
             }}
           >
-            {(['overview', 'amenities', 'history', 'documents', 'admin'] as const).map((tab) => {
+            {(['overview', 'gallery', 'amenities', 'history', 'documents', 'admin'] as const).map((tab) => {
               if (tab === 'admin' && authUser?.role !== 'SUPER_ADMIN' && authUser?.role !== 'ADMIN') return null;
               return (
                 <button
@@ -186,6 +233,7 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
                   }}
                 >
                   {tab === 'overview' && <Sparkles size={14} />}
+                  {tab === 'gallery' && <ExternalLink size={14} />}
                   {tab === 'amenities' && <MapPin size={14} />}
                   {tab === 'history' && <Clock size={14} />}
                   {tab === 'documents' && <FileText size={14} />}
@@ -204,8 +252,8 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
                 {/* Price Box Card */}
                 <div
                   style={{
-                    background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(15, 23, 42, 0.6) 100%)',
-                    border: '1px solid rgba(16, 185, 129, 0.3)',
+                    background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.14) 0%, rgba(15, 23, 42, 0.7) 100%)',
+                    border: '1px solid rgba(16, 185, 129, 0.35)',
                     borderRadius: '16px',
                     padding: '20px',
                     display: 'flex',
@@ -215,69 +263,44 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
                 >
                   <div>
                     <span style={{ fontSize: '0.8rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Total All-Inclusive Plot Price
+                      Total Plot Price
                     </span>
-                    <h3 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#10b981', margin: '4px 0 0 0' }}>
+                    <h3 style={{ fontSize: '1.9rem', fontWeight: 800, color: '#10b981', margin: '4px 0 0 0' }}>
                       ₹{plot.totalPrice.toLocaleString('en-IN')}
                     </h3>
                     <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '2px' }}>
-                      Rate: ₹{plot.ratePerSqFt.toLocaleString('en-IN')} / sq.ft • Token: ₹50,000 Only
+                      Rate: ₹{plot.ratePerSqFt.toLocaleString('en-IN')} / sq.ft • Advance Token: ₹50,000
                     </div>
                   </div>
 
-                  {authUser?.role === 'SUPER_ADMIN' && (
-                    <button
-                      onClick={() => setShowPriceEdit(!showPriceEdit)}
-                      style={{
-                        background: 'rgba(245, 158, 11, 0.2)',
-                        color: '#f59e0b',
-                        border: '1px solid #f59e0b',
-                        padding: '6px 12px',
-                        borderRadius: '8px',
-                        fontSize: '0.8rem',
-                        fontWeight: 700,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      ✏️ Edit Price
-                    </button>
-                  )}
+                  <button
+                    onClick={handleGoogleMaps}
+                    style={{
+                      background: 'rgba(56, 189, 248, 0.15)',
+                      color: '#38bdf8',
+                      border: '1px solid #38bdf8',
+                      padding: '8px 12px',
+                      borderRadius: '10px',
+                      fontSize: '0.8rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                    }}
+                  >
+                    <MapPin size={14} /> GIS Location
+                  </button>
                 </div>
 
-                {showPriceEdit && (
-                  <div style={{ background: '#1e293b', padding: '14px', borderRadius: '12px', display: 'flex', gap: '10px' }}>
-                    <input
-                      type="number"
-                      value={editPrice}
-                      onChange={(e) => setEditPrice(Number(e.target.value))}
-                      style={{ flex: 1, padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: '#0f172a', color: '#fff' }}
-                    />
-                    <button
-                      onClick={() => {
-                        if (onUpdatePrice) onUpdatePrice(plot.id, editPrice);
-                        setShowPriceEdit(false);
-                      }}
-                      style={{ background: '#10b981', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '8px', fontWeight: 700, cursor: 'pointer' }}
-                    >
-                      Save
-                    </button>
-                  </div>
-                )}
-
                 {/* Plot Properties Grid */}
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: '12px',
-                  }}
-                >
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                   <div style={{ background: '#15222b', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
                     <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Plot Dimensions</span>
                     <strong style={{ display: 'block', fontSize: '1rem', color: '#f8fafc', marginTop: '2px' }}>{plot.dimensions}</strong>
                   </div>
                   <div style={{ background: '#15222b', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
-                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Total Carpet Area</span>
+                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Carpet Area</span>
                     <strong style={{ display: 'block', fontSize: '1rem', color: '#f8fafc', marginTop: '2px' }}>{plot.totalArea} Sq.Ft</strong>
                   </div>
                   <div style={{ background: '#15222b', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
@@ -285,30 +308,60 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
                     <strong style={{ display: 'block', fontSize: '1rem', color: '#38bdf8', marginTop: '2px' }}>{plot.facing} Facing</strong>
                   </div>
                   <div style={{ background: '#15222b', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
-                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Category & PLC</span>
-                    <strong style={{ display: 'block', fontSize: '1rem', color: '#f59e0b', marginTop: '2px' }}>
-                      {plot.category} (+{plot.plcRate || 0}%)
-                    </strong>
+                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Road Width</span>
+                    <strong style={{ display: 'block', fontSize: '1rem', color: '#f59e0b', marginTop: '2px' }}>{plot.roadWidth} Wide Road</strong>
                   </div>
                 </div>
 
                 {/* Description & Legal Assurance */}
                 <div style={{ background: '#15222b', padding: '16px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)' }}>
                   <h4 style={{ color: '#ffffff', margin: '0 0 8px 0', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <ShieldCheck size={16} color="#10b981" /> Legal Ownership & Registry Details
+                    <ShieldCheck size={16} color="#10b981" /> Ownership & RERA Compliance
                   </h4>
                   <p style={{ color: '#94a3b8', fontSize: '0.85rem', lineHeight: '1.6', margin: 0 }}>
-                    {plot.description} Gram Panchayat & RERA compliant clear title land. Official Daakhil-Kharij sub-registrar deed guaranteed within 90 days of booking.
+                    {plot.description} Gram Panchayat & RERA compliant clear title plot. Sub-registrar registry guaranteed within 90 days of booking.
                   </p>
                 </div>
 
-                {/* Assigned Manager */}
+                {/* Owner Info */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(255,255,255,0.03)', padding: '12px 16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' }}>
                   <User size={20} color="#f59e0b" />
                   <div>
-                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Assigned Sales Relationship Lead</span>
-                    <strong style={{ display: 'block', fontSize: '0.88rem', color: '#ffffff' }}>{plot.assignedSalesperson || 'Vikramaditya Singh'}</strong>
+                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Current Owner / Allottee</span>
+                    <strong style={{ display: 'block', fontSize: '0.88rem', color: '#ffffff' }}>{plot.owner || 'Shubharambh Green City'}</strong>
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* GALLERY TAB */}
+            {activeTab === 'gallery' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <h4 style={{ color: '#ffffff', margin: 0 }}>Site Photo Gallery</h4>
+                <div style={{ width: '100%', height: '240px', borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <img
+                    src={galleryImages[activeImageIdx]}
+                    alt={`Plot ${plot.plotNo} View`}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                </div>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  {galleryImages.map((img, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => setActiveImageIdx(idx)}
+                      style={{
+                        width: '70px',
+                        height: '50px',
+                        borderRadius: '8px',
+                        overflow: 'hidden',
+                        cursor: 'pointer',
+                        border: activeImageIdx === idx ? '2px solid #10b981' : '1px solid rgba(255,255,255,0.15)',
+                      }}
+                    >
+                      <img src={img} alt="Thumb" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -458,12 +511,6 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
                   >
                     🔴 Mark Sold Out
                   </button>
-                  <button
-                    onClick={() => onUpdateStatus && onUpdateStatus(plot.id, 'unreleased')}
-                    style={{ padding: '12px', borderRadius: '10px', background: 'rgba(100, 116, 139, 0.2)', color: '#94a3b8', border: '1px solid #94a3b8', fontWeight: 700, cursor: 'pointer' }}
-                  >
-                    ⚪ Mark Unreleased
-                  </button>
                 </div>
               </div>
             )}
@@ -508,7 +555,72 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
               </div>
             )}
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            {/* Communication & Site Visit Buttons */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px' }}>
+              <button
+                onClick={handleWhatsApp}
+                style={{
+                  padding: '10px',
+                  borderRadius: '10px',
+                  background: 'rgba(34, 197, 94, 0.2)',
+                  border: '1px solid #22c55e',
+                  color: '#22c55e',
+                  fontSize: '0.78rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+                title="Chat on WhatsApp"
+              >
+                <MessageSquare size={16} /> WhatsApp
+              </button>
+
+              <a
+                href="tel:+919876543210"
+                style={{
+                  padding: '10px',
+                  borderRadius: '10px',
+                  background: 'rgba(56, 189, 248, 0.2)',
+                  border: '1px solid #38bdf8',
+                  color: '#38bdf8',
+                  fontSize: '0.78rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '4px',
+                  textDecoration: 'none',
+                }}
+                title="Call Sales Desk"
+              >
+                <PhoneCall size={16} /> Call Us
+              </a>
+
+              <button
+                onClick={handleGoogleMaps}
+                style={{
+                  padding: '10px',
+                  borderRadius: '10px',
+                  background: 'rgba(245, 158, 11, 0.2)',
+                  border: '1px solid #f59e0b',
+                  color: '#f59e0b',
+                  fontSize: '0.78rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+                title="Schedule Physical Site Visit"
+              >
+                <Calendar size={16} /> Site Visit
+              </button>
+
               <button
                 onClick={handleShare}
                 style={{
@@ -517,38 +629,18 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
                   background: 'rgba(255, 255, 255, 0.05)',
                   border: '1px solid rgba(255, 255, 255, 0.15)',
                   color: '#ffffff',
-                  fontSize: '0.85rem',
-                  fontWeight: 600,
+                  fontSize: '0.78rem',
+                  fontWeight: 700,
                   cursor: 'pointer',
                   display: 'flex',
+                  flexDirection: 'column',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '6px',
+                  gap: '4px',
                 }}
+                title="Share Plot Details"
               >
-                <Share2 size={16} /> Share Plot
+                <Share2 size={16} /> Share
               </button>
-
-              <a
-                href="tel:+919876543210"
-                style={{
-                  padding: '10px',
-                  borderRadius: '10px',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  color: '#ffffff',
-                  fontSize: '0.85rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '6px',
-                  textDecoration: 'none',
-                }}
-              >
-                <PhoneCall size={16} /> Contact Sales
-              </a>
             </div>
           </div>
         </motion.div>

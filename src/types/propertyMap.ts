@@ -37,6 +37,7 @@ export interface EnhancedPlot extends Plot {
   plcRate?: number;
   description?: string;
   facing: any;
+  owner?: string;
   amenities: Amenity[];
   history: PlotHistoryItem[];
   documents: PlotDocument[];
