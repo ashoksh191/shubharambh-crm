@@ -1,29 +1,31 @@
 const fs = require('fs');
 const path = require('path');
 
-const PLOTS_PER_ROW = 12;
-const CELL_WIDTH = 110;
-const CELL_HEIGHT = 80;
-const PLOT_WIDTH = 98;
-const PLOT_HEIGHT = 56;
+// Exact 3508 x 2480 Landscape PDF Blueprint Coordinate System
+const MAP_WIDTH = 3508;
+const MAP_HEIGHT = 2480;
 
-const blockAOffset = 180;
-const blockBOffset = 2500;
-const blockCOffset = 5200;
+const PLOT_W = 54;
+const PLOT_H = 32;
 
 const plotsMap = {};
-
 const facings = ['East', 'West', 'North', 'South'];
 
-// 1. Block A (A-101 to A-316)
+// 1. Block A (Plots A-1 to A-316) - Mapped on Top Left / Center Sector
+const aStartX = 850;
+const aStartY = 450;
+const aCols = 16;
+const aCellW = 68;
+const aCellH = 44;
+
 for (let i = 1; i <= 316; i++) {
   const plotNo = `A-${100 + i}`;
   const idx = i - 1;
-  const col = idx % PLOTS_PER_ROW;
-  const row = Math.floor(idx / PLOTS_PER_ROW);
+  const col = idx % aCols;
+  const row = Math.floor(idx / aCols);
 
-  const x = 50 + col * CELL_WIDTH;
-  const y = blockAOffset + row * CELL_HEIGHT;
+  const x = aStartX + col * aCellW;
+  const y = aStartY + row * aCellH;
 
   let dim = "25' x 50'";
   let size = 1250;
@@ -37,8 +39,8 @@ for (let i = 1; i <= 316; i++) {
   else if (i % 23 === 0) status = 'reserved';
 
   let category = 'Residential';
-  if (i <= 12) category = 'Commercial';
-  else if (col === 0 || col === PLOTS_PER_ROW - 1) category = 'Corner';
+  if (i <= 16) category = 'Commercial';
+  else if (col === 0 || col === aCols - 1) category = 'Corner';
   else if (row === 0) category = 'Park Facing';
 
   plotsMap[plotNo] = {
@@ -46,9 +48,9 @@ for (let i = 1; i <= 316; i++) {
     block: 'Block A',
     points: [
       [x, y],
-      [x + PLOT_WIDTH, y],
-      [x + PLOT_WIDTH, y + PLOT_HEIGHT],
-      [x, y + PLOT_HEIGHT]
+      [x + PLOT_W, y],
+      [x + PLOT_W, y + PLOT_H],
+      [x, y + PLOT_H]
     ],
     dimensions: dim,
     size,
@@ -62,15 +64,21 @@ for (let i = 1; i <= 316; i++) {
   };
 }
 
-// 2. Block B (B-317 to B-680)
+// 2. Block B (Plots B-317 to B-680) - Mapped on Top Right Sector
+const bStartX = 1980;
+const bStartY = 280;
+const bCols = 18;
+const bCellW = 66;
+const bCellH = 42;
+
 for (let i = 317; i <= 680; i++) {
   const plotNo = `B-${i}`;
   const idx = i - 317;
-  const col = idx % PLOTS_PER_ROW;
-  const row = Math.floor(idx / PLOTS_PER_ROW);
+  const col = idx % bCols;
+  const row = Math.floor(idx / bCols);
 
-  const x = 50 + col * CELL_WIDTH;
-  const y = blockBOffset + row * CELL_HEIGHT;
+  const x = bStartX + col * bCellW;
+  const y = bStartY + row * bCellH;
 
   let dim = "25' x 40'";
   let size = 1000;
@@ -83,7 +91,7 @@ for (let i = 317; i <= 680; i++) {
   else if (i % 29 === 0) status = 'reserved';
 
   let category = 'Residential';
-  if (col === 0 || col === PLOTS_PER_ROW - 1) category = 'Corner';
+  if (col === 0 || col === bCols - 1) category = 'Corner';
   else if (row === 0) category = 'Park Facing';
 
   plotsMap[plotNo] = {
@@ -91,9 +99,9 @@ for (let i = 317; i <= 680; i++) {
     block: 'Block B',
     points: [
       [x, y],
-      [x + PLOT_WIDTH, y],
-      [x + PLOT_WIDTH, y + PLOT_HEIGHT],
-      [x, y + PLOT_HEIGHT]
+      [x + PLOT_W, y],
+      [x + PLOT_W, y + PLOT_H],
+      [x, y + PLOT_H]
     ],
     dimensions: dim,
     size,
@@ -107,15 +115,21 @@ for (let i = 317; i <= 680; i++) {
   };
 }
 
-// 3. Block C (C-681 to C-980)
+// 3. Block C (Plots C-681 to C-980) - Mapped on Far Right / Center Sector
+const cStartx = 2250;
+const cStartY = 1150;
+const cCols = 16;
+const cCellW = 66;
+const cCellH = 42;
+
 for (let i = 681; i <= 980; i++) {
   const plotNo = `C-${i}`;
   const idx = i - 681;
-  const col = idx % PLOTS_PER_ROW;
-  const row = Math.floor(idx / PLOTS_PER_ROW);
+  const col = idx % cCols;
+  const row = Math.floor(idx / cCols);
 
-  const x = 50 + col * CELL_WIDTH;
-  const y = blockCOffset + row * CELL_HEIGHT;
+  const x = cStartx + col * cCellW;
+  const y = cStartY + row * cCellH;
 
   let dim = "20' x 40'";
   let size = 800;
@@ -128,7 +142,7 @@ for (let i = 681; i <= 980; i++) {
   else if (i % 31 === 0) status = 'reserved';
 
   let category = 'Residential';
-  if (col === 0 || col === PLOTS_PER_ROW - 1) category = 'Corner';
+  if (col === 0 || col === cCols - 1) category = 'Corner';
   else if (row === 0) category = 'Park Facing';
 
   plotsMap[plotNo] = {
@@ -136,9 +150,9 @@ for (let i = 681; i <= 980; i++) {
     block: 'Block C',
     points: [
       [x, y],
-      [x + PLOT_WIDTH, y],
-      [x + PLOT_WIDTH, y + PLOT_HEIGHT],
-      [x, y + PLOT_HEIGHT]
+      [x + PLOT_W, y],
+      [x + PLOT_W, y + PLOT_H],
+      [x, y + PLOT_H]
     ],
     dimensions: dim,
     size,
@@ -154,4 +168,4 @@ for (let i = 681; i <= 980; i++) {
 
 const outputPath = path.join(__dirname, '../src/data/plots.json');
 fs.writeFileSync(outputPath, JSON.stringify(plotsMap, null, 2));
-console.log(`Successfully generated ${Object.keys(plotsMap).length} plots in ${outputPath}`);
+console.log(`Successfully generated ${Object.keys(plotsMap).length} landscape plots in ${outputPath}`);
