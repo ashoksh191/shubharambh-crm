@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import type { EnhancedPlot, EnhancedPlotStatus } from '../../../types/propertyMap';
+import type { EnhancedPlot } from '../../../types/propertyMap';
 
 interface PlotPolygonProps {
   plot: EnhancedPlot;
@@ -9,22 +9,6 @@ interface PlotPolygonProps {
   onHover: (plot: EnhancedPlot | null, e?: React.MouseEvent) => void;
 }
 
-const STATUS_STROKES: Record<EnhancedPlotStatus, string> = {
-  available: '#10b981',
-  reserved: '#f59e0b',
-  booked: '#3b82f6',
-  sold: '#ef4444',
-  unreleased: '#64748b',
-};
-
-const STATUS_FILLS: Record<EnhancedPlotStatus, string> = {
-  available: 'rgba(16, 185, 129, 0.18)',
-  reserved: 'rgba(245, 158, 11, 0.25)',
-  booked: 'rgba(59, 130, 246, 0.25)',
-  sold: 'rgba(239, 68, 68, 0.25)',
-  unreleased: 'rgba(100, 116, 139, 0.25)',
-};
-
 export const PlotPolygon: React.FC<PlotPolygonProps> = memo(({
   plot,
   isSelected,
@@ -32,9 +16,6 @@ export const PlotPolygon: React.FC<PlotPolygonProps> = memo(({
   onSelect,
   onHover,
 }) => {
-  const strokeColor = STATUS_STROKES[plot.enhancedStatus] || STATUS_STROKES.available;
-  const fillColor = STATUS_FILLS[plot.enhancedStatus] || STATUS_FILLS.available;
-
   return (
     <g
       className={`plot-polygon-group ${isSelected ? 'selected' : ''}`}
@@ -46,12 +27,12 @@ export const PlotPolygon: React.FC<PlotPolygonProps> = memo(({
       onMouseLeave={() => onHover(null)}
       style={{ cursor: 'pointer' }}
     >
-      {/* Clickable Vector Polygon Overlaid on 4K PDF Map */}
+      {/* Completely Invisible Trigger Polygon over 4K Map; Lights up ONLY on Hover or Selection */}
       <polygon
         points={plot.svgPathPoints}
-        fill={isSelected ? 'rgba(56, 189, 248, 0.35)' : isSearched ? 'rgba(245, 158, 11, 0.4)' : fillColor}
-        stroke={isSelected ? '#38bdf8' : isSearched ? '#f59e0b' : strokeColor}
-        strokeWidth={isSelected ? 3 : isSearched ? 3 : 1.2}
+        fill={isSelected ? 'rgba(56, 189, 248, 0.35)' : isSearched ? 'rgba(245, 158, 11, 0.4)' : 'transparent'}
+        stroke={isSelected ? '#38bdf8' : isSearched ? '#f59e0b' : 'transparent'}
+        strokeWidth={isSelected || isSearched ? 3 : 1.5}
         style={{
           transition: 'all 0.15s ease',
           filter: isSelected
