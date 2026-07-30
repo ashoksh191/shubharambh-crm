@@ -15,6 +15,7 @@
     "deploy": "gh-pages -d dist",
     "lint": "oxlint",
     "type-check": "tsc -b",
+    "typecheck": "tsc -b",
     "format": "npx prettier --write .",
     "preview": "vite preview"
   },
