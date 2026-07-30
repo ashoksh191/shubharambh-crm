@@ -18,7 +18,8 @@ import {
   FileCheck,
   Send,
   LogIn,
-  MoreHorizontal
+  MoreHorizontal,
+  X
 } from 'lucide-react';
 import '../../styles/LandingPage.css';
 
@@ -101,78 +102,31 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
 
   return (
     <div className="lovable-landing-container">
-      {/* Top Header Navbar with 3-Dots Menu System */}
+      {/* Top Header Navbar with Left-Aligned 3-Dots Menu System */}
       <header className="sehat-navbar">
         <div className="sehat-navbar-inner">
-          <div className="sehat-brand">
-            <div className="sehat-logo-icon">
-              <img src="./assets/logo_and_entrance.jpg" alt="Shubharambh Logo" />
+          {/* Left Brand + 3-Dots Group */}
+          <div className="sehat-brand-left-group" ref={menuContainerRef}>
+            <div className="sehat-brand">
+              <div className="sehat-logo-icon">
+                <img src="./assets/logo_and_entrance.jpg" alt="Shubharambh Logo" />
+              </div>
+              <span className="sehat-brand-title">Shubharambh Green City</span>
             </div>
-            <span className="sehat-brand-title">Shubharambh Green City</span>
-          </div>
 
-          {/* 3-Dots (...) Expandable Navigation Menu */}
-          <div className="landing-three-dots-container" ref={menuContainerRef}>
+            {/* Left 3-Dots Button */}
             <button
-              className={`landing-three-dots-btn ${showThreeDotsMenu ? 'active' : ''}`}
-              onClick={() => setShowThreeDotsMenu(!showThreeDotsMenu)}
-              title="Tap for all features menu"
+              className={`landing-three-dots-btn left-aligned ${showThreeDotsMenu ? 'active' : ''}`}
+              onClick={() => setShowThreeDotsMenu((prev) => !prev)}
+              title="Tap to open full space menu"
             >
               <MoreHorizontal size={22} className="three-dots-svg" />
-              <span>Features & Menu</span>
+              <span>Menu</span>
               <ChevronDown size={14} className={`chevron-svg ${showThreeDotsMenu ? 'open' : ''}`} />
             </button>
-
-            {showThreeDotsMenu && (
-              <div className="landing-dropdown-menu">
-                <div className="dropdown-header-label">Township Sections</div>
-                <button className="dropdown-item" onClick={() => scrollToSection('features')}>
-                  ✨ Key Features & Amenities
-                </button>
-                <button className="dropdown-item" onClick={() => scrollToSection('how-it-works')}>
-                  🗺️ How It Works (3 Steps)
-                </button>
-                <button className="dropdown-item" onClick={() => scrollToSection('government')}>
-                  📜 Legal & Registry Proof
-                </button>
-                <button className="dropdown-item" onClick={() => scrollToSection('stories')}>
-                  ⭐ Customer Stories
-                </button>
-                <button className="dropdown-item" onClick={() => scrollToSection('faq')}>
-                  ❓ Frequently Asked Questions
-                </button>
-
-                <div className="dropdown-divider"></div>
-
-                <div className="dropdown-header-label">Quick Actions</div>
-                <button
-                  className="dropdown-item highlight"
-                  onClick={() => scrollToSection('book-visit')}
-                >
-                  🚗 Book Free Site Visit
-                </button>
-                <button
-                  className="dropdown-item"
-                  onClick={() => {
-                    setShowThreeDotsMenu(false);
-                    onNavigateToMap();
-                  }}
-                >
-                  📐 Interactive 2D Plot Map
-                </button>
-                <button
-                  className="dropdown-item"
-                  onClick={() => {
-                    setShowThreeDotsMenu(false);
-                    alert('Support Helpline: +91 98765 43210 (24x7 Support)');
-                  }}
-                >
-                  📞 Contact Helpline (+91 9876543210)
-                </button>
-              </div>
-            )}
           </div>
 
+          {/* Right Action Buttons */}
           <div className="sehat-nav-actions">
             {authUser ? (
               <button className="sehat-signin-btn" onClick={logout} title="Sign Out">
@@ -196,6 +150,144 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
           </div>
         </div>
       </header>
+
+      {/* Full Space Cover Menu Overlay when 3-Dots Button is Tapped */}
+      {showThreeDotsMenu && (
+        <div className="full-space-menu-overlay" ref={menuContainerRef}>
+          <div className="full-space-menu-header">
+            <div className="full-space-brand">
+              <div className="sehat-logo-icon">
+                <img src="./assets/logo_and_entrance.jpg" alt="Shubharambh Logo" />
+              </div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#ffffff', fontWeight: 800 }}>
+                  SHUBHARAMBH GREEN CITY
+                </h3>
+                <span style={{ fontSize: '0.78rem', color: '#38bdf8', fontWeight: 600 }}>
+                  Full Space Navigation Menu
+                </span>
+              </div>
+            </div>
+            <button
+              className="full-space-close-btn"
+              onClick={() => setShowThreeDotsMenu(false)}
+              title="Close Menu"
+            >
+              <X size={24} />
+            </button>
+          </div>
+
+          <div className="full-space-menu-body">
+            <div className="full-space-grid">
+              <button
+                className="full-space-card highlight"
+                onClick={() => {
+                  setShowThreeDotsMenu(false);
+                  onNavigateToMap();
+                }}
+              >
+                <div className="card-icon">📐</div>
+                <div className="card-info">
+                  <h4>Interactive 2D Layout Map</h4>
+                  <p>Explore all 980 plot availability grid (Block A, B, C)</p>
+                </div>
+              </button>
+
+              <button
+                className="full-space-card"
+                onClick={() => scrollToSection('features')}
+              >
+                <div className="card-icon">✨</div>
+                <div className="card-info">
+                  <h4>Key Features & Amenities</h4>
+                  <p>50 Ft Grand Gate, 40 Ft Roads, Central Parks, Mandir Zone</p>
+                </div>
+              </button>
+
+              <button
+                className="full-space-card"
+                onClick={() => scrollToSection('how-it-works')}
+              >
+                <div className="card-icon">🗺️</div>
+                <div className="card-info">
+                  <h4>How It Works</h4>
+                  <p>3 Simple steps from booking token to registry</p>
+                </div>
+              </button>
+
+              <button
+                className="full-space-card"
+                onClick={() => scrollToSection('government')}
+              >
+                <div className="card-icon">📜</div>
+                <div className="card-info">
+                  <h4>Legal & Registry Proof</h4>
+                  <p>100% Clear Title Land & Direct Daakhil-Kharij Guarantee</p>
+                </div>
+              </button>
+
+              <button
+                className="full-space-card"
+                onClick={() => scrollToSection('stories')}
+              >
+                <div className="card-icon">⭐</div>
+                <div className="card-info">
+                  <h4>Customer Stories</h4>
+                  <p>Verified buyer testimonials & site experience</p>
+                </div>
+              </button>
+
+              <button
+                className="full-space-card"
+                onClick={() => scrollToSection('faq')}
+              >
+                <div className="card-icon">❓</div>
+                <div className="card-info">
+                  <h4>Frequently Asked Questions</h4>
+                  <p>Plot pricing, Bank loan approval, and Free cab info</p>
+                </div>
+              </button>
+
+              <button
+                className="full-space-card visit"
+                onClick={() => scrollToSection('book-visit')}
+              >
+                <div className="card-icon">🚗</div>
+                <div className="card-info">
+                  <h4>Book Free Site Visit</h4>
+                  <p>Free Pick & Drop transport available today</p>
+                </div>
+              </button>
+
+              <button
+                className="full-space-card helpline"
+                onClick={() => {
+                  setShowThreeDotsMenu(false);
+                  alert('24x7 Support Helpline: +91 98765 43210');
+                }}
+              >
+                <div className="card-icon">📞</div>
+                <div className="card-info">
+                  <h4>24x7 Helpline Support</h4>
+                  <p>Call +91 9876543210 / support@shubharambh.com</p>
+                </div>
+              </button>
+            </div>
+
+            {/* Bottom Actions inside Full Space Menu */}
+            <div className="full-space-menu-footer">
+              <button className="sehat-get-started-btn" onClick={() => { setShowThreeDotsMenu(false); onNavigateToMap(); }}>
+                Explore 980 Plots Grid →
+              </button>
+              {!authUser && (
+                <button className="sehat-signin-btn" onClick={() => { setShowThreeDotsMenu(false); if (onOpenLogin) onOpenLogin(); }}>
+                  Sign in to Portal
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Top Floating Announcement */}
       <div className="announcement-banner">
