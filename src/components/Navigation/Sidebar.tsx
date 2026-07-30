@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import {
   Map,
@@ -28,6 +28,22 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpenQuickFeature }) => {
   const { user: authUser, logout, switchRolePreset } = useAuth();
   const [showMoreFeatures, setShowMoreFeatures] = useState(false);
+  const moreMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close 3-dots features menu on click/touch outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      if (moreMenuRef.current && !moreMenuRef.current.contains(event.target as Node)) {
+        setShowMoreFeatures(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, []);
 
   return (
     <aside className="app-sidebar">
@@ -107,10 +123,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpe
         </RoleGuard>
 
         {/* 3 Dots (...) Expandable More Features Menu */}
-        <div className="sidebar-more-section">
+        <div className="sidebar-more-section" ref={moreMenuRef}>
           <button
             className={`sidebar-nav-item more-toggle ${showMoreFeatures ? 'open' : ''}`}
-            onClick={() => setShowMoreFeatures(!showMoreFeatures)}
+            onClick={() => setShowMoreFeatures((prev) => !prev)}
             title="Tap for more CRM features"
           >
             <MoreHorizontal size={20} className="three-dots-icon" />
@@ -123,6 +139,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpe
               <button
                 className="more-feature-subitem"
                 onClick={() => {
+                  setShowMoreFeatures(false);
                   setActiveTab('usps');
                   if (onOpenQuickFeature) onOpenQuickFeature('site-visit');
                 }}
@@ -134,6 +151,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpe
               <button
                 className="more-feature-subitem"
                 onClick={() => {
+                  setShowMoreFeatures(false);
                   setActiveTab('map');
                   if (onOpenQuickFeature) onOpenQuickFeature('qr-verify');
                 }}
@@ -145,6 +163,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpe
               <button
                 className="more-feature-subitem"
                 onClick={() => {
+                  setShowMoreFeatures(false);
                   setActiveTab('map');
                   if (onOpenQuickFeature) onOpenQuickFeature('bond');
                 }}
@@ -156,6 +175,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpe
               <button
                 className="more-feature-subitem"
                 onClick={() => {
+                  setShowMoreFeatures(false);
                   alert('24x7 Support Helpline: +91 98765 43210 / support@shubharambh.com');
                 }}
               >

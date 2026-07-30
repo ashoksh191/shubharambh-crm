@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -32,6 +32,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
   const { user: authUser, logout } = useAuth();
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [showThreeDotsMenu, setShowThreeDotsMenu] = useState(false);
+  const menuContainerRef = useRef<HTMLDivElement>(null);
   const [siteVisitForm, setSiteVisitForm] = useState({
     name: '',
     phone: '',
@@ -39,6 +40,21 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
     visitDate: '',
   });
   const [formSubmitted, setFormSubmitted] = useState(false);
+
+  // Close 3-dots menu on touch/click outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      if (menuContainerRef.current && !menuContainerRef.current.contains(event.target as Node)) {
+        setShowThreeDotsMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, []);
 
   const availableCount = plots.filter((p) => p.status === 'available').length;
 
@@ -96,7 +112,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
           </div>
 
           {/* 3-Dots (...) Expandable Navigation Menu */}
-          <div className="landing-three-dots-container">
+          <div className="landing-three-dots-container" ref={menuContainerRef}>
             <button
               className={`landing-three-dots-btn ${showThreeDotsMenu ? 'active' : ''}`}
               onClick={() => setShowThreeDotsMenu(!showThreeDotsMenu)}
@@ -135,12 +151,21 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
                 >
                   🚗 Book Free Site Visit
                 </button>
-                <button className="dropdown-item" onClick={onNavigateToMap}>
+                <button
+                  className="dropdown-item"
+                  onClick={() => {
+                    setShowThreeDotsMenu(false);
+                    onNavigateToMap();
+                  }}
+                >
                   📐 Interactive 2D Plot Map
                 </button>
                 <button
                   className="dropdown-item"
-                  onClick={() => alert('Support Helpline: +91 98765 43210 (24x7 Support)')}
+                  onClick={() => {
+                    setShowThreeDotsMenu(false);
+                    alert('Support Helpline: +91 98765 43210 (24x7 Support)');
+                  }}
                 >
                   📞 Contact Helpline (+91 9876543210)
                 </button>
