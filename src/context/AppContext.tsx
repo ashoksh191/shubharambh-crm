@@ -42,13 +42,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Force refresh if cached plots have old overlapping coordinates (B-317 y < 2000)
-        const b317 = parsed.find((p: Plot) => p.id === 'B-317');
-        if (Array.isArray(parsed) && parsed.length >= 900 && b317 && b317.y > 2000) {
+        // Force refresh if cached plots have old coordinates (verify exact C-891 alignment)
+        const c891 = parsed.find((p: Plot) => p.plotNo === 'C-891' || p.id === 'C-891');
+        if (Array.isArray(parsed) && parsed.length >= 900 && c891 && c891.x === 2382) {
           return parsed;
         }
       } catch (_e) {
-        console.warn('Resetting plots to fresh non-overlapping state...');
+        console.warn('Resetting plots to fresh 4K aligned coordinates...');
       }
     }
     return generatePlots();

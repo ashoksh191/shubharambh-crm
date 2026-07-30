@@ -1,4 +1,5 @@
 import type { Plot, User, Booking, Transaction } from '../types';
+import plotsJsonData from './plots.json';
 
 export const INITIAL_USERS: User[] = [
   {
@@ -32,218 +33,110 @@ export const INITIAL_USERS: User[] = [
     id: 'SGC-L001',
     name: 'Vikram Singh',
     role: 'leader',
-    phone: '+91 99887 76655',
-    email: 'vikram.singh@sgc.com',
-    parentId: 'SGC-ADM01',
-    downlineIds: ['SGC-A001', 'SGC-A002'],
-    joinedDate: '2025-02-01',
-    totalBookingsCount: 0,
-    totalSalesVolume: 0,
-    totalCommissionEarned: 0,
-    commissionPaid: 0,
-    commissionPending: 0,
+    phone: '+91 98222 33445',
+    email: 'vikram.singh@gmail.com',
+    joinedDate: '2025-01-20',
+    totalBookingsCount: 8,
+    totalSalesVolume: 12500000,
+    totalCommissionEarned: 625000,
+    commissionPaid: 500000,
+    commissionPending: 125000,
+    downlineIds: ['SGC-L003', 'SGC-L004'],
   },
   {
     id: 'SGC-L002',
-    name: 'Anita Roy',
+    name: 'Anjali Gupta',
     role: 'leader',
-    phone: '+91 97766 55443',
-    email: 'anita.roy@sgc.com',
-    parentId: 'SGC-ADM01',
-    downlineIds: ['SGC-A003', 'SGC-A004'],
+    phone: '+91 98333 44556',
+    email: 'anjali.gupta@yahoo.com',
+    joinedDate: '2025-01-22',
+    totalBookingsCount: 5,
+    totalSalesVolume: 7800000,
+    totalCommissionEarned: 390000,
+    commissionPaid: 390000,
+    commissionPending: 0,
+    downlineIds: ['SGC-L005'],
+  },
+  {
+    id: 'SGC-L003',
+    name: 'Rahul Yadav',
+    role: 'associate',
+    phone: '+91 98444 55667',
+    email: 'rahul.yadav@gmail.com',
+    joinedDate: '2025-02-01',
+    totalBookingsCount: 3,
+    totalSalesVolume: 4200000,
+    totalCommissionEarned: 126000,
+    commissionPaid: 100000,
+    commissionPending: 26000,
+  },
+  {
+    id: 'SGC-L004',
+    name: 'Suresh Kumar',
+    role: 'associate',
+    phone: '+91 98555 66778',
+    email: 'suresh.k@gmail.com',
     joinedDate: '2025-02-05',
-    totalBookingsCount: 0,
-    totalSalesVolume: 0,
-    totalCommissionEarned: 0,
-    commissionPaid: 0,
+    totalBookingsCount: 2,
+    totalSalesVolume: 3100000,
+    totalCommissionEarned: 93000,
+    commissionPaid: 93000,
     commissionPending: 0,
   },
   {
-    id: 'SGC-A001',
-    name: 'Rajesh Kumar',
+    id: 'SGC-L005',
+    name: 'Neha Srivastava',
     role: 'associate',
-    phone: '+91 96543 21098',
-    email: 'rajesh.k@sgc.com',
-    parentId: 'SGC-L001',
-    downlineIds: [],
-    joinedDate: '2025-03-01',
-    totalBookingsCount: 0,
-    totalSalesVolume: 0,
-    totalCommissionEarned: 0,
+    phone: '+91 98666 77889',
+    email: 'neha.s@gmail.com',
+    joinedDate: '2025-02-10',
+    totalBookingsCount: 1,
+    totalSalesVolume: 1500000,
+    totalCommissionEarned: 45000,
     commissionPaid: 0,
-    commissionPending: 0,
-  },
-  {
-    id: 'SGC-A002',
-    name: 'Suresh Gupta',
-    role: 'associate',
-    phone: '+91 95432 10987',
-    email: 'suresh.g@sgc.com',
-    parentId: 'SGC-L001',
-    downlineIds: [],
-    joinedDate: '2025-03-10',
-    totalBookingsCount: 0,
-    totalSalesVolume: 0,
-    totalCommissionEarned: 0,
-    commissionPaid: 0,
-    commissionPending: 0,
-  },
-  {
-    id: 'SGC-A003',
-    name: 'Pooja Mehta',
-    role: 'associate',
-    phone: '+91 94321 09876',
-    email: 'pooja.m@sgc.com',
-    parentId: 'SGC-L002',
-    downlineIds: [],
-    joinedDate: '2025-03-15',
-    totalBookingsCount: 0,
-    totalSalesVolume: 0,
-    totalCommissionEarned: 0,
-    commissionPaid: 0,
-    commissionPending: 0,
-  },
-  {
-    id: 'SGC-A004',
-    name: 'Amit Patel',
-    role: 'associate',
-    phone: '+91 93210 98765',
-    email: 'amit.p@sgc.com',
-    parentId: 'SGC-L002',
-    downlineIds: [],
-    joinedDate: '2025-04-01',
-    totalBookingsCount: 0,
-    totalSalesVolume: 0,
-    totalCommissionEarned: 0,
-    commissionPaid: 0,
-    commissionPending: 0,
+    commissionPending: 45000,
   },
 ];
 
 /**
- * Generates the complete 980-Plot Inventory with Spacious Non-Overlapping Grid Calculations
- * Block A: A-1 to A-316 (30'x50', 25'x50', 20'x50')
- * Block B: B-317 to B-680 (25'x40', 20'x40', 15'x40')
- * Block C: C-681 to C-980 (25'x40', 20'x40', 15'x40')
+ * Generates the complete Plot Inventory directly mapped from 4K Architect Blueprint (plots.json)
+ * Ensures 100% exact alignment between printed map numbers (e.g. C-891) and clickable polygons.
  */
 export function generatePlots(): Plot[] {
   const plots: Plot[] = [];
-  const PLOTS_PER_ROW = 12;
-  const CELL_WIDTH = 102;
-  const CELL_HEIGHT = 80;
-  const PLOT_WIDTH = 92;
-  const PLOT_HEIGHT = 54;
+  const entries = Object.entries(plotsJsonData as Record<string, any>);
 
-  // 1. BLOCK A (Plots A-1 to A-316)
-  const blockASpecs = [
-    { dim: "30' x 50'", w: 30, l: 50, area: 1500, rate: 1200 },
-    { dim: "25' x 50'", w: 25, l: 50, area: 1250, rate: 1200 },
-    { dim: "20' x 50'", w: 20, l: 50, area: 1000, rate: 1200 },
-  ];
+  for (const [key, item] of entries) {
+    const points = item.points || [];
+    const x = points[0]?.[0] || 0;
+    const y = points[0]?.[1] || 0;
+    const w = points[1] && points[0] ? Math.abs(points[1][0] - points[0][0]) : 54;
+    const h = points[2] && points[1] ? Math.abs(points[2][1] - points[1][1]) : 32;
 
-  for (let num = 1; num <= 316; num++) {
-    const plotNo = num === 13 ? 'A-12A' : `A-${num}`;
-    const spec = blockASpecs[num % blockASpecs.length];
-    const isCorner = num % 12 === 0 || num % 12 === 1;
+    const blockName = item.block || (key.startsWith('A') ? 'Block A' : key.startsWith('B') ? 'Block B' : 'Block C');
+    const facingVal = item.facing === 'East' || item.facing === 'West' || item.facing === 'North' || item.facing === 'South' || item.facing === 'Corner'
+      ? item.facing
+      : 'East';
 
-    const col = (num - 1) % PLOTS_PER_ROW;
-    const row = Math.floor((num - 1) / PLOTS_PER_ROW);
+    const statusVal = item.status === 'booked' ? 'booked' : item.status === 'sold' ? 'sold' : 'available';
 
     plots.push({
-      id: `A-${num}`,
-      plotNo: plotNo,
-      block: 'Block A',
-      dimensions: spec.dim,
-      width: spec.w,
-      length: spec.l,
-      totalArea: spec.area,
-      ratePerSqFt: spec.rate,
-      totalPrice: spec.area * spec.rate,
-      status: 'available',
-      facing: isCorner ? 'Corner' : (num % 2 === 0 ? 'East' : 'North'),
-      roadWidth: num < 100 ? '40 Ft Main Boulevard Road' : '30 Ft Sector Road',
-      x: 45 + col * CELL_WIDTH,
-      y: 75 + row * CELL_HEIGHT,
-      w: PLOT_WIDTH,
-      h: PLOT_HEIGHT,
-    });
-  }
-
-  // 2. BLOCK B (Plots B-317 to B-680)
-  // Block A ends at y = 75 + (27 rows * 80) = 2235px.
-  // Set Block B start y at 2400px (leaving 165px margin for road & banner).
-  const blockBYStart = 2400;
-  const blockBSpecs = [
-    { dim: "25' x 40'", w: 25, l: 40, area: 1000, rate: 1000 },
-    { dim: "20' x 40'", w: 20, l: 40, area: 800, rate: 1000 },
-    { dim: "15' x 40'", w: 15, l: 40, area: 600, rate: 1000 },
-  ];
-
-  for (let num = 317; num <= 680; num++) {
-    const plotNo = `B-${num}`;
-    const spec = blockBSpecs[num % blockBSpecs.length];
-    const isCorner = num % 10 === 0 || num % 10 === 1;
-
-    const index = num - 317;
-    const col = index % PLOTS_PER_ROW;
-    const row = Math.floor(index / PLOTS_PER_ROW);
-
-    plots.push({
-      id: `B-${num}`,
-      plotNo: plotNo,
-      block: 'Block B',
-      dimensions: spec.dim,
-      width: spec.w,
-      length: spec.l,
-      totalArea: spec.area,
-      ratePerSqFt: spec.rate,
-      totalPrice: spec.area * spec.rate,
-      status: 'available',
-      facing: isCorner ? 'Corner' : (num % 2 === 0 ? 'South' : 'West'),
-      roadWidth: '30 Ft Park Avenue Road',
-      x: 45 + col * CELL_WIDTH,
-      y: blockBYStart + row * CELL_HEIGHT,
-      w: PLOT_WIDTH,
-      h: PLOT_HEIGHT,
-    });
-  }
-
-  // 3. BLOCK C (Plots C-681 to C-980)
-  // Block B ends at y = 2400 + (31 rows * 80) = 4880px.
-  // Set Block C start y at 5060px (leaving 180px margin for road & banner).
-  const blockCYStart = 5060;
-  const blockCSpecs = [
-    { dim: "25' x 40'", w: 25, l: 40, area: 1000, rate: 900 },
-    { dim: "20' x 40'", w: 20, l: 40, area: 800, rate: 900 },
-    { dim: "15' x 40'", w: 15, l: 40, area: 600, rate: 900 },
-  ];
-
-  for (let num = 681; num <= 980; num++) {
-    const plotNo = `C-${num}`;
-    const spec = blockCSpecs[num % blockCSpecs.length];
-    const isCorner = num % 10 === 0 || num % 10 === 1;
-
-    const index = num - 681;
-    const col = index % PLOTS_PER_ROW;
-    const row = Math.floor(index / PLOTS_PER_ROW);
-
-    plots.push({
-      id: `C-${num}`,
-      plotNo: plotNo,
-      block: 'Block C',
-      dimensions: spec.dim,
-      width: spec.w,
-      length: spec.l,
-      totalArea: spec.area,
-      ratePerSqFt: spec.rate,
-      totalPrice: spec.area * spec.rate,
-      status: 'available',
-      facing: isCorner ? 'Corner' : (num % 2 === 0 ? 'East' : 'North'),
-      roadWidth: '25 Ft Internal Sector Road',
-      x: 45 + col * CELL_WIDTH,
-      y: blockCYStart + row * CELL_HEIGHT,
-      w: PLOT_WIDTH,
-      h: PLOT_HEIGHT,
+      id: key,
+      plotNo: item.plotNo || key,
+      block: blockName,
+      dimensions: item.dimensions || "25' x 40'",
+      width: parseInt(item.dimensions?.split("'")[0] || '25', 10),
+      length: parseInt(item.dimensions?.split("x")[1] || '40', 10),
+      totalArea: item.size || 1000,
+      ratePerSqFt: item.price && item.size ? Math.round(item.price / item.size) : 1000,
+      totalPrice: item.price || 1000000,
+      status: statusVal,
+      facing: facingVal,
+      roadWidth: blockName === 'Block A' ? '40 Ft Main Boulevard Road' : '30 Ft Sector Road',
+      x,
+      y,
+      w: w > 0 ? w : 54,
+      h: h > 0 ? h : 32,
     });
   }
 
