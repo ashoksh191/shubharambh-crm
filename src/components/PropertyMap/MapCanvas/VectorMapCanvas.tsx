@@ -31,10 +31,24 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = ({
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [showKeyboardHelp, setShowKeyboardHelp] = useState<boolean>(false);
 
+  // Exact plot centering based on container bounds & target scale
   const handleZoomToPlot = useCallback((plot: EnhancedPlot) => {
     if (transformRef.current) {
       const { setTransform } = transformRef.current;
-      setTransform(-plot.x * 2.0 + 700, -plot.y * 2.0 + 450, 2.8, 400, 'easeOut');
+      const targetScale = 3.0;
+      const cWidth = containerRef.current?.clientWidth || 1200;
+      const cHeight = containerRef.current?.clientHeight || 700;
+
+      const plotCenterX = plot.x + plot.w / 2;
+      const plotCenterY = plot.y + plot.h / 2;
+
+      const scaleX = cWidth / 2384;
+      const scaleY = cHeight / 1684;
+
+      const posX = cWidth / 2 - plotCenterX * scaleX * targetScale;
+      const posY = cHeight / 2 - plotCenterY * scaleY * targetScale;
+
+      setTransform(posX, posY, targetScale, 400, 'easeOut');
     }
   }, []);
 
@@ -114,6 +128,8 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = ({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onSelectPlot, showKeyboardHelp]);
+
+  const isZoomedIn = zoomScale >= 1.2;
 
   return (
     <div
@@ -350,7 +366,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = ({
                       isSearched={searchedPlot?.id === plot.id}
                       isHovered={hoveredPlotState?.id === plot.id}
                       showLabels={showLabelsOverride}
-                      zoomScale={zoomScale}
+                      isZoomedIn={isZoomedIn}
                       onSelect={onSelectPlot}
                       onHover={handlePlotHover}
                     />

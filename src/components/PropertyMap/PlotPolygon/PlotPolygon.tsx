@@ -7,7 +7,7 @@ interface PlotPolygonProps {
   isSearched: boolean;
   isHovered?: boolean;
   showLabels?: boolean;
-  zoomScale?: number;
+  isZoomedIn?: boolean;
   onSelect: (plot: EnhancedPlot) => void;
   onHover: (plot: EnhancedPlot | null, e?: React.MouseEvent) => void;
 }
@@ -26,7 +26,7 @@ export const PlotPolygon: React.FC<PlotPolygonProps> = memo(({
   isSearched,
   isHovered = false,
   showLabels = false,
-  zoomScale = 1,
+  isZoomedIn = false,
   onSelect,
   onHover,
 }) => {
@@ -34,7 +34,7 @@ export const PlotPolygon: React.FC<PlotPolygonProps> = memo(({
   const centerX = plot.x + plot.w / 2;
   const centerY = plot.y + plot.h / 2;
 
-  // Determine fill, stroke, and glow filter based on state
+  // Determine fill, stroke, and glow filter based on interaction state
   let fill = 'rgba(16, 185, 129, 0.12)';
   let stroke = 'rgba(16, 185, 129, 0.4)';
   let strokeWidth = 1.2;
@@ -56,7 +56,6 @@ export const PlotPolygon: React.FC<PlotPolygonProps> = memo(({
     strokeWidth = 2.5;
     filter = `drop-shadow(0 0 10px ${statusColor})`;
   } else {
-    // Status color tinting for unhovered state
     if (plot.enhancedStatus === 'reserved') {
       fill = 'rgba(245, 158, 11, 0.15)';
       stroke = 'rgba(245, 158, 11, 0.5)';
@@ -69,37 +68,38 @@ export const PlotPolygon: React.FC<PlotPolygonProps> = memo(({
     }
   }
 
-  const shouldRenderLabel = showLabels || zoomScale >= 1.2;
+  const shouldRenderLabel = showLabels || isZoomedIn;
 
   return (
     <g
       className={`plot-polygon-group ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''}`}
-      onClick={(e) => {
-        e.stopPropagation();
-        onSelect(plot);
-      }}
-      onMouseEnter={(e) => onHover(plot, e)}
-      onMouseLeave={() => onHover(null)}
-      onFocus={(e) => onHover(plot, e as any)}
-      onBlur={() => onHover(null)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onSelect(plot);
-        }
-      }}
       tabIndex={0}
       role="button"
       aria-label={`Plot ${plot.plotNo}, Block ${plot.block}, Status ${plot.enhancedStatus}`}
-      style={{ cursor: 'pointer', outline: 'none' }}
+      style={{ outline: 'none' }}
     >
-      {/* SVG Vector Polygon element for Plot geometry */}
+      {/* Dynamic SVG Vector Polygon element for Plot geometry */}
       <polygon
         points={plot.svgPathPoints}
         fill={fill}
         stroke={stroke}
         strokeWidth={strokeWidth}
+        onClick={(e) => {
+          e.stopPropagation();
+          onSelect(plot);
+        }}
+        onMouseEnter={(e) => onHover(plot, e)}
+        onMouseLeave={() => onHover(null)}
+        onFocus={(e) => onHover(plot, e as any)}
+        onBlur={() => onHover(null)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onSelect(plot);
+          }
+        }}
         style={{
+          cursor: 'pointer',
           transition: 'fill 0.15s ease, stroke 0.15s ease, stroke-width 0.15s ease',
           filter,
           pointerEvents: 'visiblePainted',
@@ -134,14 +134,14 @@ export const PlotPolygon: React.FC<PlotPolygonProps> = memo(({
         />
       )}
 
-      {/* SVG Vector Text Label for Plot Number */}
+      {/* Dynamic Zoom Plot Number Label */}
       {shouldRenderLabel && (
         <text
           x={centerX}
           y={centerY + 3}
           textAnchor="middle"
           fill="#ffffff"
-          fontSize={zoomScale >= 2.5 ? '11' : '9'}
+          fontSize="9"
           fontWeight="700"
           style={{
             pointerEvents: 'none',
@@ -163,7 +163,7 @@ export const PlotPolygon: React.FC<PlotPolygonProps> = memo(({
     prevProps.isSearched === nextProps.isSearched &&
     prevProps.isHovered === nextProps.isHovered &&
     prevProps.showLabels === nextProps.showLabels &&
-    prevProps.zoomScale === nextProps.zoomScale
+    prevProps.isZoomedIn === nextProps.isZoomedIn
   );
 });
 
