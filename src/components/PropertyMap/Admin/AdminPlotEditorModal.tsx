@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { EnhancedPlot, EnhancedPlotStatus, PlotCategory } from '../../../types/propertyMap';
+import type { EnhancedPlot, EnhancedPlotStatus, PlotCategory, PlotFacing } from '../../../types/propertyMap';
 import { updatePlotApi } from '../../../services/api';
 import { X, Save, Shield } from 'lucide-react';
 
@@ -17,7 +17,7 @@ export const AdminPlotEditorModal: React.FC<AdminPlotEditorModalProps> = ({
   const [price, setPrice] = useState<number>(plot?.totalPrice ?? 0);
   const [status, setStatus] = useState<EnhancedPlotStatus>(plot?.enhancedStatus ?? 'available');
   const [category, setCategory] = useState<PlotCategory>(plot?.category ?? 'Residential');
-  const [facing, setFacing] = useState<string>(plot?.facing ?? 'East');
+  const [facing, setFacing] = useState<PlotFacing>(plot?.facing ?? 'East');
   const [owner, setOwner] = useState<string>(plot?.owner || 'Shubharambh Green City');
   const [description, setDescription] = useState<string>(plot?.description || '');
   const [galleryInput, setGalleryInput] = useState<string>(
@@ -197,7 +197,7 @@ export const AdminPlotEditorModal: React.FC<AdminPlotEditorModalProps> = ({
               </label>
               <select
                 value={facing}
-                onChange={(e) => setFacing(e.target.value)}
+                onChange={(e) => setFacing(e.target.value as PlotFacing)}
                 style={{
                   width: '100%',
                   padding: '10px 14px',

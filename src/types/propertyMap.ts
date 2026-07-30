@@ -4,7 +4,7 @@ export type EnhancedPlotStatus = 'available' | 'reserved' | 'booked' | 'sold' | 
 
 export type PlotCategory = 'Residential' | 'Commercial' | 'Corner' | 'Park Facing' | 'Road Facing' | 'Mixed Use';
 
-export type PlotFacing = 'East' | 'West' | 'North' | 'South' | 'North-East' | 'North-West' | 'South-East' | 'South-West';
+export type PlotFacing = 'East' | 'West' | 'North' | 'South' | 'Corner';
 
 export interface Amenity {
   name: string;
@@ -36,7 +36,7 @@ export interface EnhancedPlot extends Plot {
   category: PlotCategory;
   plcRate?: number;
   description?: string;
-  facing: any;
+  facing: PlotFacing;
   owner?: string;
   amenities: Amenity[];
   history: PlotHistoryItem[];

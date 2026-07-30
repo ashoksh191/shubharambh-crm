@@ -1,7 +1,10 @@
 import plotsGeneratedData from '../data/plots.generated.json';
 import type { Plot } from '../types';
-import type { EnhancedPlot, EnhancedPlotStatus, PlotCategory, PlotHistoryStage } from '../types/propertyMap';
+import type { EnhancedPlot, EnhancedPlotStatus, PlotCategory, PlotFacing, PlotHistoryStage } from '../types/propertyMap';
 
+/**
+ * Interface representing a plot entry from `plots.generated.json`.
+ */
 export interface PlotGeneratedEntry {
   id: string;
   polygon: [number, number][];
@@ -12,10 +15,21 @@ export interface PlotGeneratedEntry {
   nearbyPark: string;
 }
 
+/**
+ * Loads generated plot entries from `src/data/plots.generated.json`.
+ * @returns Map of plot IDs to extracted PDF plot entries.
+ */
 export const loadPlotsFromGeneratedJson = (): Record<string, PlotGeneratedEntry> => {
   return plotsGeneratedData as unknown as Record<string, PlotGeneratedEntry>;
 };
 
+/**
+ * Enhances base Plot objects with vector polygon coordinates, spatial road/park names,
+ * default amenities, document links, and historical audit trail entries.
+ *
+ * @param rawPlots - Array of base Plot inventory items.
+ * @returns Array of fully enriched EnhancedPlot objects ready for SVG rendering.
+ */
 export const enhancePlotData = (rawPlots: Plot[]): EnhancedPlot[] => {
   const generatedPlots = loadPlotsFromGeneratedJson();
 
@@ -60,7 +74,6 @@ export const enhancePlotData = (rawPlots: Plot[]): EnhancedPlot[] => {
     },
   ];
 
-  // Map input rawPlots using plots.generated.json coordinates
   const enhancedList: EnhancedPlot[] = rawPlots.map((p) => {
     const genEntry = generatedPlots[p.plotNo] || generatedPlots[p.id];
 
@@ -88,9 +101,8 @@ export const enhancePlotData = (rawPlots: Plot[]): EnhancedPlot[] => {
       enhancedStatus = rawStatus as EnhancedPlotStatus;
     }
 
-
-
     const category = (p.plotNo.includes('A-') ? 'Residential' : p.plotNo.includes('B-') ? 'Park Facing' : 'Commercial') as PlotCategory;
+    const facing = (p.facing || 'East') as PlotFacing;
 
     const history = [
       {
@@ -155,6 +167,7 @@ export const enhancePlotData = (rawPlots: Plot[]): EnhancedPlot[] => {
       svgPathPoints: pointsStr,
       enhancedStatus,
       category,
+      facing,
       plcRate: category === 'Corner' ? 10 : category === 'Park Facing' ? 7.5 : category === 'Commercial' ? 15 : 0,
       description: `Official Plot ${p.plotNo} near ${nearbyRoad} and ${nearbyPark}.`,
       amenities: defaultAmenities,
