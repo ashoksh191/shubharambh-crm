@@ -19,6 +19,9 @@ import approvalRoutes from './routes/approvalRoutes.js';
 
 const app = express();
 
+// Trust reverse proxy headers (e.g. Nginx, Cloudflare) for secure IP extraction
+app.set('trust proxy', 1);
+
 // Security Middlewares
 app.use(helmetSecurityHeaders);
 app.use(cors(corsOptions));

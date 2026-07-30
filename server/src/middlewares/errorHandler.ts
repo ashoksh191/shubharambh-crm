@@ -8,7 +8,7 @@ export const globalErrorHandler = (
   res: Response,
   _next: NextFunction
 ): void => {
-  // Always log complete error details server-side for debugging
+  // Always log complete error details server-side for internal debugging
   logger.error('Unhandled Server Exception:', {
     name: err?.name,
     message: err?.message,
@@ -28,24 +28,33 @@ export const globalErrorHandler = (
     res.status(400).json({
       success: false,
       error: 'INVALID_INPUT',
-      message: 'Input validation failed. Please check the supplied parameters.',
+      message: 'Input validation failed. Please check supplied parameters.',
       details: formattedErrors,
     });
     return;
   }
 
   // Handle JWT Auth Errors
-  if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
+  if (err?.name === 'TokenExpiredError') {
     res.status(401).json({
       success: false,
-      error: 'UNAUTHORIZED',
-      message: 'Authentication session invalid or expired.',
+      error: 'TOKEN_EXPIRED',
+      message: 'Authentication session expired. Please refresh or log in again.',
     });
     return;
   }
 
-  // Handle Prisma / Database Errors (Hide database internal schema/paths)
-  if (err.code && typeof err.code === 'string' && err.code.startsWith('P')) {
+  if (err?.name === 'JsonWebTokenError') {
+    res.status(401).json({
+      success: false,
+      error: 'UNAUTHORIZED',
+      message: 'Authentication token is invalid or corrupted.',
+    });
+    return;
+  }
+
+  // Handle Prisma / Database Errors (Mask database internal schema and paths)
+  if (err?.code && typeof err.code === 'string' && err.code.startsWith('P')) {
     res.status(400).json({
       success: false,
       error: 'DATABASE_ERROR',
@@ -54,18 +63,18 @@ export const globalErrorHandler = (
     return;
   }
 
-  const statusCode = typeof err.statusCode === 'number' ? err.statusCode : 500;
+  const statusCode = typeof err?.statusCode === 'number' ? err.statusCode : 500;
+  const isProd = process.env.NODE_ENV === 'production';
 
   // In production or 500 errors, never leak stack traces, raw system errors, or file paths
-  const isProd = process.env.NODE_ENV === 'production';
   const clientMessage =
     statusCode >= 500 || isProd
-      ? 'An unexpected error occurred. Please try again later.'
-      : err.message || 'Internal Server Error';
+      ? 'An unexpected server error occurred. Please try again later.'
+      : err?.message || 'Internal Server Error';
 
   res.status(statusCode).json({
     success: false,
-    error: err.name && statusCode < 500 ? err.name : 'SERVER_ERROR',
+    error: err?.name && statusCode < 500 ? err.name : 'SERVER_ERROR',
     message: clientMessage,
   });
 };

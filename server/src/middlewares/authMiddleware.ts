@@ -24,8 +24,8 @@ export const authenticateJwt = (
     if (!token) {
       res.status(401).json({
         success: false,
-        error: 'Authentication Required',
-        message: 'Access token missing or invalid.',
+        error: 'AUTHENTICATION_REQUIRED',
+        message: 'Access token missing or not provided.',
       });
       return;
     }
@@ -33,12 +33,21 @@ export const authenticateJwt = (
     const payload = verifyAccessToken(token);
     req.user = payload;
     next();
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.name === 'TokenExpiredError') {
+      res.status(401).json({
+        success: false,
+        error: 'TOKEN_EXPIRED',
+        message: 'Access token has expired. Please refresh your session.',
+        tokenExpired: true,
+      });
+      return;
+    }
+
     res.status(401).json({
       success: false,
-      error: 'Unauthorized',
-      message: 'Access token expired or corrupted.',
-      tokenExpired: true,
+      error: 'UNAUTHORIZED',
+      message: 'Invalid or corrupted access token.',
     });
   }
 };

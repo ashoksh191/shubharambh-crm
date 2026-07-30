@@ -8,24 +8,25 @@ const envSchema = z.object({
   PORT: z.string().default('5000').transform((val) => parseInt(val, 10)),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   CLIENT_URL: z.string().url().default('http://localhost:5173'),
-  
+  ALLOWED_ORIGINS: z.string().optional().default(''),
+
   // Secrets
   JWT_ACCESS_SECRET: z.string().min(32, 'JWT_ACCESS_SECRET must be at least 32 characters long'),
   JWT_REFRESH_SECRET: z.string().min(32, 'JWT_REFRESH_SECRET must be at least 32 characters long'),
   COOKIE_SECRET: z.string().min(16, 'COOKIE_SECRET must be at least 16 characters long'),
-  
+
   JWT_ACCESS_EXPIRATION: z.string().default('15m'),
   JWT_REFRESH_EXPIRATION: z.string().default('7d'),
   JWT_REMEMBER_ME_EXPIRATION: z.string().default('30d'),
 
-  // Rate Limiting Config (Configurable, not hardcoded)
+  // Rate Limiting Config
   RATE_LIMIT_GLOBAL_WINDOW_MS: z.string().default('900000').transform((val) => parseInt(val, 10)), // 15 mins
   RATE_LIMIT_GLOBAL_MAX: z.string().default('300').transform((val) => parseInt(val, 10)),
-  
+
   RATE_LIMIT_AUTH_WINDOW_MS: z.string().default('900000').transform((val) => parseInt(val, 10)), // 15 mins
-  RATE_LIMIT_AUTH_MAX: z.string().default('5').transform((val) => parseInt(val, 10)), // 5 attempts per window
-  RATE_LIMIT_AUTH_BACKOFF_BASE_MS: z.string().default('1000').transform((val) => parseInt(val, 10)), // 1 sec base
-  
+  RATE_LIMIT_AUTH_MAX: z.string().default('5').transform((val) => parseInt(val, 10)),
+  RATE_LIMIT_AUTH_BACKOFF_BASE_MS: z.string().default('1000').transform((val) => parseInt(val, 10)),
+
   RATE_LIMIT_PUBLIC_WINDOW_MS: z.string().default('900000').transform((val) => parseInt(val, 10)), // 15 mins
   RATE_LIMIT_PUBLIC_MAX: z.string().default('100').transform((val) => parseInt(val, 10)),
 
@@ -42,34 +43,51 @@ const envSchema = z.object({
   SMTP_FROM: z.string().default('Shubharambh CRM Security <security@shubharambh.com>'),
 });
 
+const defaultAccessSecret = 'sgc_access_secret_super_secure_key_2026_enterprise_x89a';
+const defaultRefreshSecret = 'sgc_refresh_secret_super_secure_key_2026_enterprise_y77b';
+const defaultCookieSecret = 'sgc_cookie_secret_99812_shubharambh';
+
+const isProduction = process.env.NODE_ENV === 'production';
+
+// Strict environment variable validation
 const parsedEnv = envSchema.safeParse({
   ...process.env,
-  JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET || 'sgc_access_secret_super_secure_key_2026_enterprise_x89a',
-  JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET || 'sgc_refresh_secret_super_secure_key_2026_enterprise_y77b',
-  COOKIE_SECRET: process.env.COOKIE_SECRET || 'sgc_cookie_secret_99812_shubharambh',
+  JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET || defaultAccessSecret,
+  JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET || defaultRefreshSecret,
+  COOKIE_SECRET: process.env.COOKIE_SECRET || defaultCookieSecret,
 });
 
 if (!parsedEnv.success) {
-  console.error('❌ Invalid environment variables configuration:', parsedEnv.error.format());
+  console.error('❌ Environment configuration validation failed:', parsedEnv.error.format());
   throw new Error('Environment configuration validation failed');
 }
 
-// In production, enforce that non-default secrets are provided
-if (process.env.NODE_ENV === 'production') {
+const env = parsedEnv.data;
+
+// In production, prohibit default fallback secrets
+if (isProduction) {
   if (
-    process.env.JWT_ACCESS_SECRET?.includes('super_secure') ||
-    process.env.JWT_REFRESH_SECRET?.includes('super_secure')
+    env.JWT_ACCESS_SECRET === defaultAccessSecret ||
+    env.JWT_REFRESH_SECRET === defaultRefreshSecret ||
+    env.COOKIE_SECRET === defaultCookieSecret
   ) {
-    throw new Error('CRITICAL SECURITY ERROR: Production deployment must use real secret keys in environment variables!');
+    console.error('❌ CRITICAL SECURITY ERROR: Production environment MUST specify custom JWT_ACCESS_SECRET, JWT_REFRESH_SECRET, and COOKIE_SECRET in environment variables!');
+    throw new Error('CRITICAL SECURITY ERROR: Default secret keys are prohibited in production!');
   }
 }
 
-const env = parsedEnv.data;
+// Parse extra allowed CORS origins from ALLOWED_ORIGINS comma-separated string
+const extraOrigins = env.ALLOWED_ORIGINS
+  ? env.ALLOWED_ORIGINS.split(',').map((o) => o.trim()).filter(Boolean)
+  : [];
+
+const allowedCorsOrigins = Array.from(new Set([env.CLIENT_URL, ...extraOrigins]));
 
 export const config = {
   port: env.PORT,
   nodeEnv: env.NODE_ENV,
   clientUrl: env.CLIENT_URL,
+  allowedCorsOrigins,
   jwt: {
     accessSecret: env.JWT_ACCESS_SECRET,
     refreshSecret: env.JWT_REFRESH_SECRET,

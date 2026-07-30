@@ -11,6 +11,14 @@ import {
   registerSchema,
 } from '../validators/authValidators.js';
 
+const getCookieOptions = (maxAgeMs?: number) => ({
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'strict' as const,
+  path: '/api/auth',
+  ...(maxAgeMs ? { maxAge: maxAgeMs } : {}),
+});
+
 export class AuthController {
   /**
    * Registers a Custom User / Admin Account directly in Database
@@ -79,13 +87,7 @@ export class AuthController {
           ? 30 * 24 * 60 * 60 * 1000
           : 7 * 24 * 60 * 60 * 1000;
 
-        res.cookie('refreshToken', result.refreshToken, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
-          maxAge: cookieMaxAge,
-          path: '/api/auth/refresh',
-        });
+        res.cookie('refreshToken', result.refreshToken, getCookieOptions(cookieMaxAge));
       }
 
       await recordAuditLog({
@@ -128,13 +130,7 @@ export class AuthController {
       const deviceInfo = parseClientDeviceInfo(req);
       const result = await AuthService.refreshTokens(rawRefreshToken, deviceInfo);
 
-      res.cookie('refreshToken', result.refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-        path: '/api/auth/refresh',
-      });
+      res.cookie('refreshToken', result.refreshToken, getCookieOptions(7 * 24 * 60 * 60 * 1000));
 
       res.status(200).json({
         success: true,
@@ -142,7 +138,7 @@ export class AuthController {
         user: result.user,
       });
     } catch (error) {
-      res.clearCookie('refreshToken', { path: '/api/auth/refresh' });
+      res.clearCookie('refreshToken', getCookieOptions());
       next(error);
     }
   }
@@ -161,12 +157,13 @@ export class AuthController {
         });
       }
 
-      res.clearCookie('refreshToken', { path: '/api/auth/refresh' });
+      res.clearCookie('refreshToken', getCookieOptions());
       res.status(200).json({
         success: true,
         message: 'Logged out successfully.',
       });
     } catch (error) {
+      res.clearCookie('refreshToken', getCookieOptions());
       next(error);
     }
   }
@@ -183,12 +180,13 @@ export class AuthController {
         targetId: req.user.userId,
       });
 
-      res.clearCookie('refreshToken', { path: '/api/auth/refresh' });
+      res.clearCookie('refreshToken', getCookieOptions());
       res.status(200).json({
         success: true,
         message: 'All device sessions revoked successfully.',
       });
     } catch (error) {
+      res.clearCookie('refreshToken', getCookieOptions());
       next(error);
     }
   }
