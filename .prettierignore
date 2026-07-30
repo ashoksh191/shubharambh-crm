@@ -1,0 +1,15 @@
+# Output & Build
+dist
+dist-ssr
+coverage
+node_modules
+*.min.js
+*.min.css
+
+# System & Package Locks
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Auto-generated
+src/data/plots.generated.json

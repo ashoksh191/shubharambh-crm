@@ -1,0 +1,8 @@
+{
+  "*.{js,jsx,ts,tsx}": [
+    "npx oxlint --deny-warnings"
+  ],
+  "*.{json,md,css,html}": [
+    "npx prettier --write"
+  ]
+}
