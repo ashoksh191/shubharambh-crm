@@ -131,7 +131,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = ({
                   y="0"
                   width="3508"
                   height="2480"
-                  preserveAspectRatio="xMidYMid meet"
+                  preserveAspectRatio="none"
                 />
 
                 {/* Pure Interactive Polygon Triggers (No artificial boxes or text overlays) */}

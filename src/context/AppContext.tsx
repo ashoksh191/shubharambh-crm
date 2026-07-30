@@ -42,9 +42,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Force refresh if cached plots have old coordinates (verify exact C-891 alignment)
+        // Force refresh if cached plots have old coordinates (verify exact A-231 and C-891 alignment)
+        const a231 = parsed.find((p: Plot) => p.plotNo === 'A-231' || p.id === 'A-231');
         const c891 = parsed.find((p: Plot) => p.plotNo === 'C-891' || p.id === 'C-891');
-        if (Array.isArray(parsed) && parsed.length >= 900 && c891 && c891.x === 2382) {
+        if (Array.isArray(parsed) && parsed.length >= 900 && a231 && a231.x === 986 && c891 && c891.x === 2382) {
           return parsed;
         }
       } catch (_e) {
