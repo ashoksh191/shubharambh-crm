@@ -51,13 +51,14 @@ export function usePropertyMap(): UsePropertyMapReturn {
   const [bookingModalPlot, setBookingModalPlot] = useState<EnhancedPlot | null>(null);
   const [adminEditorPlot, setAdminEditorPlot] = useState<EnhancedPlot | null>(null);
 
-  // Fetch backend API plot status/prices if available
+  // Fetch backend API plot status/prices with O(1) Map lookup
   useEffect(() => {
     fetchPlotsFromApi().then((apiPlots) => {
       if (apiPlots && Array.isArray(apiPlots) && apiPlots.length > 0) {
+        const apiPlotMap = new Map(apiPlots.map((ap: any) => [ap.plotNo, ap]));
         setEnhancedPlots((prev) =>
           prev.map((p) => {
-            const match = apiPlots.find((ap: any) => ap.plotNo === p.plotNo);
+            const match = apiPlotMap.get(p.plotNo);
             return match
               ? {
                   ...p,
@@ -100,12 +101,13 @@ export function usePropertyMap(): UsePropertyMapReturn {
 
   // Memoized Filtered Plots
   const filteredPlots = useMemo(() => {
+    const trimmedQuery = searchQuery.trim().toLowerCase();
     return enhancedPlots.filter((p) => {
       if (filters.block !== 'All' && p.block !== filters.block) return false;
       if (filters.status !== 'All' && p.enhancedStatus !== filters.status) return false;
       if (filters.category !== 'All' && p.category !== filters.category) return false;
       if (filters.facing !== 'All' && p.facing !== filters.facing) return false;
-      if (searchQuery.trim().length > 0 && !p.plotNo.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+      if (trimmedQuery.length > 0 && !p.plotNo.toLowerCase().includes(trimmedQuery)) return false;
       return true;
     });
   }, [enhancedPlots, filters, searchQuery]);
@@ -141,35 +143,29 @@ export function usePropertyMap(): UsePropertyMapReturn {
     setSelectedPlot(plot);
   }, []);
 
-  // Update Status Handler
+  // Update Status Handler with functional state setter (no selectedPlot dependency)
   const handleUpdatePlotStatus = useCallback((plotId: string, newStatus: EnhancedPlotStatus) => {
     setEnhancedPlots((prev) =>
       prev.map((p) => (p.id === plotId ? { ...p, enhancedStatus: newStatus } : p))
     );
-    if (selectedPlot?.id === plotId) {
-      setSelectedPlot((prev) => (prev ? { ...prev, enhancedStatus: newStatus } : null));
-    }
-  }, [selectedPlot]);
+    setSelectedPlot((prev) => (prev?.id === plotId ? { ...prev, enhancedStatus: newStatus } : prev));
+  }, []);
 
-  // Update Price Handler
+  // Update Price Handler with functional state setter (no selectedPlot dependency)
   const handleUpdatePlotPrice = useCallback((plotId: string, newPrice: number) => {
     setEnhancedPlots((prev) =>
       prev.map((p) => (p.id === plotId ? { ...p, totalPrice: newPrice } : p))
     );
-    if (selectedPlot?.id === plotId) {
-      setSelectedPlot((prev) => (prev ? { ...prev, totalPrice: newPrice } : null));
-    }
-  }, [selectedPlot]);
+    setSelectedPlot((prev) => (prev?.id === plotId ? { ...prev, totalPrice: newPrice } : prev));
+  }, []);
 
   // Save Admin Plot Editor Changes Handler
   const handleSaveAdminUpdate = useCallback((updated: EnhancedPlot) => {
     setEnhancedPlots((prev) =>
       prev.map((p) => (p.id === updated.id ? updated : p))
     );
-    if (selectedPlot?.id === updated.id) {
-      setSelectedPlot(updated);
-    }
-  }, [selectedPlot]);
+    setSelectedPlot((prev) => (prev?.id === updated.id ? updated : prev));
+  }, []);
 
   return {
     enhancedPlots,

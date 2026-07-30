@@ -1,14 +1,19 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { usePropertyMap } from '../../hooks/usePropertyMap';
 import { VectorMapCanvas } from './MapCanvas/VectorMapCanvas';
 import { PlotDrawer } from './PlotDrawer/PlotDrawer';
 import { PlotTooltip } from './Tooltip/PlotTooltip';
 import { MapFilters } from './Filters/MapFilters';
 import { MapSearch } from './Search/MapSearch';
-import { BookingFormModal } from '../Booking/BookingFormModal';
-import { AdminPlotEditorModal } from './Admin/AdminPlotEditorModal';
 import { Download, Compass } from 'lucide-react';
 import '../../styles/Map.css';
+
+const BookingFormModal = lazy(() =>
+  import('../Booking/BookingFormModal').then((m) => ({ default: m.BookingFormModal }))
+);
+const AdminPlotEditorModal = lazy(() =>
+  import('./Admin/AdminPlotEditorModal').then((m) => ({ default: m.AdminPlotEditorModal }))
+);
 
 interface PropertyMapContainerProps {
   onOpenBooking: (plot: any) => void;
@@ -141,25 +146,27 @@ export const PropertyMapContainer: React.FC<PropertyMapContainerProps> = ({
       />
 
       {/* Booking Form Modal */}
-      {bookingModalPlot && (
-        <BookingFormModal
-          plot={bookingModalPlot}
-          onClose={() => setBookingModalPlot(null)}
-          onSuccess={() => {
-            handleUpdatePlotStatus(bookingModalPlot.id, 'booked');
-            setBookingModalPlot(null);
-          }}
-        />
-      )}
+      <Suspense fallback={null}>
+        {bookingModalPlot && (
+          <BookingFormModal
+            plot={bookingModalPlot}
+            onClose={() => setBookingModalPlot(null)}
+            onSuccess={() => {
+              handleUpdatePlotStatus(bookingModalPlot.id, 'booked');
+              setBookingModalPlot(null);
+            }}
+          />
+        )}
 
-      {/* Admin Plot Editor Modal */}
-      {adminEditorPlot && (
-        <AdminPlotEditorModal
-          plot={adminEditorPlot}
-          onClose={() => setAdminEditorPlot(null)}
-          onSaveSuccess={handleSaveAdminUpdate}
-        />
-      )}
+        {/* Admin Plot Editor Modal */}
+        {adminEditorPlot && (
+          <AdminPlotEditorModal
+            plot={adminEditorPlot}
+            onClose={() => setAdminEditorPlot(null)}
+            onSaveSuccess={handleSaveAdminUpdate}
+          />
+        )}
+      </Suspense>
     </div>
   );
 };

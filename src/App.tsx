@@ -1,23 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, lazy, Suspense } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProtectedRoute } from './components/Auth/ProtectedRoute';
 import { RoleGuard } from './components/Auth/RoleGuard';
 import { Sidebar } from './components/Navigation/Sidebar';
 import { InteractiveMap } from './components/Map/InteractiveMap';
-import { AssociateDashboard } from './components/MLM/AssociateDashboard';
-import { FinancialDashboard } from './components/Admin/FinancialDashboard';
-import { USPShowcase } from './components/Public/USPShowcase';
-import { UserProfileDashboard } from './components/Dashboard/UserProfileDashboard';
-import { AuditLogViewer } from './components/Admin/AuditLogViewer';
-import { PendingApprovals } from './components/Admin/PendingApprovals';
-import { BookingFormModal } from './components/Booking/BookingFormModal';
-import { ReceiptPDF } from './components/Documents/ReceiptPDF';
-import { AgreementBond } from './components/Documents/AgreementBond';
-import { QRVerificationModal } from './components/Documents/QRVerificationModal';
-import { PhoneCall, MapPin, Sparkles } from 'lucide-react';
+import { PhoneCall, MapPin, Sparkles, Loader2 } from 'lucide-react';
 import type { Plot } from './types';
 import './styles/App.css';
+
+// Lazy Loaded Heavy Modules & Views
+const AssociateDashboard = lazy(() =>
+  import('./components/MLM/AssociateDashboard').then((m) => ({ default: m.AssociateDashboard }))
+);
+const FinancialDashboard = lazy(() =>
+  import('./components/Admin/FinancialDashboard').then((m) => ({ default: m.FinancialDashboard }))
+);
+const USPShowcase = lazy(() =>
+  import('./components/Public/USPShowcase').then((m) => ({ default: m.USPShowcase }))
+);
+const UserProfileDashboard = lazy(() =>
+  import('./components/Dashboard/UserProfileDashboard').then((m) => ({ default: m.UserProfileDashboard }))
+);
+const AuditLogViewer = lazy(() =>
+  import('./components/Admin/AuditLogViewer').then((m) => ({ default: m.AuditLogViewer }))
+);
+const PendingApprovals = lazy(() =>
+  import('./components/Admin/PendingApprovals').then((m) => ({ default: m.PendingApprovals }))
+);
+const BookingFormModal = lazy(() =>
+  import('./components/Booking/BookingFormModal').then((m) => ({ default: m.BookingFormModal }))
+);
+const ReceiptPDF = lazy(() =>
+  import('./components/Documents/ReceiptPDF').then((m) => ({ default: m.ReceiptPDF }))
+);
+const AgreementBond = lazy(() =>
+  import('./components/Documents/AgreementBond').then((m) => ({ default: m.AgreementBond }))
+);
+const QRVerificationModal = lazy(() =>
+  import('./components/Documents/QRVerificationModal').then((m) => ({ default: m.QRVerificationModal }))
+);
+
+const ComponentFallback = () => (
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '300px', color: '#10b981', gap: '10px' }}>
+    <Loader2 className="animate-spin" size={24} />
+    <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>Loading Module...</span>
+  </div>
+);
 
 const MainLayout: React.FC = () => {
   const { plots } = useApp();
@@ -30,10 +59,19 @@ const MainLayout: React.FC = () => {
   const [activeBondBookingId, setActiveBondBookingId] = useState<string | null>(null);
   const [activeQRBookingId, setActiveQRBookingId] = useState<string | null>(null);
 
-  // Stats
-  const availableCount = plots.filter((p) => p.status === 'available').length;
-  const bookedCount = plots.filter((p) => p.status === 'booked').length;
-  const soldCount = plots.filter((p) => p.status === 'sold').length;
+  // Memoized Inventory Metrics
+  const { availableCount, bookedCount, soldCount } = useMemo(() => {
+    let available = 0;
+    let booked = 0;
+    let sold = 0;
+    for (let i = 0; i < plots.length; i++) {
+      const status = plots[i].status;
+      if (status === 'available') available++;
+      else if (status === 'booked') booked++;
+      else if (status === 'sold') sold++;
+    }
+    return { availableCount: available, bookedCount: booked, soldCount: sold };
+  }, [plots]);
 
   const userName = authUser?.fullName || authUser?.username || 'Ashok Kumar';
 
@@ -44,7 +82,7 @@ const MainLayout: React.FC = () => {
 
       {/* Right Main Content Area */}
       <div className="main-viewport-container">
-        {/* Top Header Banner (Matching SehatMitra / Screenshot UI) */}
+        {/* Top Header Banner */}
         <header className="dashboard-welcome-banner">
           <div className="welcome-text-block">
             <div className="greeting-pill">
@@ -98,96 +136,100 @@ const MainLayout: React.FC = () => {
 
         {/* Dynamic Module Content View */}
         <main className="main-content-body">
-          {activeTab === 'map' && (
-            <InteractiveMap
-              onOpenBooking={(plot) => setSelectedBookingPlot(plot)}
-              onOpenReceipt={(bId) => setActiveReceiptBookingId(bId)}
-              onOpenBond={(bId) => setActiveBondBookingId(bId)}
+          <Suspense fallback={<ComponentFallback />}>
+            {activeTab === 'map' && (
+              <InteractiveMap
+                onOpenBooking={(plot) => setSelectedBookingPlot(plot)}
+                onOpenReceipt={(bId) => setActiveReceiptBookingId(bId)}
+                onOpenBond={(bId) => setActiveBondBookingId(bId)}
+              />
+            )}
+
+            {activeTab === 'mlm' && <AssociateDashboard />}
+
+            {activeTab === 'finance' && (
+              <RoleGuard
+                requiredPermissions="payments:approve"
+                fallback={
+                  <div style={{ padding: '3rem', textAlign: 'center', color: '#fca5a5' }}>
+                    <h3>⛔ Access Denied</h3>
+                    <p>You need the <strong>FINANCE</strong> or <strong>SUPER_ADMIN</strong> role to view payment approvals & financial dashboards.</p>
+                  </div>
+                }
+              >
+                <FinancialDashboard />
+              </RoleGuard>
+            )}
+
+            {activeTab === 'usps' && <USPShowcase />}
+
+            {activeTab === 'profile' && <UserProfileDashboard />}
+
+            {activeTab === 'approvals' && (
+              <RoleGuard
+                requiredPermissions="users:manage_roles"
+                fallback={
+                  <div style={{ padding: '3rem', textAlign: 'center', color: '#fca5a5' }}>
+                    <h3>⛔ Access Denied</h3>
+                    <p>Only <strong>ADMIN</strong> and <strong>SUPER_ADMIN</strong> roles can review pending user registration requests.</p>
+                  </div>
+                }
+              >
+                <PendingApprovals />
+              </RoleGuard>
+            )}
+
+            {activeTab === 'audit' && (
+              <RoleGuard
+                requiredPermissions="audit_logs:read"
+                fallback={
+                  <div style={{ padding: '3rem', textAlign: 'center', color: '#fca5a5' }}>
+                    <h3>⛔ Access Denied</h3>
+                    <p>Only <strong>ADMIN</strong> and <strong>SUPER_ADMIN</strong> roles can inspect enterprise security audit trails.</p>
+                  </div>
+                }
+              >
+                <AuditLogViewer />
+              </RoleGuard>
+            )}
+          </Suspense>
+        </main>
+
+        {/* Lazy Loaded Modals */}
+        <Suspense fallback={null}>
+          {selectedBookingPlot && (
+            <BookingFormModal
+              plot={selectedBookingPlot}
+              onClose={() => setSelectedBookingPlot(null)}
+              onSuccess={(bId) => {
+                setSelectedBookingPlot(null);
+                setActiveReceiptBookingId(bId);
+              }}
             />
           )}
 
-          {activeTab === 'mlm' && <AssociateDashboard />}
-
-          {activeTab === 'finance' && (
-            <RoleGuard
-              requiredPermissions="payments:approve"
-              fallback={
-                <div style={{ padding: '3rem', textAlign: 'center', color: '#fca5a5' }}>
-                  <h3>⛔ Access Denied</h3>
-                  <p>You need the <strong>FINANCE</strong> or <strong>SUPER_ADMIN</strong> role to view payment approvals & financial dashboards.</p>
-                </div>
-              }
-            >
-              <FinancialDashboard />
-            </RoleGuard>
+          {activeReceiptBookingId && (
+            <ReceiptPDF
+              bookingId={activeReceiptBookingId}
+              onClose={() => setActiveReceiptBookingId(null)}
+              onOpenVerification={(bId) => setActiveQRBookingId(bId)}
+            />
           )}
 
-          {activeTab === 'usps' && <USPShowcase />}
-
-          {activeTab === 'profile' && <UserProfileDashboard />}
-
-          {activeTab === 'approvals' && (
-            <RoleGuard
-              requiredPermissions="users:manage_roles"
-              fallback={
-                <div style={{ padding: '3rem', textAlign: 'center', color: '#fca5a5' }}>
-                  <h3>⛔ Access Denied</h3>
-                  <p>Only <strong>ADMIN</strong> and <strong>SUPER_ADMIN</strong> roles can review pending user registration requests.</p>
-                </div>
-              }
-            >
-              <PendingApprovals />
-            </RoleGuard>
+          {activeBondBookingId && (
+            <AgreementBond
+              bookingId={activeBondBookingId}
+              onClose={() => setActiveBondBookingId(null)}
+            />
           )}
 
-          {activeTab === 'audit' && (
-            <RoleGuard
-              requiredPermissions="audit_logs:read"
-              fallback={
-                <div style={{ padding: '3rem', textAlign: 'center', color: '#fca5a5' }}>
-                  <h3>⛔ Access Denied</h3>
-                  <p>Only <strong>ADMIN</strong> and <strong>SUPER_ADMIN</strong> roles can inspect enterprise security audit trails.</p>
-                </div>
-              }
-            >
-              <AuditLogViewer />
-            </RoleGuard>
+          {activeQRBookingId && (
+            <QRVerificationModal
+              bookingId={activeQRBookingId}
+              onClose={() => setActiveQRBookingId(null)}
+            />
           )}
-        </main>
-
-        {/* Modals */}
-        {selectedBookingPlot && (
-          <BookingFormModal
-            plot={selectedBookingPlot}
-            onClose={() => setSelectedBookingPlot(null)}
-            onSuccess={(bId) => {
-              setSelectedBookingPlot(null);
-              setActiveReceiptBookingId(bId);
-            }}
-          />
-        )}
-
-        {activeReceiptBookingId && (
-          <ReceiptPDF
-            bookingId={activeReceiptBookingId}
-            onClose={() => setActiveReceiptBookingId(null)}
-            onOpenVerification={(bId) => setActiveQRBookingId(bId)}
-          />
-        )}
-
-        {activeBondBookingId && (
-          <AgreementBond
-            bookingId={activeBondBookingId}
-            onClose={() => setActiveBondBookingId(null)}
-          />
-        )}
-
-        {activeQRBookingId && (
-          <QRVerificationModal
-            bookingId={activeQRBookingId}
-            onClose={() => setActiveQRBookingId(null)}
-          />
-        )}
+        </Suspense>
 
         {/* Mobile Bottom Navigation */}
         <div className="mobile-bottom-nav">

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+import React, { useRef, useState, useEffect, useCallback, memo } from 'react';
 import { TransformWrapper, TransformComponent, type ReactZoomPanPinchRef } from 'react-zoom-pan-pinch';
 import type { EnhancedPlot, EnhancedPlotStatus } from '../../../types/propertyMap';
 import { PlotPolygon } from '../PlotPolygon/PlotPolygon';
@@ -14,7 +14,7 @@ interface VectorMapCanvasProps {
   onHoverPlot: (plot: EnhancedPlot | null, e?: React.MouseEvent) => void;
 }
 
-export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = ({
+export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
   plots,
   selectedPlot,
   searchedPlot,
@@ -379,7 +379,9 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = ({
       </TransformWrapper>
     </div>
   );
-};
+});
+
+VectorMapCanvas.displayName = 'VectorMapCanvas';
 
 const controlBtnStyle: React.CSSProperties = {
   background: 'rgba(255, 255, 255, 0.08)',
