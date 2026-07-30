@@ -35,29 +35,41 @@ export const PlotPolygon: React.FC<PlotPolygonProps> = memo(({
   const centerY = plot.y + plot.h / 2;
 
   // Determine fill, stroke, and glow filter based on state
-  let fill = 'transparent';
-  let stroke = 'transparent';
-  let strokeWidth = 1.5;
+  let fill = 'rgba(16, 185, 129, 0.12)';
+  let stroke = 'rgba(16, 185, 129, 0.4)';
+  let strokeWidth = 1.2;
   let filter = 'none';
 
   if (isSelected) {
-    fill = 'rgba(56, 189, 248, 0.4)';
+    fill = 'rgba(56, 189, 248, 0.45)';
     stroke = '#38bdf8';
-    strokeWidth = 3.5;
+    strokeWidth = 3.0;
     filter = 'drop-shadow(0 0 12px rgba(56, 189, 248, 0.95))';
   } else if (isSearched) {
-    fill = 'rgba(245, 158, 11, 0.45)';
+    fill = 'rgba(245, 158, 11, 0.5)';
     stroke = '#f59e0b';
-    strokeWidth = 3.5;
+    strokeWidth = 3.0;
     filter = 'drop-shadow(0 0 14px rgba(245, 158, 11, 0.95))';
   } else if (isHovered) {
-    fill = `${statusColor}33`; // 20% opacity translucent fill
+    fill = `${statusColor}44`;
     stroke = statusColor;
     strokeWidth = 2.5;
     filter = `drop-shadow(0 0 10px ${statusColor})`;
+  } else {
+    // Status color tinting for unhovered state
+    if (plot.enhancedStatus === 'reserved') {
+      fill = 'rgba(245, 158, 11, 0.15)';
+      stroke = 'rgba(245, 158, 11, 0.5)';
+    } else if (plot.enhancedStatus === 'booked') {
+      fill = 'rgba(59, 130, 246, 0.18)';
+      stroke = 'rgba(59, 130, 246, 0.5)';
+    } else if (plot.enhancedStatus === 'sold') {
+      fill = 'rgba(239, 68, 68, 0.2)';
+      stroke = 'rgba(239, 68, 68, 0.5)';
+    }
   }
 
-  const shouldRenderLabel = showLabels || zoomScale >= 1.4;
+  const shouldRenderLabel = showLabels || zoomScale >= 1.2;
 
   return (
     <g
@@ -78,10 +90,10 @@ export const PlotPolygon: React.FC<PlotPolygonProps> = memo(({
       }}
       tabIndex={0}
       role="button"
-      aria-label={`Plot ${plot.plotNo}, Block ${plot.block}, Status ${plot.enhancedStatus}, Dimensions ${plot.dimensions}, Price ₹${plot.totalPrice.toLocaleString('en-IN')}`}
+      aria-label={`Plot ${plot.plotNo}, Block ${plot.block}, Status ${plot.enhancedStatus}`}
       style={{ cursor: 'pointer', outline: 'none' }}
     >
-      {/* Dynamic Trigger Polygon over 4K Map */}
+      {/* SVG Vector Polygon element for Plot geometry */}
       <polygon
         points={plot.svgPathPoints}
         fill={fill}
@@ -90,33 +102,31 @@ export const PlotPolygon: React.FC<PlotPolygonProps> = memo(({
         style={{
           transition: 'fill 0.15s ease, stroke 0.15s ease, stroke-width 0.15s ease',
           filter,
+          pointerEvents: 'visiblePainted',
         }}
       />
 
-      {/* Searched or Selected Dashed Focus Ring */}
+      {/* Searched or Selected Focus Ring */}
       {(isSelected || isSearched) && (
-        <rect
-          x={plot.x - 3}
-          y={plot.y - 3}
-          width={plot.w + 6}
-          height={plot.h + 6}
-          rx="5"
+        <polygon
+          points={plot.svgPathPoints}
           fill="none"
           stroke={isSelected ? '#38bdf8' : '#f59e0b'}
           strokeWidth="2.5"
           strokeDasharray="4 4"
+          style={{ pointerEvents: 'none' }}
         />
       )}
 
-      {/* Status Center Pulse Marker Dot */}
+      {/* Status Center Marker Dot */}
       {(isHovered || isSelected || isSearched) && (
         <circle
           cx={centerX}
           cy={centerY}
-          r={isSelected ? 6 : 4}
+          r={isSelected ? 5 : 3.5}
           fill={statusColor}
           stroke="#ffffff"
-          strokeWidth="1.5"
+          strokeWidth="1.2"
           style={{
             pointerEvents: 'none',
             filter: `drop-shadow(0 0 6px ${statusColor})`,
@@ -124,21 +134,20 @@ export const PlotPolygon: React.FC<PlotPolygonProps> = memo(({
         />
       )}
 
-      {/* Optional or Dynamic Zoom Plot Number Label */}
+      {/* SVG Vector Text Label for Plot Number */}
       {shouldRenderLabel && (
         <text
           x={centerX}
-          y={centerY + 4}
+          y={centerY + 3}
           textAnchor="middle"
           fill="#ffffff"
-          fontSize={zoomScale >= 2.5 ? '13' : '11'}
-          fontWeight="800"
+          fontSize={zoomScale >= 2.5 ? '11' : '9'}
+          fontWeight="700"
           style={{
             pointerEvents: 'none',
             userSelect: 'none',
             fontFamily: 'Inter, system-ui, sans-serif',
-            textShadow: '0 1px 3px rgba(0, 0, 0, 0.9), 0 0 2px #000000',
-            letterSpacing: '-0.02em',
+            textShadow: '0 1px 2px rgba(0, 0, 0, 0.9)',
           }}
         >
           {plot.plotNo}

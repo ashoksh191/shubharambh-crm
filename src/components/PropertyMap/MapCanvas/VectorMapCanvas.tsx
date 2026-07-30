@@ -31,39 +31,10 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = ({
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [showKeyboardHelp, setShowKeyboardHelp] = useState<boolean>(false);
 
-  // Progressive Image Loading State: fast (366KB) -> HD (1.8MB) -> Lossless PNG (>2.0x zoom)
-  const [imageSrc, setImageSrc] = useState<string>('./assets/layout_map_fast.jpg');
-  const [isHdLoaded, setIsHdLoaded] = useState<boolean>(false);
-  const [isPngLoaded, setIsPngLoaded] = useState<boolean>(false);
-
-  // Step 1: Preload HD image after initial render
-  useEffect(() => {
-    const hdImg = new Image();
-    hdImg.src = './assets/layout_map_hd.jpg';
-    hdImg.onload = () => {
-      setIsHdLoaded(true);
-      setImageSrc('./assets/layout_map_hd.jpg');
-    };
-  }, []);
-
-  // Step 2: Preload & swap to Lossless PNG when zoom scale > 2.0x
-  useEffect(() => {
-    if (zoomScale >= 2.0 && !isPngLoaded) {
-      const pngImg = new Image();
-      pngImg.src = './assets/layout_map_hd.png';
-      pngImg.onload = () => {
-        setIsPngLoaded(true);
-        setImageSrc('./assets/layout_map_hd.png');
-      };
-    } else if (zoomScale < 2.0 && isHdLoaded) {
-      setImageSrc('./assets/layout_map_hd.jpg');
-    }
-  }, [zoomScale, isPngLoaded, isHdLoaded]);
-
   const handleZoomToPlot = useCallback((plot: EnhancedPlot) => {
     if (transformRef.current) {
       const { setTransform } = transformRef.current;
-      setTransform(-plot.x * 1.5 + 600, -plot.y * 1.5 + 400, 2.2, 400, 'easeOut');
+      setTransform(-plot.x * 2.0 + 700, -plot.y * 2.0 + 450, 2.8, 400, 'easeOut');
     }
   }, []);
 
@@ -79,10 +50,9 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = ({
     onHoverPlot(plot, e);
   }, [onHoverPlot]);
 
-  // Keyboard Shortcuts Listener (+, -, 0, F, Arrow Keys, Esc)
+  // Keyboard Shortcuts Listener (+, -, 0, F, L, Arrow Keys, Esc)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger shortcuts if user is typing inside input/textarea
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName)) {
         return;
       }
@@ -94,12 +64,12 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = ({
         case '+':
         case '=':
           e.preventDefault();
-          zoomIn(0.4);
+          zoomIn(0.5);
           break;
         case '-':
         case '_':
           e.preventDefault();
-          zoomOut(0.4);
+          zoomOut(0.5);
           break;
         case '0':
           e.preventDefault();
@@ -177,7 +147,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = ({
       {/* Floating Inventory Legend */}
       <MapLegend counts={statusCounts} />
 
-      {/* Floating Touch / Mobile Helper Badge */}
+      {/* Touch & Keyboard Helper Badge */}
       <div
         style={{
           position: 'absolute',
@@ -197,7 +167,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = ({
           boxShadow: '0 8px 20px rgba(0,0,0,0.4)',
         }}
       >
-        💡 Touch: Pinch to zoom • Drag to pan • Keys: <span style={{ color: '#38bdf8' }}>+ - 0 F L</span>
+        💡 SVG Vector Engine • Pinch / Wheel to zoom (up to 10x) • Drag to pan
       </div>
 
       {/* Keyboard Shortcuts Help Modal */}
@@ -229,23 +199,23 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = ({
             </button>
           </div>
           <div style={{ fontSize: '0.82rem', color: '#cbd5e1', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div><kbd style={kbdStyle}>+</kbd> / <kbd style={kbdStyle}>-</kbd> Zoom In / Zoom Out</div>
+            <div><kbd style={kbdStyle}>+</kbd> / <kbd style={kbdStyle}>-</kbd> Zoom In / Zoom Out (up to 10x)</div>
             <div><kbd style={kbdStyle}>0</kbd> Recenter & Reset Map View</div>
             <div><kbd style={kbdStyle}>F</kbd> Toggle Fullscreen Canvas</div>
             <div><kbd style={kbdStyle}>L</kbd> Toggle Plot Number Labels</div>
-            <div><kbd style={kbdStyle}>↑ ↓ ← →</kbd> Pan Map North/South/East/West</div>
+            <div><kbd style={kbdStyle}>↑ ↓ ← →</kbd> Pan Map View</div>
             <div><kbd style={kbdStyle}>Esc</kbd> Clear Plot Selection</div>
           </div>
         </div>
       )}
 
-      {/* Zoom Pan Pinch Canvas Wrapper */}
+      {/* Zoom Pan Pinch Canvas Wrapper (Up to 10x scale) */}
       <TransformWrapper
         ref={transformRef}
         initialScale={1}
-        minScale={0.7}
-        maxScale={6}
-        wheel={{ step: 0.08 }}
+        minScale={0.5}
+        maxScale={10}
+        wheel={{ step: 0.1 }}
         doubleClick={{ mode: 'reset' }}
         panning={{ velocityDisabled: true }}
         centerOnInit={true}
@@ -273,7 +243,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = ({
               }}
             >
               <button
-                onClick={() => zoomIn(0.4)}
+                onClick={() => zoomIn(0.5)}
                 style={controlBtnStyle}
                 title="Zoom In (+)"
               >
@@ -281,7 +251,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = ({
               </button>
 
               <button
-                onClick={() => zoomOut(0.4)}
+                onClick={() => zoomOut(0.5)}
                 style={controlBtnStyle}
                 title="Zoom Out (-)"
               >
@@ -326,31 +296,51 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = ({
               </button>
             </div>
 
-            {/* Transform Canvas Surface */}
+            {/* Transform Canvas Surface - Pure SVG Vector Rendering */}
             <TransformComponent
               wrapperStyle={{ width: '100%', height: '100%' }}
               contentStyle={{ width: '100%', height: '100%', willChange: 'transform' }}
             >
               <svg
-                viewBox="0 0 3508 2480"
+                viewBox="0 0 2384 1684"
                 style={{
                   width: '100%',
                   height: '100%',
                   display: 'block',
                   shapeRendering: 'geometricPrecision',
+                  background: '#0b0f19',
                 }}
               >
-                {/* Progressive 3-Stage Blueprint Image (Fast -> HD -> Lossless PNG) */}
-                <image
-                  href={imageSrc}
-                  x="0"
-                  y="0"
-                  width="3508"
-                  height="2480"
-                  preserveAspectRatio="none"
-                />
+                {/* SVG Blueprint Background & Sector Boundaries */}
+                <rect x="0" y="0" width="2384" height="1684" fill="#0b0f19" />
 
-                {/* Grouped SVG Plot Layer for Maximum Rendering Performance */}
+                {/* SVG Grid Overlay Lines */}
+                <defs>
+                  <pattern id="vector-grid" width="100" height="100" patternUnits="userSpaceOnUse">
+                    <path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="1" />
+                  </pattern>
+                </defs>
+                <rect x="0" y="0" width="2384" height="1684" fill="url(#vector-grid)" />
+
+                {/* Main Arterial Road Corridors */}
+                <g className="roads-layer" opacity="0.8">
+                  {/* 50' Main Boulevard Road */}
+                  <rect x="840" y="550" width="140" height="50" fill="rgba(30, 41, 59, 0.9)" stroke="#38bdf8" strokeWidth="1" />
+                  <text x="910" y="580" fill="#38bdf8" fontSize="12" fontWeight="700" textAnchor="middle">50'-0" MAIN BOULEVARD ROAD</text>
+
+                  {/* 40' Sector Roads */}
+                  <rect x="1560" y="340" width="140" height="40" fill="rgba(30, 41, 59, 0.9)" stroke="#94a3b8" strokeWidth="1" />
+                  <text x="1630" y="365" fill="#cbd5e1" fontSize="10" fontWeight="600" textAnchor="middle">40'-0" WIDE ROAD</text>
+                </g>
+
+                {/* Major Township Sector Labels */}
+                <g className="sector-labels" opacity="0.6">
+                  <text x="550" y="380" fill="#f59e0b" fontSize="22" fontWeight="800" letterSpacing="1">BLOCK A (RESIDENTIAL SECTOR)</text>
+                  <text x="1450" y="260" fill="#10b981" fontSize="22" fontWeight="800" letterSpacing="1">BLOCK B (PARK FACING SECTOR)</text>
+                  <text x="1650" y="1100" fill="#38bdf8" fontSize="22" fontWeight="800" letterSpacing="1">BLOCK C (GARDEN SECTOR)</text>
+                </g>
+
+                {/* Pure Vector SVG Plot Polygons Layer */}
                 <g className="plots-layer">
                   {plots.map((plot) => (
                     <PlotPolygon

@@ -1,28 +1,23 @@
-import plotsJsonData from '../data/plots.json';
+import plotsGeneratedData from '../data/plots.generated.json';
 import type { Plot } from '../types';
 import type { EnhancedPlot, EnhancedPlotStatus, PlotCategory, PlotHistoryStage } from '../types/propertyMap';
 
-export interface PlotJsonEntry {
-  plotNo: string;
-  block: 'Block A' | 'Block B' | 'Block C';
-  points: [number, number][];
-  dimensions: string;
-  size: number;
-  price: number;
-  status: EnhancedPlotStatus;
-  facing: string;
-  category: PlotCategory;
-  owner: string;
-  bookingAmount: number;
-  description: string;
+export interface PlotGeneratedEntry {
+  id: string;
+  polygon: [number, number][];
+  bbox: [number, number, number, number];
+  center: [number, number];
+  area: number;
+  nearbyRoad: string;
+  nearbyPark: string;
 }
 
-export const loadPlotsFromJson = (): Record<string, PlotJsonEntry> => {
-  return plotsJsonData as unknown as Record<string, PlotJsonEntry>;
+export const loadPlotsFromGeneratedJson = (): Record<string, PlotGeneratedEntry> => {
+  return plotsGeneratedData as unknown as Record<string, PlotGeneratedEntry>;
 };
 
 export const enhancePlotData = (rawPlots: Plot[]): EnhancedPlot[] => {
-  const plotsJson = loadPlotsFromJson();
+  const generatedPlots = loadPlotsFromGeneratedJson();
 
   const defaultAmenities = [
     { name: 'Shri Ganesha Temple', category: 'Temple' as const, distance: '100 Meters', icon: '🛕' },
@@ -65,29 +60,37 @@ export const enhancePlotData = (rawPlots: Plot[]): EnhancedPlot[] => {
     },
   ];
 
-  return rawPlots.map((p) => {
-    const jsonEntry = plotsJson[p.plotNo];
+  // Map input rawPlots using plots.generated.json coordinates
+  const enhancedList: EnhancedPlot[] = rawPlots.map((p) => {
+    const genEntry = generatedPlots[p.plotNo] || generatedPlots[p.id];
 
     let x = p.x;
     let y = p.y;
-    let w = p.w || 98;
-    let h = p.h || 56;
+    let w = p.w || 40;
+    let h = p.h || 24;
     let pointsStr = `${x},${y} ${x + w},${y} ${x + w},${y + h} ${x},${y + h}`;
+    let nearbyRoad = p.roadWidth || '40 Ft Sector Road';
+    let nearbyPark = 'Central Park';
 
-    if (jsonEntry && Array.isArray(jsonEntry.points)) {
-      pointsStr = jsonEntry.points.map(([px, py]) => `${px},${py}`).join(' ');
-      x = jsonEntry.points[0][0];
-      y = jsonEntry.points[0][1];
-      w = jsonEntry.points[1][0] - jsonEntry.points[0][0];
-      h = jsonEntry.points[2][1] - jsonEntry.points[1][1];
+    if (genEntry && Array.isArray(genEntry.polygon)) {
+      pointsStr = genEntry.polygon.map(([px, py]) => `${px},${py}`).join(' ');
+      x = genEntry.bbox[0];
+      y = genEntry.bbox[1];
+      w = genEntry.bbox[2] - genEntry.bbox[0];
+      h = genEntry.bbox[3] - genEntry.bbox[1];
+      nearbyRoad = genEntry.nearbyRoad || nearbyRoad;
+      nearbyPark = genEntry.nearbyPark || nearbyPark;
     }
 
+    const rawStatus = p.status as string;
     let enhancedStatus: EnhancedPlotStatus = 'available';
-    if (p.status === 'booked') enhancedStatus = 'booked';
-    else if (p.status === 'sold') enhancedStatus = 'sold';
-    else if (jsonEntry?.status) enhancedStatus = jsonEntry.status;
+    if (rawStatus === 'booked' || rawStatus === 'sold' || rawStatus === 'reserved' || rawStatus === 'unreleased') {
+      enhancedStatus = rawStatus as EnhancedPlotStatus;
+    }
 
-    const category = jsonEntry?.category || (p.plotNo.includes('A-') ? 'Residential' : 'Park Facing');
+
+
+    const category = (p.plotNo.includes('A-') ? 'Residential' : p.plotNo.includes('B-') ? 'Park Facing' : 'Commercial') as PlotCategory;
 
     const history = [
       {
@@ -153,11 +156,13 @@ export const enhancePlotData = (rawPlots: Plot[]): EnhancedPlot[] => {
       enhancedStatus,
       category,
       plcRate: category === 'Corner' ? 10 : category === 'Park Facing' ? 7.5 : category === 'Commercial' ? 15 : 0,
-      description: jsonEntry?.description || `Premium ${category} Plot in ${p.block} facing ${p.facing}. Direct access to ${p.roadWidth} Wide Road.`,
+      description: `Official Plot ${p.plotNo} near ${nearbyRoad} and ${nearbyPark}.`,
       amenities: defaultAmenities,
       history,
       documents: defaultDocs,
       assignedSalesperson: 'Vikramaditya Singh (Senior Lead)',
     };
   });
+
+  return enhancedList;
 };
