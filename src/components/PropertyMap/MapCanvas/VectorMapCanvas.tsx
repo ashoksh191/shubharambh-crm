@@ -35,7 +35,8 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = ({
     if (searchedPlot) {
       handleZoomToPlot(searchedPlot);
     }
-  }, [searchedPlot?.id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchedPlot]);
 
   return (
     <div

@@ -5,10 +5,11 @@ import { config } from './config/index.js';
 import { corsOptions } from './config/cors.js';
 import { helmetSecurityHeaders } from './config/helmet.js';
 import { logger } from './utils/logger.js';
-import { apiGlobalRateLimiter } from './middlewares/rateLimiter.js';
+import { apiGlobalRateLimiter, publicRateLimiter } from './middlewares/rateLimiter.js';
 import { csrfTokenGenerator, verifyCsrfToken } from './middlewares/csrfMiddleware.js';
 import { sanitizeInputs } from './middlewares/sanitizer.js';
 import { globalErrorHandler } from './middlewares/errorHandler.js';
+import { serveSecureUploadedFile } from './middlewares/uploadGuard.js';
 
 import authRoutes from './routes/authRoutes.js';
 import sessionRoutes from './routes/sessionRoutes.js';
@@ -32,8 +33,8 @@ app.use('/api', apiGlobalRateLimiter);
 // CSRF Protection Middleware
 app.use(csrfTokenGenerator);
 
-// Health Check Endpoint
-app.get('/health', (req, res) => {
+// Health Check Endpoint (Public Rate Limited)
+app.get('/health', publicRateLimiter, (req, res) => {
   res.status(200).json({
     status: 'UP',
     service: 'Shubharambh Green City CRM Advanced Security Server',
@@ -41,6 +42,9 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+// Secure Static Upload Storage Endpoint (Isolated & Non-Executable)
+app.get('/api/uploads/:filename', publicRateLimiter, serveSecureUploadedFile);
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -53,7 +57,7 @@ app.use('/api/approvals', verifyCsrfToken, approvalRoutes);
 app.use('*', (req, res) => {
   res.status(404).json({
     success: false,
-    error: 'Endpoint Not Found',
+    error: 'ENDPOINT_NOT_FOUND',
     message: `The requested endpoint '${req.originalUrl}' does not exist on this server.`,
   });
 });

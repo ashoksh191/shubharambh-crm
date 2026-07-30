@@ -14,18 +14,18 @@ export const AdminPlotEditorModal: React.FC<AdminPlotEditorModalProps> = ({
   onClose,
   onSaveSuccess,
 }) => {
-  if (!plot) return null;
-
-  const [price, setPrice] = useState<number>(plot.totalPrice);
-  const [status, setStatus] = useState<EnhancedPlotStatus>(plot.enhancedStatus);
-  const [category, setCategory] = useState<PlotCategory>(plot.category);
-  const [facing, setFacing] = useState<string>(plot.facing);
-  const [owner, setOwner] = useState<string>(plot.owner || 'Shubharambh Green City');
-  const [description, setDescription] = useState<string>(plot.description || '');
+  const [price, setPrice] = useState<number>(plot?.totalPrice ?? 0);
+  const [status, setStatus] = useState<EnhancedPlotStatus>(plot?.enhancedStatus ?? 'available');
+  const [category, setCategory] = useState<PlotCategory>(plot?.category ?? 'Residential');
+  const [facing, setFacing] = useState<string>(plot?.facing ?? 'East');
+  const [owner, setOwner] = useState<string>(plot?.owner || 'Shubharambh Green City');
+  const [description, setDescription] = useState<string>(plot?.description || '');
   const [galleryInput, setGalleryInput] = useState<string>(
     'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&auto=format&fit=crop&q=80'
   );
   const [isSaving, setIsSaving] = useState(false);
+
+  if (!plot) return null;
 
   const handleSave = async () => {
     setIsSaving(true);

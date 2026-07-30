@@ -6,15 +6,19 @@ export const globalErrorHandler = (
   err: any,
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ): void => {
+  // Always log complete error details server-side for debugging
   logger.error('Unhandled Server Exception:', {
-    message: err.message,
-    stack: err.stack,
+    name: err?.name,
+    message: err?.message,
+    stack: err?.stack,
     path: req.path,
     method: req.method,
+    ip: (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || req.socket.remoteAddress,
   });
 
+  // Handle Zod Schema Validation Errors
   if (err instanceof ZodError) {
     const formattedErrors = err.errors.map((e) => ({
       field: e.path.join('.'),
@@ -23,18 +27,45 @@ export const globalErrorHandler = (
 
     res.status(400).json({
       success: false,
-      error: 'Validation Error',
+      error: 'INVALID_INPUT',
+      message: 'Input validation failed. Please check the supplied parameters.',
       details: formattedErrors,
     });
     return;
   }
 
-  const statusCode = err.statusCode || 500;
-  const message = err.message || 'Internal Server Error';
+  // Handle JWT Auth Errors
+  if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
+    res.status(401).json({
+      success: false,
+      error: 'UNAUTHORIZED',
+      message: 'Authentication session invalid or expired.',
+    });
+    return;
+  }
+
+  // Handle Prisma / Database Errors (Hide database internal schema/paths)
+  if (err.code && typeof err.code === 'string' && err.code.startsWith('P')) {
+    res.status(400).json({
+      success: false,
+      error: 'DATABASE_ERROR',
+      message: 'A database constraint error occurred while processing your request.',
+    });
+    return;
+  }
+
+  const statusCode = typeof err.statusCode === 'number' ? err.statusCode : 500;
+
+  // In production or 500 errors, never leak stack traces, raw system errors, or file paths
+  const isProd = process.env.NODE_ENV === 'production';
+  const clientMessage =
+    statusCode >= 500 || isProd
+      ? 'An unexpected error occurred. Please try again later.'
+      : err.message || 'Internal Server Error';
 
   res.status(statusCode).json({
     success: false,
-    error: err.name || 'ServerError',
-    message: process.env.NODE_ENV === 'production' ? 'An internal error occurred.' : message,
+    error: err.name && statusCode < 500 ? err.name : 'SERVER_ERROR',
+    message: clientMessage,
   });
 };

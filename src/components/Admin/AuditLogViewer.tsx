@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { apiClient } from '../../services/apiClient';
 import type { AuditLogEntry } from '../../types/auth';
 
@@ -7,14 +7,14 @@ export const AuditLogViewer: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [page] = useState(1);
 
-  const fetchLogs = async () => {
+  const fetchLogs = useCallback(async () => {
     setLoading(true);
     try {
       const res = await apiClient.getAuditLogs(page);
       if (res.success) {
         setLogs(res.logs);
       }
-    } catch (e) {
+    } catch (_e) {
       // Mock data fallback for local demo
       setLogs([
         {
@@ -57,11 +57,11 @@ export const AuditLogViewer: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page]);
 
   useEffect(() => {
     fetchLogs();
-  }, [page]);
+  }, [fetchLogs]);
 
   return (
     <div style={{ padding: '1.5rem', maxWidth: '1200px', margin: '0 auto', color: '#f3f4f6' }}>

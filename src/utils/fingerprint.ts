@@ -30,7 +30,7 @@ const getCanvasHash = (): string => {
     ctx.fillText('Shubharambh Security CRM 2026', 4, 17);
 
     return simpleStringHash(canvas.toDataURL());
-  } catch (e) {
+  } catch (_e) {
     return 'canvas-blocked';
   }
 };
@@ -51,7 +51,7 @@ const getWebGLHash = (): string => {
       return simpleStringHash(`${vendor}~${renderer}`);
     }
     return 'webgl-basic';
-  } catch (e) {
+  } catch (_e) {
     return 'webgl-blocked';
   }
 };

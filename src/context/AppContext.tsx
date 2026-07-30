@@ -47,7 +47,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         if (Array.isArray(parsed) && parsed.length >= 900 && b317 && b317.y > 2000) {
           return parsed;
         }
-      } catch (e) {
+      } catch (_e) {
         console.warn('Resetting plots to fresh non-overlapping state...');
       }
     }

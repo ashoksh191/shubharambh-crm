@@ -3,6 +3,7 @@ import { AuthService } from '../services/authService.js';
 import { parseClientDeviceInfo } from '../utils/agentParser.js';
 import { recordAuditLog } from '../middlewares/auditLogger.js';
 import { AuthenticatedRequest } from '../middlewares/authMiddleware.js';
+import { recordFailedAuthAttempt, resetAuthAttemptState } from '../middlewares/rateLimiter.js';
 import {
   loginSchema,
   changePasswordSchema,
@@ -94,6 +95,10 @@ export class AuthController {
         targetId: result.user!.id,
       });
 
+      // Reset rate-limit attempt state on success
+      const ip = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || req.socket.remoteAddress || '127.0.0.1';
+      resetAuthAttemptState(ip, validated.identifier);
+
       res.status(200).json({
         success: true,
         message: 'Login successful.',
@@ -102,6 +107,8 @@ export class AuthController {
         session: result.session,
       });
     } catch (error) {
+      const ip = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || req.socket.remoteAddress || '127.0.0.1';
+      recordFailedAuthAttempt(ip, req.body?.identifier);
       next(error);
     }
   }
