@@ -18,7 +18,7 @@ import {
   FileCheck,
   Send,
   LogIn,
-  Sun
+  MoreHorizontal
 } from 'lucide-react';
 import '../../styles/LandingPage.css';
 
@@ -31,6 +31,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
   const { plots } = useApp();
   const { user: authUser, logout } = useAuth();
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  const [showThreeDotsMenu, setShowThreeDotsMenu] = useState(false);
   const [siteVisitForm, setSiteVisitForm] = useState({
     name: '',
     phone: '',
@@ -52,6 +53,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
   };
 
   const scrollToSection = (id: string) => {
+    setShowThreeDotsMenu(false);
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
@@ -83,7 +85,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
 
   return (
     <div className="lovable-landing-container">
-      {/* Top Header Navbar (SehatMitra Style) */}
+      {/* Top Header Navbar with 3-Dots Menu System */}
       <header className="sehat-navbar">
         <div className="sehat-navbar-inner">
           <div className="sehat-brand">
@@ -93,19 +95,60 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
             <span className="sehat-brand-title">Shubharambh Green City</span>
           </div>
 
-          <nav className="sehat-nav-menu">
-            <a href="#features" onClick={(e) => { e.preventDefault(); scrollToSection('features'); }}>Features</a>
-            <a href="#how-it-works" onClick={(e) => { e.preventDefault(); scrollToSection('how-it-works'); }}>How it works</a>
-            <a href="#government" onClick={(e) => { e.preventDefault(); scrollToSection('government'); }}>Legal & Registry</a>
-            <a href="#stories" onClick={(e) => { e.preventDefault(); scrollToSection('stories'); }}>Stories</a>
-            <a href="#faq" onClick={(e) => { e.preventDefault(); scrollToSection('faq'); }}>FAQ</a>
-          </nav>
-
-          <div className="sehat-nav-actions">
-            <button className="sehat-theme-btn" title="Toggle Theme">
-              <Sun size={18} />
+          {/* 3-Dots (...) Expandable Navigation Menu */}
+          <div className="landing-three-dots-container">
+            <button
+              className={`landing-three-dots-btn ${showThreeDotsMenu ? 'active' : ''}`}
+              onClick={() => setShowThreeDotsMenu(!showThreeDotsMenu)}
+              title="Tap for all features menu"
+            >
+              <MoreHorizontal size={22} className="three-dots-svg" />
+              <span>Features & Menu</span>
+              <ChevronDown size={14} className={`chevron-svg ${showThreeDotsMenu ? 'open' : ''}`} />
             </button>
 
+            {showThreeDotsMenu && (
+              <div className="landing-dropdown-menu">
+                <div className="dropdown-header-label">Township Sections</div>
+                <button className="dropdown-item" onClick={() => scrollToSection('features')}>
+                  ✨ Key Features & Amenities
+                </button>
+                <button className="dropdown-item" onClick={() => scrollToSection('how-it-works')}>
+                  🗺️ How It Works (3 Steps)
+                </button>
+                <button className="dropdown-item" onClick={() => scrollToSection('government')}>
+                  📜 Legal & Registry Proof
+                </button>
+                <button className="dropdown-item" onClick={() => scrollToSection('stories')}>
+                  ⭐ Customer Stories
+                </button>
+                <button className="dropdown-item" onClick={() => scrollToSection('faq')}>
+                  ❓ Frequently Asked Questions
+                </button>
+
+                <div className="dropdown-divider"></div>
+
+                <div className="dropdown-header-label">Quick Actions</div>
+                <button
+                  className="dropdown-item highlight"
+                  onClick={() => scrollToSection('book-visit')}
+                >
+                  🚗 Book Free Site Visit
+                </button>
+                <button className="dropdown-item" onClick={onNavigateToMap}>
+                  📐 Interactive 2D Plot Map
+                </button>
+                <button
+                  className="dropdown-item"
+                  onClick={() => alert('Support Helpline: +91 98765 43210 (24x7 Support)')}
+                >
+                  📞 Contact Helpline (+91 9876543210)
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="sehat-nav-actions">
             {authUser ? (
               <button className="sehat-signin-btn" onClick={logout} title="Sign Out">
                 <LogIn size={16} /> Sign out ({authUser.role})
