@@ -112,7 +112,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onBackToHome }) => {
     setIsLoading(true);
     try {
       await login(identifier || 'superadmin', password || 'Password@123456', rememberMe, '123456');
-    } catch (e) {
+    } catch (_e) {
       // Ignore
     } finally {
       setIsLoading(false);

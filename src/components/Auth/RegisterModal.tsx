@@ -39,7 +39,7 @@ export const RegisterModal: React.FC<Props> = ({ onClose, onSuccess }) => {
       if (res.success) {
         onSuccess(res.user);
       }
-    } catch (err: any) {
+    } catch (_err: any) {
       // Fallback local registration if backend server is not running
       const newUser = {
         id: 'user-custom-' + Date.now(),

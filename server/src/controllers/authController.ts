@@ -235,7 +235,7 @@ export class AuthController {
   static async enable2FA(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       if (!req.user) return;
-      const validated = twoFactorVerifySchema.parse(req.body);
+      twoFactorVerifySchema.parse(req.body);
 
       res.status(200).json({
         success: true,

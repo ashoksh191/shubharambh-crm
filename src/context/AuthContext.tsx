@@ -182,7 +182,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (!refreshed && !localStorage.getItem('sgc_auth_user')) {
           saveUserToState(null);
         }
-      } catch (err) {
+      } catch (_err) {
         // Keep saved user
       } finally {
         setIsLoading(false);
@@ -245,7 +245,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         saveUserToState(res.user);
         return { success: true };
       }
-    } catch (err: any) {
+    } catch (_err: any) {
       // Fallback local authentication
       const defaultMatch = Object.values(DEFAULT_USERS).find(
         (u) => u.username.toLowerCase() === identifier.toLowerCase() || u.email.toLowerCase() === identifier.toLowerCase()
@@ -280,7 +280,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             saveUserToState(customAuthUser);
             return { success: true };
           }
-        } catch (e) {
+        } catch (_e) {
           // ignore
         }
       }
@@ -305,7 +305,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const logout = async () => {
     try {
       await apiClient.logout();
-    } catch (e) {
+    } catch (_e) {
       // Ignore
     } finally {
       apiClient.setAccessToken(null);
@@ -316,7 +316,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const logoutAll = async () => {
     try {
       await apiClient.logoutAll();
-    } catch (e) {
+    } catch (_e) {
       // Ignore
     } finally {
       apiClient.setAccessToken(null);
@@ -339,7 +339,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       ]);
       if (sessRes.success) setSessions(sessRes.sessions);
       if (histRes.success) setLoginHistory(histRes.history);
-    } catch (e) {
+    } catch (_e) {
       setSessions([
         {
           id: 'sess-01',
@@ -373,7 +373,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       await apiClient.revokeSession(sessionId);
       setSessions((prev) => prev.filter((s) => s.id !== sessionId));
-    } catch (e) {
+    } catch (_e) {
       setSessions((prev) => prev.filter((s) => s.id !== sessionId));
     }
   };

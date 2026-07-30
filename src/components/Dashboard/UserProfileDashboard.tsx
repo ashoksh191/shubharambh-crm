@@ -16,7 +16,7 @@ export const UserProfileDashboard: React.FC = () => {
 
   useEffect(() => {
     fetchSessionsAndHistory();
-  }, []);
+  }, [fetchSessionsAndHistory]);
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();

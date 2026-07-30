@@ -14,7 +14,7 @@ import {
 } from '../utils/twoFactor.js';
 import { sendEmailOtpNotification } from '../utils/mailer.js';
 import { sendSmsOtpNotification } from '../utils/smsGateway.js';
-import { parseClientDeviceInfo, ClientDeviceInfo } from '../utils/agentParser.js';
+import { type ClientDeviceInfo } from '../utils/agentParser.js';
 import { config } from '../config/index.js';
 
 const prisma = new PrismaClient();
@@ -283,7 +283,7 @@ export class AuthService {
 
   static async refreshTokens(rawRefreshToken: string, deviceInfo: ClientDeviceInfo) {
     try {
-      const payload = verifyRefreshToken(rawRefreshToken);
+      verifyRefreshToken(rawRefreshToken);
       const tokenHash = hashToken(rawRefreshToken);
 
       const session = await prisma.session.findUnique({
@@ -333,7 +333,7 @@ export class AuthService {
           role: user.role,
         },
       };
-    } catch (error) {
+    } catch (_error) {
       throw { statusCode: 401, message: 'Invalid refresh token.' };
     }
   }

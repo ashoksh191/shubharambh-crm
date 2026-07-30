@@ -60,7 +60,7 @@ export const validateMagicBytes = (buffer: Buffer): UploadedFileValidationResult
  */
 export const sanitizeFilename = (originalName: string): string => {
   // Strip path traversal characters, null bytes, and non-alphanumeric chars
-  const cleanName = path.basename(originalName).replace(/[\0\r\n\t]/g, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+  const cleanName = path.basename(originalName).replace(/[\x00\r\n\t]/g, '').replace(/[^a-zA-Z0-9._-]/g, '_');
   const ext = path.extname(cleanName).toLowerCase();
   const safeBase = path.basename(cleanName, ext).substring(0, 30);
   const randomHash = crypto.randomBytes(8).toString('hex');

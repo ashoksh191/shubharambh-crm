@@ -22,7 +22,7 @@ export const TwoFactorSetupModal: React.FC<Props> = ({ onClose, onSuccess }) => 
         setQrCodeUrl(res.qrCodeDataUrl);
         setSecret(res.secret);
         setBackupCodes(res.backupCodes || []);
-      } catch (err: any) {
+      } catch (_err: any) {
         // Fallback mock QR code for local demo if offline
         setSecret('JBSWY3DPEHPK3PXP');
         setQrCodeUrl(
@@ -43,7 +43,7 @@ export const TwoFactorSetupModal: React.FC<Props> = ({ onClose, onSuccess }) => 
     try {
       await apiClient.enable2FA(otpInput);
       onSuccess();
-    } catch (err: any) {
+    } catch (_err: any) {
       if (otpInput.length === 6) {
         // Mock success for local demo
         onSuccess();

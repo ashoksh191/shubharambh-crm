@@ -2,10 +2,14 @@ import type { AuthUser, ActiveSession, LoginHistoryLog, AuditLogEntry } from '..
 
 const API_BASE_URL = 'http://localhost:5000/api';
 
+/**
+ * Singleton API Client for handling authenticated HTTP requests, CSRF protection,
+ * automatic token refreshing, and server communication.
+ */
 class ApiClient {
   private accessToken: string | null = null;
 
-  public setAccessToken(token: string | null) {
+  public setAccessToken(token: string | null): void {
     this.accessToken = token;
   }
 
@@ -18,6 +22,9 @@ class ApiClient {
     return match ? match[2] : null;
   }
 
+  /**
+   * Executes HTTP request with Authorization and CSRF tokens attached.
+   */
   public async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -39,29 +46,28 @@ class ApiClient {
       credentials: 'include', // Send HTTP-Only Cookies
     };
 
-    try {
-      const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
-      if (response.status === 401 && !endpoint.includes('/auth/login') && !endpoint.includes('/auth/refresh')) {
-        const refreshed = await this.refreshTokenSilently();
-        if (refreshed) {
-          headers['Authorization'] = `Bearer ${this.accessToken}`;
-          const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, { ...config, headers });
-          if (retryResponse.ok) return await retryResponse.json();
-        }
+    if (response.status === 401 && !endpoint.includes('/auth/login') && !endpoint.includes('/auth/refresh')) {
+      const refreshed = await this.refreshTokenSilently();
+      if (refreshed) {
+        headers['Authorization'] = `Bearer ${this.accessToken}`;
+        const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, { ...config, headers });
+        if (retryResponse.ok) return await retryResponse.json();
       }
-
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message || data.error || 'Request failed');
-      }
-
-      return data as T;
-    } catch (err: any) {
-      throw err;
     }
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || data.error || 'Request failed');
+    }
+
+    return data as T;
   }
 
+  /**
+   * Refreshes access token silently using HTTP-Only refresh cookie.
+   */
   public async refreshTokenSilently(): Promise<boolean> {
     try {
       const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
@@ -76,14 +82,14 @@ class ApiClient {
           return true;
         }
       }
-    } catch (e) {
+    } catch (_err) {
       this.setAccessToken(null);
     }
     return false;
   }
 
   // Auth endpoints
-  public async register(payload: any) {
+  public async register(payload: Record<string, any>) {
     return this.request<{ success: boolean; user: AuthUser; message?: string }>('/auth/register', {
       method: 'POST',
       body: JSON.stringify(payload),
@@ -151,7 +157,7 @@ class ApiClient {
 
   // Audit Logs
   public async getAuditLogs(page: number = 1) {
-    return this.request<{ success: boolean; logs: AuditLogEntry[]; pagination: any }>(
+    return this.request<{ success: boolean; logs: AuditLogEntry[]; pagination: Record<string, any> }>(
       `/audit?page=${page}`
     );
   }
