@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { EnhancedPlot, EnhancedPlotStatus } from '../../../types/propertyMap';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Clock, ShieldCheck, MapPin, Download, Share2, PhoneCall, FileText, Sparkles, User, Settings, ExternalLink, Calendar, MessageSquare, Edit3 } from 'lucide-react';
@@ -23,6 +23,18 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
   const { user: authUser } = useAuth();
   const [activeTab, setActiveTab] = useState<'overview' | 'gallery' | 'amenities' | 'history' | 'documents' | 'admin'>('overview');
   const [activeImageIdx, setActiveImageIdx] = useState(0);
+
+  // Close drawer on Escape key press
+  useEffect(() => {
+    if (!plot) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [plot, onClose]);
 
   if (!plot) return null;
 
@@ -95,6 +107,9 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
 
         {/* Sliding Side Drawer Card */}
         <motion.div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Plot Details Drawer for Plot ${plot.plotNo}`}
           initial={{ x: '100%' }}
           animate={{ x: 0 }}
           exit={{ x: '100%' }}

@@ -26,7 +26,7 @@ export const MapSearch: React.FC<MapSearchProps> = ({
     : [];
 
   return (
-    <div style={{ position: 'relative', width: '280px' }}>
+    <div role="search" aria-label="Master Blueprint Plot Search" style={{ position: 'relative', width: '280px' }}>
       <div
         style={{
           display: 'flex',
@@ -42,6 +42,9 @@ export const MapSearch: React.FC<MapSearchProps> = ({
         <input
           type="text"
           placeholder="Search A-101, Commercial..."
+          aria-label="Search Plot Number or Sector"
+          aria-autocomplete="list"
+          aria-expanded={showSuggestions && suggestions.length > 0}
           value={searchQuery}
           onChange={(e) => {
             onSearchChange(e.target.value);

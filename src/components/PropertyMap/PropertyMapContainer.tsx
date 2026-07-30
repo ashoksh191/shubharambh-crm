@@ -15,8 +15,10 @@ const AdminPlotEditorModal = lazy(() =>
   import('./Admin/AdminPlotEditorModal').then((m) => ({ default: m.AdminPlotEditorModal }))
 );
 
+import type { EnhancedPlot } from '../../types/propertyMap';
+
 interface PropertyMapContainerProps {
-  onOpenBooking: (plot: any) => void;
+  onOpenBooking: (plot: EnhancedPlot) => void;
   onOpenReceipt: (bookingId: string) => void;
   onOpenBond: (bookingId: string) => void;
 }
