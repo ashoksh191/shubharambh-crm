@@ -1,32 +1,34 @@
 [
   {
     "id": "COMM-001",
-    "name": "COMMERCIAL PLOT",
+    "name": "Commercial Hub — Main Gate",
     "type": "Commercial Hub & Retail",
-    "polygon": [
-      [
-        844.64,
-        493.21
-      ],
-      [
-        1004.64,
-        493.21
-      ],
-      [
-        1004.64,
-        593.21
-      ],
-      [
-        844.64,
-        593.21
-      ]
-    ],
-    "bbox": [
-      844.64,
-      493.21,
-      1004.64,
-      593.21
-    ],
-    "areaSqFt": 16000.0
+    "polygon": [[120, 620], [380, 620], [380, 800], [120, 800]],
+    "bbox": [120, 620, 380, 800],
+    "areaSqFt": 46800
+  },
+  {
+    "id": "COMM-002",
+    "name": "Shopping Complex — South",
+    "type": "Retail & Shopping",
+    "polygon": [[400, 1340], [740, 1340], [740, 1520], [400, 1520]],
+    "bbox": [400, 1340, 740, 1520],
+    "areaSqFt": 61200
+  },
+  {
+    "id": "COMM-003",
+    "name": "Commercial Block — East Wing",
+    "type": "Mixed Commercial",
+    "polygon": [[1650, 950], [1950, 950], [1950, 1100], [1650, 1100]],
+    "bbox": [1650, 950, 1950, 1100],
+    "areaSqFt": 45000
+  },
+  {
+    "id": "COMM-004",
+    "name": "Market Square — North",
+    "type": "Market & Convenience",
+    "polygon": [[1100, 80], [1400, 80], [1400, 155], [1100, 155]],
+    "bbox": [1100, 80, 1400, 155],
+    "areaSqFt": 22500
   }
 ]

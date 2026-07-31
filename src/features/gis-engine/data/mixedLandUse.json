@@ -1,0 +1,37 @@
+[
+  {
+    "id": "MLU-001",
+    "name": "Community Centre & Clubhouse",
+    "type": "community",
+    "polygon": [[460, 400], [700, 400], [700, 600], [460, 600]],
+    "bbox": [460, 400, 700, 600]
+  },
+  {
+    "id": "MLU-002",
+    "name": "Temple & Meditation Zone",
+    "type": "religious",
+    "polygon": [[200, 380], [400, 380], [400, 500], [200, 500]],
+    "bbox": [200, 380, 400, 500]
+  },
+  {
+    "id": "MLU-003",
+    "name": "School & Education Zone",
+    "type": "education",
+    "polygon": [[150, 150], [450, 150], [450, 340], [150, 340]],
+    "bbox": [150, 150, 450, 340]
+  },
+  {
+    "id": "MLU-004",
+    "name": "Healthcare & Wellness Centre",
+    "type": "healthcare",
+    "polygon": [[150, 900], [380, 900], [380, 1080], [150, 1080]],
+    "bbox": [150, 900, 380, 1080]
+  },
+  {
+    "id": "MLU-005",
+    "name": "Sports Complex & Gymnasium",
+    "type": "sports",
+    "polygon": [[150, 1120], [380, 1120], [380, 1300], [150, 1300]],
+    "bbox": [150, 1120, 380, 1300]
+  }
+]
