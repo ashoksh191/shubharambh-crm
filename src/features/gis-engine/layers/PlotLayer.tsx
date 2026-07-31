@@ -12,13 +12,7 @@ interface PlotLayerProps {
   onHoverPlot?: (plotId: string | null, e?: React.MouseEvent) => void;
 }
 
-const STATUS_COLORS: Record<PlotStatus, string> = {
-  available: '#10b981',
-  reserved: '#f59e0b',
-  booked: '#3b82f6',
-  sold: '#ef4444',
-  unreleased: '#64748b',
-};
+import { GIS_COLORS } from '../constants/gisConstants';
 
 const SinglePlotItem = memo(({
   plotId,
@@ -36,7 +30,7 @@ const SinglePlotItem = memo(({
   onHover?: (plotId: string | null, e?: React.MouseEvent) => void;
 }) => {
   const status: PlotStatus = (plot.status as PlotStatus) || 'available';
-  const statusColor = STATUS_COLORS[status] || '#10b981';
+  const statusColor = GIS_COLORS[status] || GIS_COLORS.available;
 
   let fill = 'rgba(16, 185, 129, 0.14)';
   let stroke = 'rgba(16, 185, 129, 0.45)';
