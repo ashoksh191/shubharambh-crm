@@ -7,46 +7,46 @@ interface LayerManagerProps {
   onToggleLayer: (layerKey: keyof LayerVisibilityState) => void;
 }
 
+const LAYER_CONFIG: Array<{
+  key: keyof LayerVisibilityState;
+  label: string;
+  activeColor: string;
+}> = [
+  { key: 'boundary', label: 'Township Boundary', activeColor: '#38bdf8' },
+  { key: 'parks', label: 'Parks & Amenities', activeColor: '#059669' },
+  { key: 'commercial', label: 'Commercial Zones', activeColor: '#7c3aed' },
+  { key: 'roads', label: 'Road Network', activeColor: '#f8fafc' },
+];
+
 export const LayerManager: React.FC<LayerManagerProps> = memo(({ layers, onToggleLayer }) => {
   return (
     <div style={containerStyle}>
       <div style={titleStyle}>
-        <Layers size={15} color="#38bdf8" />
-        <span>GIS Vector Layers</span>
+        <Layers size={13} color="#38bdf8" />
+        <span>Layers</span>
       </div>
 
       <div style={listStyle}>
-        <button
-          onClick={() => onToggleLayer('boundary')}
-          style={{ ...btnStyle, opacity: layers.boundary ? 1 : 0.55 }}
-        >
-          {layers.boundary ? <Eye size={14} color="#38bdf8" /> : <EyeOff size={14} color="#64748b" />}
-          <span>Township Boundary</span>
-        </button>
-
-        <button
-          onClick={() => onToggleLayer('roads')}
-          style={{ ...btnStyle, opacity: layers.roads ? 1 : 0.55 }}
-        >
-          {layers.roads ? <Eye size={14} color="#f59e0b" /> : <EyeOff size={14} color="#64748b" />}
-          <span>Road Network</span>
-        </button>
-
-        <button
-          onClick={() => onToggleLayer('commercial')}
-          style={{ ...btnStyle, opacity: layers.commercial ? 1 : 0.55 }}
-        >
-          {layers.commercial ? <Eye size={14} color="#8b5cf6" /> : <EyeOff size={14} color="#64748b" />}
-          <span>Commercial Zones</span>
-        </button>
-
-        <button
-          onClick={() => onToggleLayer('parks')}
-          style={{ ...btnStyle, opacity: layers.parks ? 1 : 0.55 }}
-        >
-          {layers.parks ? <Eye size={14} color="#10b981" /> : <EyeOff size={14} color="#64748b" />}
-          <span>Parks & Amenities</span>
-        </button>
+        {LAYER_CONFIG.map(({ key, label, activeColor }) => {
+          const isActive = layers[key];
+          return (
+            <button
+              key={key}
+              onClick={() => onToggleLayer(key)}
+              style={{
+                ...btnStyle,
+                opacity: isActive ? 1 : 0.45,
+                borderColor: isActive ? `${activeColor}30` : 'rgba(255, 255, 255, 0.06)',
+              }}
+            >
+              {isActive
+                ? <Eye size={12} color={activeColor} />
+                : <EyeOff size={12} color="#475569" />
+              }
+              <span style={{ fontSize: '0.72rem' }}>{label}</span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -56,45 +56,51 @@ LayerManager.displayName = 'LayerManager';
 
 const containerStyle: React.CSSProperties = {
   position: 'absolute',
-  top: '20px',
-  right: '20px',
+  top: '16px',
+  right: '16px',
   zIndex: 30,
-  background: 'rgba(15, 23, 42, 0.9)',
-  backdropFilter: 'blur(12px)',
-  border: '1px solid rgba(255, 255, 255, 0.15)',
-  borderRadius: '14px',
-  padding: '12px 14px',
+  background: 'rgba(15, 23, 42, 0.82)',
+  backdropFilter: 'blur(16px)',
+  WebkitBackdropFilter: 'blur(16px)',
+  border: '1px solid rgba(255, 255, 255, 0.10)',
+  borderRadius: '10px',
+  padding: '8px 10px',
   color: '#ffffff',
-  boxShadow: '0 12px 30px rgba(0, 0, 0, 0.5)',
+  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.45)',
+  minWidth: '150px',
 };
 
 const titleStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
-  gap: '8px',
-  fontSize: '0.85rem',
+  gap: '6px',
+  fontSize: '0.72rem',
   fontWeight: 700,
-  marginBottom: '10px',
-  color: '#cbd5e1',
+  marginBottom: '6px',
+  color: '#94a3b8',
+  textTransform: 'uppercase',
+  letterSpacing: '0.8px',
+  fontFamily: 'Inter, system-ui, sans-serif',
 };
 
 const listStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
-  gap: '6px',
+  gap: '3px',
 };
 
 const btnStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
-  gap: '8px',
-  background: 'rgba(255, 255, 255, 0.06)',
-  border: '1px solid rgba(255, 255, 255, 0.1)',
-  borderRadius: '8px',
-  padding: '6px 10px',
-  color: '#ffffff',
-  fontSize: '0.78rem',
-  fontWeight: 600,
+  gap: '6px',
+  background: 'rgba(255, 255, 255, 0.04)',
+  border: '1px solid rgba(255, 255, 255, 0.06)',
+  borderRadius: '6px',
+  padding: '4px 8px',
+  color: '#e2e8f0',
+  fontSize: '0.72rem',
+  fontWeight: 500,
   cursor: 'pointer',
-  transition: 'all 0.15s ease',
+  transition: 'background 150ms ease, opacity 150ms ease',
+  fontFamily: 'Inter, system-ui, sans-serif',
 };

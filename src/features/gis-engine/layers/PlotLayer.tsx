@@ -1,6 +1,7 @@
 import React, { memo, useCallback } from 'react';
 import type { PlotFeature, PlotStatus } from '../types/gis';
 import { formatSvgPoints } from '../utils/polygon';
+import { GIS_COLORS, GIS_FILL_OPACITY } from '../constants/gisConstants';
 import defaultPlotData from '../../../data/plots.generated.json';
 
 interface PlotLayerProps {
@@ -11,8 +12,6 @@ interface PlotLayerProps {
   onSelectPlot?: (plotId: string, plot: PlotFeature) => void;
   onHoverPlot?: (plotId: string | null, e?: React.MouseEvent) => void;
 }
-
-import { GIS_COLORS } from '../constants/gisConstants';
 
 const SinglePlotItem = memo(({
   plotId,
@@ -30,37 +29,19 @@ const SinglePlotItem = memo(({
   onHover?: (plotId: string | null, e?: React.MouseEvent) => void;
 }) => {
   const status: PlotStatus = (plot.status as PlotStatus) || 'available';
-  const statusColor = GIS_COLORS[status] || GIS_COLORS.available;
-
-  let fill = 'rgba(16, 185, 129, 0.14)';
-  let stroke = 'rgba(16, 185, 129, 0.45)';
+  const stroke = GIS_COLORS[status] || GIS_COLORS.available;
+  let fill = GIS_FILL_OPACITY[status] || GIS_FILL_OPACITY.available;
   let strokeWidth = 1.2;
   let filter = 'none';
 
   if (isSelected) {
-    fill = 'rgba(56, 189, 248, 0.45)';
-    stroke = '#38bdf8';
-    strokeWidth = 3.0;
-    filter = 'drop-shadow(0 0 12px rgba(56, 189, 248, 0.95))';
-  } else if (isHovered) {
-    fill = `${statusColor}44`;
-    stroke = statusColor;
+    fill = GIS_FILL_OPACITY.selected;
     strokeWidth = 2.5;
-    filter = `drop-shadow(0 0 10px ${statusColor})`;
-  } else {
-    if (status === 'reserved') {
-      fill = 'rgba(245, 158, 11, 0.15)';
-      stroke = 'rgba(245, 158, 11, 0.5)';
-    } else if (status === 'booked') {
-      fill = 'rgba(59, 130, 246, 0.18)';
-      stroke = 'rgba(59, 130, 246, 0.5)';
-    } else if (status === 'sold') {
-      fill = 'rgba(239, 68, 68, 0.2)';
-      stroke = 'rgba(239, 68, 68, 0.5)';
-    } else if (status === 'unreleased') {
-      fill = 'rgba(100, 116, 139, 0.15)';
-      stroke = 'rgba(100, 116, 139, 0.4)';
-    }
+    filter = 'drop-shadow(0 0 10px rgba(56, 189, 248, 0.9))';
+  } else if (isHovered) {
+    fill = 'rgba(56, 189, 248, 0.35)';
+    strokeWidth = 2.0;
+    filter = 'drop-shadow(0 0 8px rgba(56, 189, 248, 0.6))';
   }
 
   const pointsStr = formatSvgPoints(plot.polygon);
@@ -77,7 +58,7 @@ const SinglePlotItem = memo(({
       <polygon
         points={pointsStr}
         fill={fill}
-        stroke={stroke}
+        stroke={isSelected ? '#38bdf8' : stroke}
         strokeWidth={strokeWidth}
         onClick={(e) => {
           e.stopPropagation();
@@ -102,13 +83,13 @@ const SinglePlotItem = memo(({
         }}
         style={{
           cursor: 'pointer',
-          transition: 'fill 0.15s ease, stroke 0.15s ease, stroke-width 0.15s ease',
+          transition: 'fill 150ms ease, stroke 150ms ease, stroke-width 150ms ease',
           filter,
           pointerEvents: 'visiblePainted',
         }}
       />
 
-      {/* Selected Focus Indicator Ring */}
+      {/* Selected Focus Ring */}
       {isSelected && (
         <polygon
           points={pointsStr}

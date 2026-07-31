@@ -40,13 +40,13 @@ export const Viewport: React.FC<ViewportProps> = memo(({
           <>
             <div style={toolbarStyle}>
               <button onClick={() => zoomIn(0.5)} style={btnStyle} title="Zoom In">
-                <ZoomIn size={15} />
+                <ZoomIn size={14} />
               </button>
               <button onClick={() => zoomOut(0.5)} style={btnStyle} title="Zoom Out">
-                <ZoomOut size={15} />
+                <ZoomOut size={14} />
               </button>
               <button onClick={() => resetTransform()} style={btnStyle} title="Reset Viewport">
-                <RotateCcw size={14} />
+                <RotateCcw size={13} />
               </button>
             </div>
 
@@ -81,21 +81,23 @@ const toolbarStyle: React.CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   gap: '6px',
-  background: 'rgba(15, 23, 42, 0.85)',
-  backdropFilter: 'blur(10px)',
-  padding: '6px 10px',
-  borderRadius: '12px',
+  background: 'rgba(15, 23, 42, 0.88)',
+  backdropFilter: 'blur(16px)',
+  padding: '5px 8px',
+  borderRadius: '10px',
   border: '1px solid rgba(255, 255, 255, 0.12)',
+  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.45)',
 };
 
 const btnStyle: React.CSSProperties = {
-  background: 'rgba(255, 255, 255, 0.08)',
-  border: '1px solid rgba(255, 255, 255, 0.1)',
+  background: 'rgba(255, 255, 255, 0.06)',
+  border: '1px solid rgba(255, 255, 255, 0.08)',
   color: '#ffffff',
-  padding: '6px 10px',
+  padding: '6px 8px',
   borderRadius: '6px',
   cursor: 'pointer',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+  transition: 'background 150ms ease, transform 150ms ease',
 };

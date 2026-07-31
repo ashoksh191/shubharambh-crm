@@ -19,46 +19,53 @@ export const PlotTooltip: React.FC<PlotTooltipProps> = memo(({ plot, position })
     <div
       style={{
         position: 'fixed',
-        left: `${position.x + 14}px`,
-        top: `${position.y + 14}px`,
+        left: `${position.x + 16}px`,
+        top: `${position.y + 16}px`,
         zIndex: 9999,
-        background: 'rgba(15, 23, 42, 0.94)',
-        backdropFilter: 'blur(12px)',
-        border: `1.5px solid ${statusColor}`,
-        borderRadius: '12px',
-        padding: '10px 14px',
+        background: 'rgba(15, 23, 42, 0.92)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        border: '1px solid rgba(255, 255, 255, 0.12)',
+        borderLeft: `3px solid ${statusColor}`,
+        borderRadius: '8px',
+        padding: '8px 12px',
         color: '#ffffff',
         pointerEvents: 'none',
-        boxShadow: '0 12px 30px rgba(0,0,0,0.6)',
-        fontSize: '0.82rem',
-        minWidth: '180px',
-        transition: 'opacity 0.1s ease',
+        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.55)',
+        fontSize: '0.78rem',
+        minWidth: '170px',
+        maxWidth: '220px',
+        transition: 'opacity 150ms ease',
+        fontFamily: 'Inter, system-ui, sans-serif',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-        <span style={{ fontWeight: 800, fontSize: '0.95rem', color: '#ffffff' }}>
+      {/* Header Row */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '5px' }}>
+        <span style={{ fontWeight: 700, fontSize: '0.85rem', color: '#f1f5f9' }}>
           Plot {plot.plotNo || plot.id}
         </span>
         <span
           style={{
-            background: `${statusColor}22`,
-            border: `1px solid ${statusColor}`,
+            background: `${statusColor}18`,
+            border: `1px solid ${statusColor}60`,
             color: statusColor,
-            padding: '2px 8px',
+            padding: '1px 7px',
             borderRadius: '9999px',
-            fontSize: '0.7rem',
+            fontSize: '0.62rem',
             fontWeight: 700,
             textTransform: 'uppercase',
+            letterSpacing: '0.5px',
           }}
         >
           {status}
         </span>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', color: '#cbd5e1', fontSize: '0.78rem' }}>
-        <div><strong style={{ color: '#94a3b8' }}>Block:</strong> {plot.block || 'Block A'}</div>
-        <div><strong style={{ color: '#94a3b8' }}>Area:</strong> {area}</div>
-        <div><strong style={{ color: '#94a3b8' }}>Facing:</strong> {plot.nearbyPark ? 'Park Facing' : 'East'}</div>
+      {/* Detail Rows */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', color: '#cbd5e1', fontSize: '0.72rem' }}>
+        <div><span style={{ color: '#64748b', fontWeight: 600 }}>Block </span>{plot.block || 'Block A'}</div>
+        <div><span style={{ color: '#64748b', fontWeight: 600 }}>Area </span>{area}</div>
+        <div><span style={{ color: '#64748b', fontWeight: 600 }}>Facing </span>{plot.nearbyPark ? 'Park Facing' : 'East'}</div>
       </div>
     </div>
   );

@@ -31,6 +31,7 @@ export const InteractiveGisCanvas: React.FC<InteractiveGisCanvasProps> = ({
 }) => {
   const { layers, toggleLayer } = useLayerVisibility({ plots: true });
   const [hoverPosition, setHoverPosition] = useState<{ x: number; y: number } | null>(null);
+  const [viewportScale, setViewportScale] = useState<number>(1.0);
 
   // Memoize plot array for spatial indexing
   const plotItems = useMemo(() => {
@@ -59,6 +60,10 @@ export const InteractiveGisCanvas: React.FC<InteractiveGisCanvasProps> = ({
     setHoverPosition({ x: e.clientX, y: e.clientY });
   }, []);
 
+  const handleTransformChange = useCallback((scale: number) => {
+    setViewportScale(scale);
+  }, []);
+
   return (
     <div
       onMouseMove={handleMouseMove}
@@ -66,7 +71,7 @@ export const InteractiveGisCanvas: React.FC<InteractiveGisCanvasProps> = ({
     >
       <LayerManager layers={layers} onToggleLayer={toggleLayer} />
 
-      <Viewport>
+      <Viewport onTransformChange={handleTransformChange}>
         <div style={{ width: '100%', height: '100%' }} onClick={() => clearSelection()}>
           <SvgCanvas
             roads={roads}
@@ -74,6 +79,7 @@ export const InteractiveGisCanvas: React.FC<InteractiveGisCanvasProps> = ({
             commercialAreas={commercialAreas}
             boundaries={boundaries}
             layers={layers}
+            scale={viewportScale}
           />
         </div>
       </Viewport>
