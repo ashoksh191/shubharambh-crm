@@ -370,24 +370,6 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
                 </defs>
                 <rect x="0" y="0" width="2384" height="1684" fill="url(#vector-grid)" />
 
-                {/* Main Arterial Road Corridors */}
-                <g className="roads-layer" opacity="0.8">
-                  {/* 50' Main Boulevard Road */}
-                  <rect x="840" y="550" width="140" height="50" fill="rgba(30, 41, 59, 0.9)" stroke="#38bdf8" strokeWidth="1" />
-                  <text x="910" y="580" fill="#38bdf8" fontSize="12" fontWeight="700" textAnchor="middle">50'-0" MAIN BOULEVARD ROAD</text>
-
-                  {/* 40' Sector Roads */}
-                  <rect x="1560" y="340" width="140" height="40" fill="rgba(30, 41, 59, 0.9)" stroke="#94a3b8" strokeWidth="1" />
-                  <text x="1630" y="365" fill="#cbd5e1" fontSize="10" fontWeight="600" textAnchor="middle">40'-0" WIDE ROAD</text>
-                </g>
-
-                {/* Major Township Sector Labels */}
-                <g className="sector-labels" opacity="0.6">
-                  <text x="550" y="380" fill="#f59e0b" fontSize="22" fontWeight="800" letterSpacing="1">BLOCK A (RESIDENTIAL SECTOR)</text>
-                  <text x="1450" y="260" fill="#10b981" fontSize="22" fontWeight="800" letterSpacing="1">BLOCK B (PARK FACING SECTOR)</text>
-                  <text x="1650" y="1100" fill="#38bdf8" fontSize="22" fontWeight="800" letterSpacing="1">BLOCK C (GARDEN SECTOR)</text>
-                </g>
-
                 {/* Pure Vector SVG Plot Polygons Layer */}
                 <g className="plots-layer">
                   {plots.map((plot) => (
