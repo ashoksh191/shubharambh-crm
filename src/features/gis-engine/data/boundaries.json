@@ -1,37 +1,31 @@
 [
   {
     "id": "BOUND-001",
-    "name": "Shubharambh Green City — Outer Township Perimeter",
+    "name": "Shubharambh Green City Township Outer Perimeter",
     "boundaryType": "Outer Township Boundary",
-    "polygon": [[50, 50], [2334, 50], [2334, 1634], [50, 1634]],
-    "bbox": [50, 50, 2334, 1634]
-  },
-  {
-    "id": "BOUND-002",
-    "name": "Block A — North Residential Sector",
-    "boundaryType": "Block Perimeter Boundary",
-    "polygon": [[850, 160], [1560, 160], [1560, 650], [850, 650]],
-    "bbox": [850, 160, 1560, 650]
-  },
-  {
-    "id": "BOUND-003",
-    "name": "Block B — South Residential Sector",
-    "boundaryType": "Block Perimeter Boundary",
-    "polygon": [[750, 700], [1180, 700], [1180, 1320], [750, 1320]],
-    "bbox": [750, 700, 1180, 1320]
-  },
-  {
-    "id": "BOUND-004",
-    "name": "Block C — East Residential Sector",
-    "boundaryType": "Block Perimeter Boundary",
-    "polygon": [[1600, 160], [2310, 160], [2310, 900], [1600, 900]],
-    "bbox": [1600, 160, 2310, 900]
-  },
-  {
-    "id": "BOUND-005",
-    "name": "Block D — South-East Sector",
-    "boundaryType": "Block Perimeter Boundary",
-    "polygon": [[1200, 700], [2310, 700], [2310, 1320], [1200, 1320]],
-    "bbox": [1200, 700, 2310, 1320]
+    "polygon": [
+      [
+        50.0,
+        50.0
+      ],
+      [
+        2334.0,
+        50.0
+      ],
+      [
+        2334.0,
+        1634.0
+      ],
+      [
+        50.0,
+        1634.0
+      ]
+    ],
+    "bbox": [
+      50.0,
+      50.0,
+      2334.0,
+      1634.0
+    ]
   }
 ]
