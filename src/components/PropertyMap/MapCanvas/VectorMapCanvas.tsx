@@ -344,17 +344,21 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
                 {/* Layer 0: SVG Blueprint Background & Base Canvas */}
                 <rect x="0" y="0" width="2384" height="1684" fill="#0b0f19" />
 
-                {/* Layer 1: Restored High-Definition Master Architectural Layout Plan */}
+                {/* Layer 1: Restored Pure Vector Master Architectural Layout PDF Blueprint */}
                 {showBlueprintImage && (
                   <image
-                    href="./assets/layout_map_hd.png"
+                    href="./assets/layout_plan_master.svg"
                     x="0"
                     y="0"
                     width="2384"
                     height="1684"
                     preserveAspectRatio="none"
                     style={{ pointerEvents: 'none' }}
-                    opacity="0.85"
+                    opacity="0.95"
+                    onError={(e) => {
+                      // Fallback to high-res raster if SVG is unsupported
+                      (e.currentTarget as SVGImageElement).setAttribute('href', './assets/layout_map_hd.png');
+                    }}
                   />
                 )}
 
