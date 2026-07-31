@@ -30,11 +30,28 @@ export interface BoundaryFeature extends GISFeatureBase {
   polygon: Point2D[];
 }
 
+export type PlotStatus = 'available' | 'reserved' | 'booked' | 'sold' | 'unreleased';
+
+export interface PlotFeature {
+  id: string;
+  plotNo?: string;
+  block?: string;
+  status?: PlotStatus;
+  polygon: Point2D[];
+  bbox?: [number, number, number, number];
+  center?: Point2D;
+  areaSqFt?: number;
+  price?: number;
+  nearbyRoad?: string;
+  nearbyPark?: string;
+}
+
 export interface LayerVisibilityState {
   boundary: boolean;
   roads: boolean;
   commercial: boolean;
   parks: boolean;
+  plots?: boolean;
 }
 
 export interface GISViewportState {

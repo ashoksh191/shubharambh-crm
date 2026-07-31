@@ -4,6 +4,7 @@ import { BoundaryLayer } from '../layers/BoundaryLayer';
 import { RoadLayer } from '../layers/RoadLayer';
 import { CommercialLayer } from '../layers/CommercialLayer';
 import { ParkLayer } from '../layers/ParkLayer';
+import { PlotLayer } from '../layers/PlotLayer';
 
 interface SvgCanvasProps {
   roads: RoadFeature[];
@@ -54,8 +55,8 @@ export const SvgCanvas: React.FC<SvgCanvasProps> = memo(({
       {/* 4. Central Parks & Amenity Spans */}
       <ParkLayer parks={parks} visible={layers.parks} />
 
-      {/* 5. Future Plot Layer Slot */}
-      <g className="gis-future-plots-slot" style={{ pointerEvents: 'none' }} />
+      {/* 5. Production Plot Layer */}
+      <PlotLayer visible={layers.plots !== false} />
 
       {/* 6. Future Labels & HUD Slot */}
       <g className="gis-future-labels-slot" style={{ pointerEvents: 'none' }} />
