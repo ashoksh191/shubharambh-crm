@@ -77,15 +77,15 @@ export const enhancePlotData = (rawPlots: Plot[]): EnhancedPlot[] => {
   const enhancedList: EnhancedPlot[] = rawPlots.map((p) => {
     const genEntry = generatedPlots[p.plotNo] || generatedPlots[p.id];
 
-    let x = p.x;
-    let y = p.y;
+    let x = p.x || 0;
+    let y = p.y || 0;
     let w = p.w || 40;
     let h = p.h || 24;
-    let pointsStr = `${x},${y} ${x + w},${y} ${x + w},${y + h} ${x},${y + h}`;
+    let pointsStr = '';
     let nearbyRoad = p.roadWidth || '40 Ft Sector Road';
     let nearbyPark = 'Central Park';
 
-    if (genEntry && Array.isArray(genEntry.polygon)) {
+    if (genEntry && Array.isArray(genEntry.polygon) && genEntry.polygon.length >= 3) {
       pointsStr = genEntry.polygon.map(([px, py]) => `${px},${py}`).join(' ');
       x = genEntry.bbox[0];
       y = genEntry.bbox[1];
@@ -93,6 +93,17 @@ export const enhancePlotData = (rawPlots: Plot[]): EnhancedPlot[] => {
       h = genEntry.bbox[3] - genEntry.bbox[1];
       nearbyRoad = genEntry.nearbyRoad || nearbyRoad;
       nearbyPark = genEntry.nearbyPark || nearbyPark;
+    } else if (Array.isArray((p as any).points) && (p as any).points.length >= 3) {
+      const pts: [number, number][] = (p as any).points;
+      pointsStr = pts.map(([px, py]) => `${px},${py}`).join(' ');
+      const xs = pts.map(([px]) => px);
+      const ys = pts.map(([, py]) => py);
+      x = Math.min(...xs);
+      y = Math.min(...ys);
+      w = Math.max(...xs) - x;
+      h = Math.max(...ys) - y;
+    } else {
+      pointsStr = `${x},${y} ${x + w},${y} ${x + w},${y + h} ${x},${y + h}`;
     }
 
     const rawStatus = p.status as string;

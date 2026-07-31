@@ -183,6 +183,31 @@ def extract_township_data(pdf_path, output_json_path):
             "nearbyPark": closest_park
         }
 
+    # 3.5 Populate fallback polygon entries from plots.json for 100% plot coverage
+    plots_json_path = os.path.join(base_dir, "src", "data", "plots.json")
+    if os.path.exists(plots_json_path):
+        with open(plots_json_path, 'r', encoding='utf-8') as f:
+            raw_plots = json.load(f)
+            for pid, raw_p in raw_plots.items():
+                if pid not in plots_result and "points" in raw_p and len(raw_p["points"]) >= 3:
+                    pts = raw_p["points"]
+                    xs = [p[0] for p in pts]
+                    ys = [p[1] for p in pts]
+                    xmin, xmax = min(xs), max(xs)
+                    ymin, ymax = min(ys), max(ys)
+                    cx = round((xmin + xmax) / 2, 2)
+                    cy = round((ymin + ymax) / 2, 2)
+                    area = round((xmax - xmin) * (ymax - ymin), 2)
+                    plots_result[pid] = {
+                        "id": pid,
+                        "polygon": pts,
+                        "bbox": [xmin, ymin, xmax, ymax],
+                        "center": [cx, cy],
+                        "area": area,
+                        "nearbyRoad": raw_p.get("roadWidth", "40 Ft Sector Road"),
+                        "nearbyPark": "Central Green Park"
+                    }
+
     # 4. Save output file
     os.makedirs(os.path.dirname(output_json_path), exist_ok=True)
     with open(output_json_path, 'w', encoding='utf-8') as f:
