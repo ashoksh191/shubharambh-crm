@@ -24,6 +24,10 @@ export const SvgCanvas: React.FC<SvgCanvasProps> = memo(({
   layers,
   scale = 1.0,
 }) => {
+  const baseAssetUrl = (import.meta.env.BASE_URL || './').replace(/\/+$/, '');
+  const svgBlueprintUrl = `${baseAssetUrl}/assets/layout_plan_master.svg`;
+  const pngBlueprintUrl = `${baseAssetUrl}/assets/layout_map_hd.png`;
+
   return (
     <svg
       viewBox="0 0 2384 1684"
@@ -43,6 +47,21 @@ export const SvgCanvas: React.FC<SvgCanvasProps> = memo(({
         </pattern>
       </defs>
       <rect x="0" y="0" width="2384" height="1684" fill="url(#gis-grid-pattern)" style={{ pointerEvents: 'none' }} />
+
+      {/* 0. CAD Vector Master Architectural Blueprint Base Drawing */}
+      <image
+        href={svgBlueprintUrl}
+        x="0"
+        y="0"
+        width="2384"
+        height="1684"
+        preserveAspectRatio="none"
+        style={{ pointerEvents: 'none' }}
+        opacity="0.45"
+        onError={(e) => {
+          (e.currentTarget as SVGImageElement).setAttribute('href', pngBlueprintUrl);
+        }}
+      />
 
       {/* FAITHFUL ARCHITECTURAL VECTOR LAYERS (EXACTLY AS IN BLUEPRINT PDF) */}
 

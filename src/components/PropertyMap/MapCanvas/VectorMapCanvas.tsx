@@ -367,34 +367,32 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
                 </defs>
                 <rect x="0" y="0" width="2384" height="1684" fill="url(#vector-grid)" />
 
-                {/* Layer 1: Township Outer Perimeter Boundary Layer */}
+                {/* Layer 1: Master CAD Vector Drawing (ALWAYS present: 0.85 when Blueprint ON, 0.40 when Blueprint OFF) */}
+                <image
+                  href={svgBlueprintUrl}
+                  x="0"
+                  y="0"
+                  width="2384"
+                  height="1684"
+                  preserveAspectRatio="none"
+                  style={{ pointerEvents: 'none' }}
+                  opacity={showBlueprintImage ? 0.85 : 0.40}
+                  onError={(e) => {
+                    (e.currentTarget as SVGImageElement).setAttribute('href', pngBlueprintUrl);
+                  }}
+                />
+
+                {/* Layer 2: Township Outer Perimeter Boundary Layer */}
                 <BoundaryLayer boundaries={boundariesData as any[]} visible={true} />
 
-                {/* Layer 2: Central Parks & Amenity Reserves Layer */}
+                {/* Layer 3: Central Parks & Amenity Reserves Layer */}
                 <ParkLayer parks={parksData as any[]} visible={true} />
 
-                {/* Layer 3: Commercial Reserves Layer */}
+                {/* Layer 4: Commercial Reserves Layer */}
                 <CommercialLayer commercialAreas={commercialData as any[]} visible={true} />
 
-                {/* Layer 4: Road Network Corridors Layer */}
+                {/* Layer 5: Road Network Corridors Layer */}
                 <RoadLayer roads={roadsData as any[]} visible={true} />
-
-                {/* Layer 5: Architectural Master Layout PDF Overlay Image (when Blueprint ON) */}
-                {showBlueprintImage && (
-                  <image
-                    href={svgBlueprintUrl}
-                    x="0"
-                    y="0"
-                    width="2384"
-                    height="1684"
-                    preserveAspectRatio="none"
-                    style={{ pointerEvents: 'none' }}
-                    opacity="0.65"
-                    onError={(e) => {
-                      (e.currentTarget as SVGImageElement).setAttribute('href', pngBlueprintUrl);
-                    }}
-                  />
-                )}
 
                 {/* Layer 6: Pure Vector SVG Plot Polygons Layer */}
                 <g className="plots-layer">
