@@ -1,6 +1,5 @@
 import React, { memo } from 'react';
 import type { CommercialFeature } from '../types/gis';
-import { GIS_FILL_OPACITY, GIS_COLORS } from '../constants/gisConstants';
 
 interface CommercialLayerProps {
   commercialAreas: CommercialFeature[];
@@ -19,11 +18,11 @@ export const CommercialLayer: React.FC<CommercialLayerProps> = memo(({ commercia
           <g key={comm.id} className="commercial-group">
             <polygon
               points={pointsStr}
-              fill={GIS_FILL_OPACITY.commercial}
-              stroke={GIS_COLORS.commercial}
-              strokeWidth={1.5}
+              fill="rgba(139, 92, 246, 0.45)"
+              stroke="#8b5cf6"
+              strokeWidth={2}
               strokeDasharray="6 3"
-              opacity={0.88}
+              opacity={0.95}
             />
           </g>
         );

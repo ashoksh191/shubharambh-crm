@@ -5,6 +5,17 @@ import { PlotPolygon } from '../PlotPolygon/PlotPolygon';
 import { MapLegend } from '../Legend/MapLegend';
 import { ZoomIn, ZoomOut, RotateCcw, Maximize, Minimize, Tag, Keyboard, X, Layers } from 'lucide-react';
 
+import roadsData from '../../../features/gis-engine/data/roads.json';
+import parksData from '../../../features/gis-engine/data/parks.json';
+import commercialData from '../../../features/gis-engine/data/commercial.json';
+import boundariesData from '../../../features/gis-engine/data/boundaries.json';
+
+import { BoundaryLayer } from '../../../features/gis-engine/layers/BoundaryLayer';
+import { RoadLayer } from '../../../features/gis-engine/layers/RoadLayer';
+import { ParkLayer } from '../../../features/gis-engine/layers/ParkLayer';
+import { CommercialLayer } from '../../../features/gis-engine/layers/CommercialLayer';
+import { LabelLayer } from '../../../features/gis-engine/layers/LabelLayer';
+
 interface VectorMapCanvasProps {
   plots: EnhancedPlot[];
   selectedPlot: EnhancedPlot | null;
@@ -345,26 +356,8 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
                   background: '#0b0f19',
                 }}
               >
-                {/* Layer 0: SVG Blueprint Background & Base Canvas */}
+                {/* Layer 0: SVG Background Canvas */}
                 <rect x="0" y="0" width="2384" height="1684" fill="#0b0f19" />
-
-                {/* Layer 1: Restored Pure Vector Master Architectural Layout PDF Blueprint */}
-                {showBlueprintImage && (
-                  <image
-                    href={svgBlueprintUrl}
-                    x="0"
-                    y="0"
-                    width="2384"
-                    height="1684"
-                    preserveAspectRatio="none"
-                    style={{ pointerEvents: 'none' }}
-                    opacity="0.95"
-                    onError={(e) => {
-                      // Fallback to high-res raster if SVG is unsupported or fails to load
-                      (e.currentTarget as SVGImageElement).setAttribute('href', pngBlueprintUrl);
-                    }}
-                  />
-                )}
 
                 {/* SVG Grid Overlay Lines */}
                 <defs>
@@ -374,7 +367,36 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
                 </defs>
                 <rect x="0" y="0" width="2384" height="1684" fill="url(#vector-grid)" />
 
-                {/* Pure Vector SVG Plot Polygons Layer */}
+                {/* Layer 1: Township Outer Perimeter Boundary Layer */}
+                <BoundaryLayer boundaries={boundariesData as any[]} visible={true} />
+
+                {/* Layer 2: Central Parks & Amenity Reserves Layer */}
+                <ParkLayer parks={parksData as any[]} visible={true} />
+
+                {/* Layer 3: Commercial Reserves Layer */}
+                <CommercialLayer commercialAreas={commercialData as any[]} visible={true} />
+
+                {/* Layer 4: Road Network Corridors Layer */}
+                <RoadLayer roads={roadsData as any[]} visible={true} />
+
+                {/* Layer 5: Architectural Master Layout PDF Overlay Image (when Blueprint ON) */}
+                {showBlueprintImage && (
+                  <image
+                    href={svgBlueprintUrl}
+                    x="0"
+                    y="0"
+                    width="2384"
+                    height="1684"
+                    preserveAspectRatio="none"
+                    style={{ pointerEvents: 'none' }}
+                    opacity="0.65"
+                    onError={(e) => {
+                      (e.currentTarget as SVGImageElement).setAttribute('href', pngBlueprintUrl);
+                    }}
+                  />
+                )}
+
+                {/* Layer 6: Pure Vector SVG Plot Polygons Layer */}
                 <g className="plots-layer">
                   {plots.map((plot) => (
                     <PlotPolygon
@@ -390,6 +412,9 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
                     />
                   ))}
                 </g>
+
+                {/* Layer 7: Adaptive Level-of-Detail Vector Labels Layer */}
+                <LabelLayer scale={zoomScale} visible={true} />
               </svg>
             </TransformComponent>
           </>

@@ -1,7 +1,6 @@
 import React, { memo } from 'react';
 import type { ParkFeature } from '../types/gis';
 import { getPolygonCenter } from '../geometry/geometry';
-import { GIS_FILL_OPACITY, GIS_COLORS } from '../constants/gisConstants';
 
 interface ParkLayerProps {
   parks: ParkFeature[];
@@ -19,22 +18,22 @@ export const ParkLayer: React.FC<ParkLayerProps> = memo(({ parks, visible }) => 
 
         return (
           <g key={park.id} className="park-group">
-            {/* Soft Amenity Foliage Fill */}
+            {/* Bright Amenity Foliage Fill */}
             <polygon
               points={pointsStr}
-              fill={GIS_FILL_OPACITY.park}
-              stroke={GIS_COLORS.park}
-              strokeWidth={1.5}
-              opacity={0.9}
+              fill="rgba(16, 185, 129, 0.45)"
+              stroke="#059669"
+              strokeWidth={2}
+              opacity={0.95}
             />
 
-            {/* Vector Tree Canopy Icon at Centroid */}
-            <g transform={`translate(${cx - 8}, ${cy - 12}) scale(0.7)`} opacity={0.85}>
+            {/* Tree Canopy Icon at Centroid */}
+            <g transform={`translate(${cx - 8}, ${cy - 12}) scale(0.75)`} opacity={0.9}>
               <path
                 d="M 12 2 L 4 14 L 8 14 L 2 22 L 22 22 L 16 14 L 20 14 Z"
-                fill="#059669"
+                fill="#10b981"
                 stroke="#047857"
-                strokeWidth="1"
+                strokeWidth="1.2"
               />
               <rect x="10" y="22" width="4" height="5" fill="#78350f" />
             </g>

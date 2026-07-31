@@ -17,26 +17,26 @@ export const RoadLayer: React.FC<RoadLayerProps> = memo(({ roads, visible }) => 
         const is50Ft = road.widthFt >= 50;
         const is40Ft = road.widthFt >= 40 && road.widthFt < 50;
 
-        let fill = 'rgba(241, 245, 249, 0.85)';
-        let stroke = '#cbd5e1';
-        let strokeWidth = 1.0;
-        let dividerColor = '#94a3b8';
+        let fill = 'rgba(254, 240, 138, 0.9)'; // Bright road fill
+        let stroke = '#f59e0b';
+        let strokeWidth = 1.2;
+        let dividerColor = '#d97706';
 
         if (is50Ft) {
-          fill = 'rgba(248, 250, 252, 0.95)';
-          stroke = '#38bdf8';
-          strokeWidth = 1.6;
-          dividerColor = '#f59e0b';
+          fill = 'rgba(254, 240, 138, 0.98)';
+          stroke = '#f59e0b';
+          strokeWidth = 2.0;
+          dividerColor = '#ef4444';
         } else if (is40Ft) {
-          fill = 'rgba(241, 245, 249, 0.9)';
-          stroke = '#94a3b8';
-          strokeWidth = 1.2;
-          dividerColor = '#e2e8f0';
+          fill = 'rgba(254, 243, 199, 0.92)';
+          stroke = '#d97706';
+          strokeWidth = 1.5;
+          dividerColor = '#b45309';
         }
 
         return (
           <g key={road.id} className="road-group">
-            {/* Road Corridor Polygon Surface */}
+            {/* Road Corridor Surface Polygon */}
             <polygon
               points={polyPointsStr}
               fill={fill}
@@ -44,22 +44,22 @@ export const RoadLayer: React.FC<RoadLayerProps> = memo(({ roads, visible }) => 
               strokeWidth={strokeWidth}
               strokeLinejoin="round"
               strokeLinecap="round"
-              opacity={0.92}
+              opacity={0.95}
               style={{
-                filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35))',
+                filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5))',
               }}
             />
 
-            {/* Centerline Divider Marking */}
+            {/* Centerline Marking */}
             <polyline
               points={centerLinePointsStr}
               fill="none"
               stroke={dividerColor}
-              strokeWidth={is50Ft ? 1.5 : 1.0}
+              strokeWidth={is50Ft ? 1.8 : 1.2}
               strokeDasharray={is50Ft ? '6 4' : '4 4'}
               strokeLinejoin="round"
               strokeLinecap="round"
-              opacity={0.8}
+              opacity={0.9}
             />
           </g>
         );
