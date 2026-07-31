@@ -25,8 +25,6 @@ export const PlotPolygon: React.FC<PlotPolygonProps> = memo(({
   isSelected,
   isSearched,
   isHovered = false,
-  showLabels = false,
-  isZoomedIn = false,
   onSelect,
   onHover,
 }) => {
@@ -35,8 +33,8 @@ export const PlotPolygon: React.FC<PlotPolygonProps> = memo(({
   const centerY = plot.y + plot.h / 2;
 
   // Determine fill, stroke, and glow filter based on interaction state
-  let fill = 'rgba(16, 185, 129, 0.12)';
-  let stroke = 'rgba(16, 185, 129, 0.4)';
+  let fill = 'rgba(16, 185, 129, 0.25)';
+  let stroke = '#059669';
   let strokeWidth = 1.2;
   let filter = 'none';
 
@@ -51,24 +49,22 @@ export const PlotPolygon: React.FC<PlotPolygonProps> = memo(({
     strokeWidth = 3.0;
     filter = 'drop-shadow(0 0 14px rgba(245, 158, 11, 0.95))';
   } else if (isHovered) {
-    fill = `${statusColor}44`;
+    fill = `${statusColor}55`;
     stroke = statusColor;
     strokeWidth = 2.5;
     filter = `drop-shadow(0 0 10px ${statusColor})`;
   } else {
     if (plot.enhancedStatus === 'reserved') {
-      fill = 'rgba(245, 158, 11, 0.15)';
-      stroke = 'rgba(245, 158, 11, 0.5)';
+      fill = 'rgba(245, 158, 11, 0.25)';
+      stroke = '#d97706';
     } else if (plot.enhancedStatus === 'booked') {
-      fill = 'rgba(59, 130, 246, 0.18)';
-      stroke = 'rgba(59, 130, 246, 0.5)';
+      fill = 'rgba(59, 130, 246, 0.25)';
+      stroke = '#2563eb';
     } else if (plot.enhancedStatus === 'sold') {
-      fill = 'rgba(239, 68, 68, 0.2)';
-      stroke = 'rgba(239, 68, 68, 0.5)';
+      fill = 'rgba(239, 68, 68, 0.25)';
+      stroke = '#dc2626';
     }
   }
-
-  const shouldRenderLabel = showLabels || isZoomedIn;
 
   return (
     <g
@@ -90,6 +86,11 @@ export const PlotPolygon: React.FC<PlotPolygonProps> = memo(({
         }}
         onMouseEnter={(e) => onHover(plot, e)}
         onMouseLeave={() => onHover(null)}
+        onTouchStart={(e) => onHover(plot, e as any)}
+        onTouchEnd={(e) => {
+          e.preventDefault();
+          onSelect(plot);
+        }}
         onFocus={(e) => onHover(plot, e as any)}
         onBlur={() => onHover(null)}
         onKeyDown={(e) => {
@@ -134,25 +135,28 @@ export const PlotPolygon: React.FC<PlotPolygonProps> = memo(({
         />
       )}
 
-      {/* Dynamic Zoom Plot Number Label */}
-      {shouldRenderLabel && (
-        <text
-          x={centerX}
-          y={centerY + 3}
-          textAnchor="middle"
-          fill="#ffffff"
-          fontSize="9"
-          fontWeight="700"
-          style={{
-            pointerEvents: 'none',
-            userSelect: 'none',
-            fontFamily: 'Inter, system-ui, sans-serif',
-            textShadow: '0 1px 2px rgba(0, 0, 0, 0.9)',
-          }}
-        >
-          {plot.plotNo}
-        </text>
-      )}
+      {/* Ultra-Sharp SVG Vector Plot Number Label (ALWAYS RENDERED WITH CRISP VECTOR CONTRAST) */}
+      <text
+        x={centerX}
+        y={centerY + 3}
+        textAnchor="middle"
+        dominantBaseline="central"
+        fill="#ffffff"
+        fontSize="8.5px"
+        fontWeight="700"
+        style={{
+          pointerEvents: 'none',
+          userSelect: 'none',
+          fontFamily: 'Inter, system-ui, sans-serif',
+          letterSpacing: '0.3px',
+          paintOrder: 'stroke fill',
+          stroke: '#0b0f19',
+          strokeWidth: '2.5px',
+          strokeLinejoin: 'round',
+        }}
+      >
+        {plot.plotNo}
+      </text>
     </g>
   );
 }, (prevProps, nextProps) => {
