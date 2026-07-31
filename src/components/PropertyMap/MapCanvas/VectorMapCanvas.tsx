@@ -3,7 +3,7 @@ import { TransformWrapper, TransformComponent, type ReactZoomPanPinchRef } from 
 import type { EnhancedPlot, EnhancedPlotStatus } from '../../../types/propertyMap';
 import { PlotPolygon } from '../PlotPolygon/PlotPolygon';
 import { MapLegend } from '../Legend/MapLegend';
-import { ZoomIn, ZoomOut, RotateCcw, Maximize, Minimize, Tag, Keyboard, X } from 'lucide-react';
+import { ZoomIn, ZoomOut, RotateCcw, Maximize, Minimize, Tag, Keyboard, X, Layers } from 'lucide-react';
 
 interface VectorMapCanvasProps {
   plots: EnhancedPlot[];
@@ -28,6 +28,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
   const [hoveredPlotState, setHoveredPlotState] = useState<EnhancedPlot | null>(null);
   const [zoomScale, setZoomScale] = useState<number>(1);
   const [showLabelsOverride, setShowLabelsOverride] = useState<boolean>(false);
+  const [showBlueprintImage, setShowBlueprintImage] = useState<boolean>(true);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [showKeyboardHelp, setShowKeyboardHelp] = useState<boolean>(false);
 
@@ -296,6 +297,19 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
               </button>
 
               <button
+                onClick={() => setShowBlueprintImage((prev) => !prev)}
+                style={{
+                  ...controlBtnStyle,
+                  background: showBlueprintImage ? 'rgba(245, 158, 11, 0.3)' : 'rgba(255,255,255,0.08)',
+                  borderColor: showBlueprintImage ? '#f59e0b' : 'transparent',
+                  color: showBlueprintImage ? '#f59e0b' : '#ffffff',
+                }}
+                title="Toggle Architectural Master Layout Plan"
+              >
+                <Layers size={15} /> Blueprint Map
+              </button>
+
+              <button
                 onClick={() => setIsFullscreen((prev) => !prev)}
                 style={controlBtnStyle}
                 title="Toggle Fullscreen (F)"
@@ -327,8 +341,22 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
                   background: '#0b0f19',
                 }}
               >
-                {/* SVG Blueprint Background & Sector Boundaries */}
+                {/* Layer 0: SVG Blueprint Background & Base Canvas */}
                 <rect x="0" y="0" width="2384" height="1684" fill="#0b0f19" />
+
+                {/* Layer 1: Restored High-Definition Master Architectural Layout Plan */}
+                {showBlueprintImage && (
+                  <image
+                    href="./assets/layout_map_hd.png"
+                    x="0"
+                    y="0"
+                    width="2384"
+                    height="1684"
+                    preserveAspectRatio="none"
+                    style={{ pointerEvents: 'none' }}
+                    opacity="0.85"
+                  />
+                )}
 
                 {/* SVG Grid Overlay Lines */}
                 <defs>
