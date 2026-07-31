@@ -188,7 +188,13 @@ def extract_township_data(pdf_path, output_json_path):
     with open(output_json_path, 'w', encoding='utf-8') as f:
         json.dump(plots_result, f, indent=2)
 
-    # 5. Output logging required by specification
+    # 5. Extract vector SVG layout blueprint
+    svg_output_path = os.path.join(base_dir, "public", "assets", "layout_plan_master.svg")
+    svg_image_data = page.get_svg_image()
+    with open(svg_output_path, "w", encoding="utf-8") as svg_file:
+        svg_file.write(svg_image_data)
+
+    # 6. Output logging required by specification
     print(f"Extraction Pipeline Summary:")
     print(f"-----------------------------")
     print(f"Total labels found: {len(plot_labels)}")
@@ -196,6 +202,7 @@ def extract_township_data(pdf_path, output_json_path):
     print(f"Matched plots: {matched_plots}")
     print(f"Unmatched plots: {unmatched_plots}")
     print(f"Output generated successfully: {output_json_path}")
+    print(f"Vector SVG layout plan generated: {svg_output_path}")
 
 
 if __name__ == "__main__":

@@ -132,6 +132,10 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
 
   const isZoomedIn = zoomScale >= 1.2;
 
+  const baseAssetUrl = (import.meta.env.BASE_URL || './').replace(/\/+$/, '');
+  const svgBlueprintUrl = `${baseAssetUrl}/assets/layout_plan_master.svg`;
+  const pngBlueprintUrl = `${baseAssetUrl}/assets/layout_map_hd.png`;
+
   return (
     <div
       ref={containerRef}
@@ -347,7 +351,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
                 {/* Layer 1: Restored Pure Vector Master Architectural Layout PDF Blueprint */}
                 {showBlueprintImage && (
                   <image
-                    href="./assets/layout_plan_master.svg"
+                    href={svgBlueprintUrl}
                     x="0"
                     y="0"
                     width="2384"
@@ -356,8 +360,8 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
                     style={{ pointerEvents: 'none' }}
                     opacity="0.95"
                     onError={(e) => {
-                      // Fallback to high-res raster if SVG is unsupported
-                      (e.currentTarget as SVGImageElement).setAttribute('href', './assets/layout_map_hd.png');
+                      // Fallback to high-res raster if SVG is unsupported or fails to load
+                      (e.currentTarget as SVGImageElement).setAttribute('href', pngBlueprintUrl);
                     }}
                   />
                 )}
