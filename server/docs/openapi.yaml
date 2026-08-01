@@ -1,0 +1,49 @@
+openapi: 3.1.0
+info:
+  title: Shubharambh CRM Enterprise REST API
+  version: 1.0.0-rc1
+  description: Production-grade OpenAPI 3.1 REST API specification for Shubharambh Green City CRM.
+  contact:
+    name: Shubharambh Engineering Team
+    email: dev@shubharambh.com
+servers:
+  - url: http://localhost:5000
+    description: Local Development Express API Server
+  - url: https://crm.shubharambh.com/api/v1
+    description: Production Kubernetes HTTPS Gateway
+security:
+  - bearerAuth: []
+paths:
+  /api/v1/auth/login:
+    post:
+      summary: User Login & JWT Authentication
+      tags:
+        - Authentication
+      security: []
+      responses:
+        '200':
+          description: Successful login
+  /api/v1/plots:
+    get:
+      summary: List All Plots (Redis Cached)
+      tags:
+        - Plots
+      responses:
+        '200':
+          description: List of plots
+  /api/v1/booking:
+    post:
+      summary: Create Plot Booking (Server-Authoritative OCC)
+      tags:
+        - Booking
+      responses:
+        '201':
+          description: Booking committed
+        '409':
+          description: Concurrency conflict
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

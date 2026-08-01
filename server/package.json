@@ -15,6 +15,7 @@
   "dependencies": {
     "@prisma/client": "^6.4.0",
     "@types/ioredis": "^4.28.10",
+    "@types/swagger-ui-express": "^4.1.8",
     "@types/ua-parser-js": "^0.7.39",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
@@ -28,8 +29,10 @@
     "nodemailer": "^9.0.3",
     "otplib": "^12.0.1",
     "qrcode": "^1.5.4",
+    "swagger-ui-express": "^5.0.1",
     "ua-parser-js": "^2.0.10",
     "winston": "^3.17.0",
+    "yaml": "^2.9.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {

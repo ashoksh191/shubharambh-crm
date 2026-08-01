@@ -82,6 +82,47 @@ app.get('/metrics', publicRateLimiter, (_req, res) => {
   res.status(200).json(metricsService.getMetricsReport());
 });
 
+// Interactive Swagger UI & Redoc OpenAPI Documentation Endpoints
+import swaggerUi from 'swagger-ui-express';
+import fs from 'fs';
+import path from 'path';
+
+let openApiSpec: any = {};
+try {
+  const specPath = path.join(process.cwd(), 'docs', 'openapi.json');
+  if (fs.existsSync(specPath)) {
+    openApiSpec = JSON.parse(fs.readFileSync(specPath, 'utf8'));
+  }
+} catch (_e) {
+  // Ignore fallback
+}
+
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
+
+app.get('/redoc', publicRateLimiter, (_req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Shubharambh CRM API Documentation</title>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
+        <style>body { margin: 0; padding: 0; }</style>
+      </head>
+      <body>
+        <redoc spec-url='/docs/openapi.json'></redoc>
+        <script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>
+      </body>
+    </html>
+  `);
+});
+
+app.get('/docs/openapi.json', publicRateLimiter, (_req, res) => {
+  res.json(openApiSpec);
+});
+
 // Secure Static Upload Storage Endpoint (Isolated & Non-Executable)
 app.get('/api/uploads/:filename', publicRateLimiter, serveSecureUploadedFile);
 

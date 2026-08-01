@@ -1,0 +1,208 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Shubharambh CRM Enterprise REST API",
+    "version": "1.0.0-rc1",
+    "description": "Production-grade OpenAPI 3.1 REST API specification for Shubharambh Green City CRM (GIS Township, OCC Plot Booking, MLM Sales Engine & SRE Telemetry).",
+    "contact": {
+      "name": "Shubharambh Engineering Team",
+      "email": "dev@shubharambh.com",
+      "url": "https://shubharambh.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Local Development Express API Server"
+    },
+    {
+      "url": "https://crm.shubharambh.com/api/v1",
+      "description": "Production Kubernetes HTTPS Gateway"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/api/v1/auth/login": {
+      "post": {
+        "summary": "User Login & JWT Authentication",
+        "tags": ["Authentication"],
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful login returning Access Token & user profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/400BadRequest" },
+          "401": { "$ref": "#/components/responses/401Unauthorized" }
+        }
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "summary": "Silent JWT Access Token Renewal",
+        "tags": ["Authentication"],
+        "responses": {
+          "200": {
+            "description": "Issued fresh Access Token using HttpOnly refresh cookie"
+          },
+          "401": { "$ref": "#/components/responses/401Unauthorized" }
+        }
+      }
+    },
+    "/api/v1/plots": {
+      "get": {
+        "summary": "List All Plots (Redis Cached)",
+        "tags": ["Plots"],
+        "parameters": [
+          { "name": "status", "in": "query", "schema": { "type": "string" } },
+          { "name": "block", "in": "query", "schema": { "type": "string" } },
+          { "name": "search", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of plots with status and pricing"
+          }
+        }
+      }
+    },
+    "/api/v1/booking": {
+      "post": {
+        "summary": "Create Plot Booking (Server-Authoritative OCC)",
+        "tags": ["Booking"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBookingRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Booking committed successfully"
+          },
+          "409": {
+            "description": "Optimistic Concurrency Control conflict (Plot already booked)"
+          }
+        }
+      }
+    },
+    "/api/v1/customers": {
+      "get": {
+        "summary": "List Customer KYC Records",
+        "tags": ["Customers"],
+        "responses": {
+          "200": { "description": "Customer list" }
+        }
+      }
+    },
+    "/api/v1/audit": {
+      "get": {
+        "summary": "Fetch Security Audit Trail Logs",
+        "tags": ["Audit"],
+        "responses": {
+          "200": { "description": "Paginated audit logs" }
+        }
+      }
+    },
+    "/api/v1/sessions/active": {
+      "get": {
+        "summary": "List User Active Devices & Sessions",
+        "tags": ["Sessions"],
+        "responses": {
+          "200": { "description": "Active session array" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "LoginRequest": {
+        "type": "object",
+        "required": ["identifier", "password"],
+        "properties": {
+          "identifier": { "type": "string", "example": "superadmin" },
+          "password": { "type": "string", "example": "Password@123456" }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": true },
+          "accessToken": { "type": "string", "example": "eyJhbGciOiJIUzI1Ni..." },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "email": { "type": "string" },
+              "role": { "type": "string", "example": "SUPER_ADMIN" }
+            }
+          }
+        }
+      },
+      "CreateBookingRequest": {
+        "type": "object",
+        "required": ["plotId", "customerName", "customerPhone", "bookingAmount", "paymentMode", "utrNumber"],
+        "properties": {
+          "plotId": { "type": "string", "example": "plot-101-guid" },
+          "customerName": { "type": "string", "example": "Rajesh Kumar" },
+          "customerPhone": { "type": "string", "example": "9876543210" },
+          "bookingAmount": { "type": "number", "example": 50000 },
+          "paymentMode": { "type": "string", "example": "UPI" },
+          "utrNumber": { "type": "string", "example": "UTR998877665544" }
+        }
+      }
+    },
+    "responses": {
+      "400BadRequest": {
+        "description": "Validation error",
+        "content": {
+          "application/json": {
+            "example": { "success": false, "message": "Invalid request payload" }
+          }
+        }
+      },
+      "401Unauthorized": {
+        "description": "Unauthorized access",
+        "content": {
+          "application/json": {
+            "example": { "success": false, "message": "Authentication token expired or missing" }
+          }
+        }
+      }
+    }
+  }
+}
