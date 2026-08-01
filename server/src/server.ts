@@ -1,6 +1,7 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import { PrismaClient } from '@prisma/client';
 import { config } from './config/index.js';
 import { corsOptions } from './config/cors.js';
 import { helmetSecurityHeaders } from './config/helmet.js';
@@ -21,6 +22,7 @@ import plotRoutes from './routes/plotRoutes.js';
 import customerRoutes from './routes/customerRoutes.js';
 
 const app = express();
+const prisma = new PrismaClient();
 
 // Trust reverse proxy headers (e.g. Nginx, Cloudflare) for secure IP extraction
 app.set('trust proxy', 1);
@@ -39,14 +41,34 @@ app.use('/api', apiGlobalRateLimiter);
 // CSRF Protection Middleware
 app.use(csrfTokenGenerator);
 
-// Health Check Endpoint (Public Rate Limited)
-app.get('/health', publicRateLimiter, (req, res) => {
+// Health Liveness Check Endpoint (Public Rate Limited)
+app.get('/health', publicRateLimiter, (_req, res) => {
   res.status(200).json({
     status: 'UP',
     service: 'Shubharambh Green City CRM Enterprise Server',
     environment: config.nodeEnv,
+    uptimeSeconds: Math.floor(process.uptime()),
     timestamp: new Date().toISOString(),
   });
+});
+
+// Production Readiness Endpoint (Verifies Database Connection)
+app.get('/ready', publicRateLimiter, async (_req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.status(200).json({
+      status: 'READY',
+      database: 'CONNECTED',
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err: any) {
+    logger.error('Readiness Healthcheck Failed:', { message: err?.message });
+    res.status(503).json({
+      status: 'UNREADY',
+      database: 'DISCONNECTED',
+      error: 'Database connection failed during readiness check.',
+    });
+  }
 });
 
 // Secure Static Upload Storage Endpoint (Isolated & Non-Executable)
@@ -83,9 +105,34 @@ app.use(globalErrorHandler);
 
 // Start Express Server
 const PORT = config.port;
-app.listen(PORT, () => {
-  logger.info(`🚀 Enterprise Backend Security Engine running on http://localhost:${PORT}`);
+const server = app.listen(PORT, () => {
+  logger.info(`🚀 Enterprise Backend Engine running on http://localhost:${PORT}`);
   logger.info(`🛡️ Environment: ${config.nodeEnv} | CORS Client: ${config.clientUrl}`);
 });
+
+// Graceful Shutdown Handlers
+const handleGracefulShutdown = async (signal: string) => {
+  logger.info(`🛑 Received ${signal}. Initiating graceful shutdown...`);
+  server.close(async () => {
+    logger.info('HTTP server closed.');
+    try {
+      await prisma.$disconnect();
+      logger.info('Database connection disconnected.');
+      process.exit(0);
+    } catch (err) {
+      logger.error('Error disconnecting database:', err);
+      process.exit(1);
+    }
+  });
+
+  // Force exit after 10 seconds timeout
+  setTimeout(() => {
+    logger.error('Could not close connections in time, forcing exit.');
+    process.exit(1);
+  }, 10000);
+};
+
+process.on('SIGTERM', () => handleGracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => handleGracefulShutdown('SIGINT'));
 
 export default app;

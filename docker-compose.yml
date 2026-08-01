@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  # ====================================================
+  # Database Service: PostgreSQL 16
+  # ====================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: shubharambh_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: production_password_change_me
+      POSTGRES_DB: shubharambh_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d shubharambh_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ====================================================
+  # Cache Service: Redis 7
+  # ====================================================
+  redis:
+    image: redis:7-alpine
+    container_name: shubharambh_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ====================================================
+  # Backend API Server: Express.js + Prisma Engine
+  # ====================================================
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: shubharambh_backend
+    restart: always
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      DATABASE_URL: "postgresql://postgres:production_password_change_me@postgres:5432/shubharambh_db?schema=public"
+      REDIS_URL: "redis://redis:6379"
+      JWT_ACCESS_SECRET: "prod_access_secret_super_secure_32bytes_min_length"
+      JWT_REFRESH_SECRET: "prod_refresh_secret_super_secure_32bytes_min_length"
+      CORS_ORIGIN: "http://localhost"
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  # ====================================================
+  # Frontend Web Client: Nginx Reverse Proxy
+  # ====================================================
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: shubharambh_frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
+  redis_data:

@@ -1,4 +1,4 @@
-name: Shubharambh CRM CI Pipeline
+name: Enterprise Production CI/CD Pipeline
 
 on:
   push:
@@ -7,31 +7,39 @@ on:
     branches: [ main ]
 
 jobs:
-  validate-and-build:
-    name: Install, Lint, Type Check, Test & Build
+  verify:
+    name: Build & Test Pipeline
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout Repository
+      - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: 🟢 Setup Node.js Environment (v20)
+      - name: Setup Node.js Environment
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
 
-      - name: 📦 Install Project Dependencies
+      - name: Install Dependencies
         run: npm ci
 
-      - name: 🧹 Execute Code Linting (Oxlint / ESLint)
+      - name: Code Quality & Linting
         run: npm run lint
 
-      - name: 🔍 Execute TypeScript Type Check
-        run: npm run type-check
+      - name: Static Type Checking
+        run: npm run typecheck
 
-      - name: 🧪 Execute Vitest Test Suite
+      - name: Unit & Integration Tests
         run: npm run test
 
-      - name: 🚀 Execute Production Build
+      - name: Server Build & Prisma Generation
+        run: |
+          cd server
+          npm ci
+          npx prisma generate
+          npm run build
+          cd ..
+
+      - name: Frontend Web Build
         run: npm run build
