@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shubharambh-config
+  namespace: shubharambh-production
+  labels:
+    app.kubernetes.io/name: shubharambh-crm
+    app.kubernetes.io/component: configuration
+data:
+  NODE_ENV: "production"
+  PORT: "5000"
+  REDIS_HOST: "shubharambh-redis-svc"
+  REDIS_PORT: "6379"
+  CORS_ORIGIN: "https://crm.shubharambh.com"

@@ -1,0 +1,57 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shubharambh-ingress
+  namespace: shubharambh-production
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
+  labels:
+    app.kubernetes.io/name: shubharambh-crm
+    app.kubernetes.io/component: ingress
+spec:
+  tls:
+    - hosts:
+        - crm.shubharambh.com
+      secretName: shubharambh-tls-cert
+  rules:
+    - host: crm.shubharambh.com
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: shubharambh-backend-svc
+                port:
+                  number: 5000
+          - path: /health
+            pathType: Exact
+            backend:
+              service:
+                name: shubharambh-backend-svc
+                port:
+                  number: 5000
+          - path: /ready
+            pathType: Exact
+            backend:
+              service:
+                name: shubharambh-backend-svc
+                port:
+                  number: 5000
+          - path: /metrics
+            pathType: Exact
+            backend:
+              service:
+                name: shubharambh-backend-svc
+                port:
+                  number: 5000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: shubharambh-frontend-svc
+                port:
+                  number: 80
