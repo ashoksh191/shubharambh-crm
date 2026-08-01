@@ -1,7 +1,6 @@
-import { PrismaClient, Role, UserStatus } from '@prisma/client';
+import { Role, UserStatus } from '@prisma/client';
+import { prisma } from '../config/database.js';
 import { hashPassword } from '../utils/password.js';
-
-const prisma = new PrismaClient();
 
 export class UserService {
   static async getUserProfile(userId: string) {

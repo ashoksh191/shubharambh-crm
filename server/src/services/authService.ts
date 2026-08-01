@@ -1,4 +1,5 @@
-import { PrismaClient, Role, UserStatus } from '@prisma/client';
+import { Role, UserStatus } from '@prisma/client';
+import { prisma } from '../config/database.js';
 import { hashPassword, verifyPassword } from '../utils/password.js';
 import {
   generateAccessToken,
@@ -16,8 +17,6 @@ import { sendEmailOtpNotification } from '../utils/mailer.js';
 import { sendSmsOtpNotification } from '../utils/smsGateway.js';
 import { type ClientDeviceInfo } from '../utils/agentParser.js';
 import { config } from '../config/index.js';
-
-const prisma = new PrismaClient();
 
 // In-memory OTP storage for 2FA validation
 const otpStore = new Map<string, { code: string; expiresAt: number }>();

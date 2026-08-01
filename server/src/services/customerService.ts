@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../config/database.js';
 
 export const listCustomersService = async (page = 1, limit = 20) => {
   const skip = (page - 1) * limit;

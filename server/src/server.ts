@@ -1,8 +1,8 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import { PrismaClient } from '@prisma/client';
 import { config } from './config/index.js';
+import { prisma } from './config/database.js';
 import { corsOptions } from './config/cors.js';
 import { helmetSecurityHeaders } from './config/helmet.js';
 import { logger } from './utils/logger.js';
@@ -25,7 +25,6 @@ import plotRoutes from './routes/plotRoutes.js';
 import customerRoutes from './routes/customerRoutes.js';
 
 const app = express();
-const prisma = new PrismaClient();
 
 // Trust reverse proxy headers (e.g. Nginx, Cloudflare) for secure IP extraction
 app.set('trust proxy', 1);

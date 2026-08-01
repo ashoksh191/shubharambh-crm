@@ -1,9 +1,8 @@
 import { Response, NextFunction } from 'express';
-import { PrismaClient, Role } from '@prisma/client';
+import { Role } from '@prisma/client';
+import { prisma } from '../config/database.js';
 import { AuthenticatedRequest } from './authMiddleware.js';
 import { recordAuditLog } from './auditLogger.js';
-
-const prisma = new PrismaClient();
 
 export interface AuthorizeOptions {
   roles?: (Role | string)[];

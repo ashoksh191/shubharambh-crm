@@ -1,10 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../config/database.js';
 import { parseClientDeviceInfo } from '../utils/agentParser.js';
 import { AuthenticatedRequest } from './authMiddleware.js';
 import { logger } from '../utils/logger.js';
 import { metricsService } from '../services/metricsService.js';
-
-const prisma = new PrismaClient();
 
 export interface AuditParams {
   req: AuthenticatedRequest;
