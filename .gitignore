@@ -31,3 +31,8 @@ server/logs
 *.njsproj
 *.sln
 *.sw?
+
+# Playwright Test Reports
+playwright-report/
+test-results/
+
