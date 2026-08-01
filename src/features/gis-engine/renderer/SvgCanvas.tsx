@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import type { RoadFeature, ParkFeature, CommercialFeature, BoundaryFeature, LayerVisibilityState, GisRenderMode } from '../types/gis';
 import type { EnhancedPlot } from '../../../types/propertyMap';
 import { BoundaryLayer } from '../layers/BoundaryLayer';
@@ -13,6 +13,13 @@ import defaultRoadsData from '../data/roads.json';
 import defaultParksData from '../data/parks.json';
 import defaultCommercialData from '../data/commercial.json';
 import defaultBoundariesData from '../data/boundaries.json';
+
+export interface ViewportBounds {
+  minX: number;
+  minY: number;
+  maxX: number;
+  maxY: number;
+}
 
 export interface SvgCanvasProps {
   mode?: GisRenderMode;
@@ -29,6 +36,7 @@ export interface SvgCanvasProps {
   hoveredPlot?: EnhancedPlot | null;
   showLabels?: boolean;
   isZoomedIn?: boolean;
+  viewport?: ViewportBounds | null;
   onSelectPlot?: (plot: EnhancedPlot) => void;
   onHoverPlot?: (plot: EnhancedPlot | null, e?: React.MouseEvent) => void;
 }
@@ -48,12 +56,44 @@ export const SvgCanvas: React.FC<SvgCanvasProps> = memo(({
   hoveredPlot = null,
   showLabels = false,
   isZoomedIn = false,
+  viewport = null,
   onSelectPlot = () => {},
   onHoverPlot = () => {},
 }) => {
   const baseAssetUrl = (import.meta.env.BASE_URL || './').replace(/\/+$/, '');
   const svgBlueprintUrl = `${baseAssetUrl}/assets/layout_plan_master.svg`;
   const pngBlueprintUrl = `${baseAssetUrl}/assets/layout_map_hd.png`;
+
+  // High-Performance Spatial Viewport Culling: Only render polygons intersecting current viewport
+  const visiblePlots = useMemo(() => {
+    if (!viewport) return plots;
+
+    return plots.filter((plot) => {
+      // ALWAYS render selected, searched, or hovered plot so selection & hover never break
+      if (
+        (selectedPlot && selectedPlot.id === plot.id) ||
+        (searchedPlot && searchedPlot.id === plot.id) ||
+        (hoveredPlot && hoveredPlot.id === plot.id)
+      ) {
+        return true;
+      }
+
+      const plotMinX = plot.x;
+      const plotMinY = plot.y;
+      const plotMaxX = plot.x + plot.w;
+      const plotMaxY = plot.y + plot.h;
+
+      return !(
+        plotMaxX < viewport.minX ||
+        plotMinX > viewport.maxX ||
+        plotMaxY < viewport.minY ||
+        plotMinY > viewport.maxY
+      );
+    });
+  }, [plots, viewport, selectedPlot, searchedPlot, hoveredPlot]);
+
+  // Adaptive Level-of-Detail (LOD): Control label visibility based on zoom scale
+  const isLodLabelVisible = scale >= 0.6 || showLabels;
 
   return (
     <svg
@@ -93,16 +133,16 @@ export const SvgCanvas: React.FC<SvgCanvasProps> = memo(({
             }}
           />
 
-          {/* Interactive Plot Polygons Layer */}
+          {/* Interactive Plot Polygons Layer (Spatial Culled) */}
           <g className="plots-layer">
-            {plots.map((plot) => (
+            {visiblePlots.map((plot) => (
               <PlotPolygon
                 key={plot.id}
                 plot={plot}
                 isSelected={selectedPlot?.id === plot.id}
                 isSearched={searchedPlot?.id === plot.id}
                 isHovered={hoveredPlot?.id === plot.id}
-                showLabels={showLabels}
+                showLabels={isLodLabelVisible}
                 isZoomedIn={isZoomedIn}
                 onSelect={onSelectPlot}
                 onHover={onHoverPlot}
@@ -111,7 +151,7 @@ export const SvgCanvas: React.FC<SvgCanvasProps> = memo(({
           </g>
 
           {/* Adaptive Level-of-Detail Labels Layer */}
-          <LabelLayer scale={scale} visible={true} />
+          <LabelLayer scale={scale} visible={isLodLabelVisible} />
         </>
       )}
 
@@ -133,14 +173,14 @@ export const SvgCanvas: React.FC<SvgCanvasProps> = memo(({
           {/* 5. Production Plot Layer */}
           {plots.length > 0 ? (
             <g className="plots-layer">
-              {plots.map((plot) => (
+              {visiblePlots.map((plot) => (
                 <PlotPolygon
                   key={plot.id}
                   plot={plot}
                   isSelected={selectedPlot?.id === plot.id}
                   isSearched={searchedPlot?.id === plot.id}
                   isHovered={hoveredPlot?.id === plot.id}
-                  showLabels={showLabels}
+                  showLabels={isLodLabelVisible}
                   isZoomedIn={isZoomedIn}
                   onSelect={onSelectPlot}
                   onHover={onHoverPlot}
@@ -152,7 +192,7 @@ export const SvgCanvas: React.FC<SvgCanvasProps> = memo(({
           )}
 
           {/* 6. Adaptive Level-of-Detail Labels Layer */}
-          <LabelLayer scale={scale} visible={true} />
+          <LabelLayer scale={scale} visible={isLodLabelVisible} />
         </>
       )}
     </svg>

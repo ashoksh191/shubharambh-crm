@@ -3,7 +3,7 @@ import { TransformWrapper, TransformComponent, type ReactZoomPanPinchRef } from 
 import type { EnhancedPlot, EnhancedPlotStatus } from '../../../types/propertyMap';
 import type { GisRenderMode } from '../../../features/gis-engine/types/gis';
 import { GIS_RENDER_MODE } from '../../../features/gis-engine/constants/gisConstants';
-import { SvgCanvas } from '../../../features/gis-engine/renderer/SvgCanvas';
+import { SvgCanvas, type ViewportBounds } from '../../../features/gis-engine/renderer/SvgCanvas';
 import { MapLegend } from '../Legend/MapLegend';
 import { ZoomIn, ZoomOut, RotateCcw, Maximize, Minimize, Tag, Keyboard, X, Layers, Code } from 'lucide-react';
 
@@ -34,6 +34,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [showKeyboardHelp, setShowKeyboardHelp] = useState<boolean>(false);
   const [renderMode, setRenderMode] = useState<GisRenderMode>(GIS_RENDER_MODE);
+  const [viewportBounds, setViewportBounds] = useState<ViewportBounds | null>(null);
 
   // Exact plot centering based on container bounds & target scale
   const handleZoomToPlot = useCallback((plot: EnhancedPlot) => {
@@ -61,6 +62,27 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
       handleZoomToPlot(searchedPlot);
     }
   }, [searchedPlot, handleZoomToPlot]);
+
+  // Dynamic Viewport Bounding Box Calculation for Spatial Culling
+  const handleTransform = useCallback((ref: any) => {
+    if (!ref?.state) return;
+    const { positionX, positionY, scale } = ref.state;
+    setZoomScale(scale);
+
+    const cWidth = containerRef.current?.clientWidth || 1200;
+    const cHeight = containerRef.current?.clientHeight || 700;
+
+    const scaleX = cWidth / 2384;
+    const scaleY = cHeight / 1684;
+
+    const margin = 150 / scale; // Safety padding margin in SVG coordinate space
+    const minX = (-positionX / (scale * scaleX)) - margin;
+    const minY = (-positionY / (scale * scaleY)) - margin;
+    const maxX = minX + (cWidth / (scale * scaleX)) + (margin * 2);
+    const maxY = minY + (cHeight / (scale * scaleY)) + (margin * 2);
+
+    setViewportBounds({ minX, minY, maxX, maxY });
+  }, []);
 
   // Hover handler wrapper
   const handlePlotHover = useCallback((plot: EnhancedPlot | null, e?: React.MouseEvent) => {
@@ -187,7 +209,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
           boxShadow: '0 8px 20px rgba(0,0,0,0.4)',
         }}
       >
-        💡 Enterprise GIS Engine • Mode: <span style={{ color: renderMode === 'production' ? '#10b981' : '#38bdf8', fontWeight: 700 }}>{renderMode.toUpperCase()}</span> • Pinch / Wheel to zoom (up to 10x) • Drag to pan
+        💡 Enterprise GIS Engine • Mode: <span style={{ color: renderMode === 'production' ? '#10b981' : '#38bdf8', fontWeight: 700 }}>{renderMode.toUpperCase()}</span> • Pinch / Wheel to zoom (up to 10x) • Spatial Culling: ACTIVE
       </div>
 
       {/* Keyboard Shortcuts Help Modal */}
@@ -200,31 +222,31 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
             zIndex: 30,
             background: 'rgba(15, 23, 42, 0.95)',
             backdropFilter: 'blur(16px)',
-            border: '1.5px solid #38bdf8',
+            padding: '16px 20px',
             borderRadius: '16px',
-            padding: '18px 20px',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.7)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
             color: '#ffffff',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
             maxWidth: '320px',
-            width: '100%',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-            <strong style={{ fontSize: '1rem', color: '#ffffff' }}>⌨️ Keyboard Shortcuts</strong>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: '#f59e0b' }}>Keyboard Shortcuts</h4>
             <button
               onClick={() => setShowKeyboardHelp(false)}
-              style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
+              style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
             >
-              <X size={18} />
+              <X size={16} />
             </button>
           </div>
-          <div style={{ fontSize: '0.82rem', color: '#cbd5e1', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div><kbd style={kbdStyle}>+</kbd> / <kbd style={kbdStyle}>-</kbd> Zoom In / Zoom Out (up to 10x)</div>
-            <div><kbd style={kbdStyle}>0</kbd> Recenter & Reset Map View</div>
-            <div><kbd style={kbdStyle}>F</kbd> Toggle Fullscreen Canvas</div>
-            <div><kbd style={kbdStyle}>L</kbd> Toggle Plot Number Labels</div>
-            <div><kbd style={kbdStyle}>↑ ↓ ← →</kbd> Pan Map View</div>
-            <div><kbd style={kbdStyle}>Esc</kbd> Clear Plot Selection</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '8px 14px', fontSize: '0.8rem', color: '#cbd5e1' }}>
+            <kbd style={kbdStyle}>+</kbd> <span>Zoom In</span>
+            <kbd style={kbdStyle}>-</kbd> <span>Zoom Out</span>
+            <kbd style={kbdStyle}>0</kbd> <span>Recenter Map</span>
+            <kbd style={kbdStyle}>F</kbd> <span>Toggle Fullscreen</span>
+            <kbd style={kbdStyle}>L</kbd> <span>Toggle Plot Labels</span>
+            <kbd style={kbdStyle}>↑ ↓ ← →</kbd> <span>Pan Viewport</span>
+            <kbd style={kbdStyle}>Esc</kbd> <span>Deselect Plot</span>
           </div>
         </div>
       )}
@@ -239,9 +261,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
         doubleClick={{ mode: 'reset' }}
         panning={{ velocityDisabled: true }}
         centerOnInit={true}
-        onTransform={(ref: any) => {
-          if (ref?.state?.scale) setZoomScale(ref.state.scale);
-        }}
+        onTransform={handleTransform}
       >
         {({ zoomIn, zoomOut, resetTransform }) => (
           <>
@@ -358,6 +378,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
                 hoveredPlot={hoveredPlotState}
                 showLabels={showLabelsOverride}
                 isZoomedIn={isZoomedIn}
+                viewport={viewportBounds}
                 onSelectPlot={onSelectPlot}
                 onHoverPlot={handlePlotHover}
               />
@@ -373,25 +394,26 @@ VectorMapCanvas.displayName = 'VectorMapCanvas';
 
 const controlBtnStyle: React.CSSProperties = {
   background: 'rgba(255, 255, 255, 0.08)',
-  border: '1px solid rgba(255, 255, 255, 0.1)',
-  color: '#ffffff',
+  border: '1px solid rgba(255, 255, 255, 0.15)',
+  borderRadius: '10px',
   padding: '8px 12px',
-  borderRadius: '8px',
+  color: '#ffffff',
+  fontSize: '0.8rem',
+  fontWeight: 600,
   cursor: 'pointer',
-  fontWeight: 700,
-  fontSize: '0.85rem',
   display: 'flex',
   alignItems: 'center',
-  gap: '5px',
+  gap: '6px',
   transition: 'all 0.15s ease',
 };
 
 const kbdStyle: React.CSSProperties = {
-  background: 'rgba(255, 255, 255, 0.15)',
-  border: '1px solid rgba(255, 255, 255, 0.3)',
-  borderRadius: '4px',
+  background: 'rgba(255, 255, 255, 0.12)',
+  border: '1px solid rgba(255, 255, 255, 0.2)',
+  borderRadius: '6px',
   padding: '2px 6px',
-  fontSize: '0.75rem',
   fontWeight: 700,
-  color: '#38bdf8',
+  fontSize: '0.75rem',
+  color: '#f59e0b',
+  textAlign: 'center',
 };
