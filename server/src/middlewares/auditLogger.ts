@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { parseClientDeviceInfo } from '../utils/agentParser.js';
 import { AuthenticatedRequest } from './authMiddleware.js';
 import { logger } from '../utils/logger.js';
+import { metricsService } from '../services/metricsService.js';
 
 const prisma = new PrismaClient();
 
@@ -40,6 +41,7 @@ export const recordAuditLog = async ({
       },
     });
 
+    metricsService.recordAuditEvent();
     logger.info(`[AUDIT] Action: ${action} | User: ${username} (${role}) | Entity: ${targetEntity}`);
   } catch (error) {
     logger.error('Failed to record audit log:', error);

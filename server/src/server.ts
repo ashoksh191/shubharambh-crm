@@ -11,6 +11,9 @@ import { csrfTokenGenerator, verifyCsrfToken } from './middlewares/csrfMiddlewar
 import { sanitizeInputs } from './middlewares/sanitizer.js';
 import { globalErrorHandler } from './middlewares/errorHandler.js';
 import { serveSecureUploadedFile } from './middlewares/uploadGuard.js';
+import { requestIdMiddleware } from './middlewares/requestIdMiddleware.js';
+import { requestLoggerMiddleware } from './middlewares/requestLoggerMiddleware.js';
+import { metricsService } from './services/metricsService.js';
 
 import authRoutes from './routes/authRoutes.js';
 import sessionRoutes from './routes/sessionRoutes.js';
@@ -26,6 +29,10 @@ const prisma = new PrismaClient();
 
 // Trust reverse proxy headers (e.g. Nginx, Cloudflare) for secure IP extraction
 app.set('trust proxy', 1);
+
+// SRE Observability: Correlation ID & Request Timing Logging
+app.use(requestIdMiddleware);
+app.use(requestLoggerMiddleware);
 
 // Security Middlewares
 app.use(helmetSecurityHeaders);
@@ -69,6 +76,11 @@ app.get('/ready', publicRateLimiter, async (_req, res) => {
       error: 'Database connection failed during readiness check.',
     });
   }
+});
+
+// Prometheus & SRE Metrics Telemetry Endpoint
+app.get('/metrics', publicRateLimiter, (_req, res) => {
+  res.status(200).json(metricsService.getMetricsReport());
 });
 
 // Secure Static Upload Storage Endpoint (Isolated & Non-Executable)
