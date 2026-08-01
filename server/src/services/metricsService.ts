@@ -1,3 +1,5 @@
+import { redisCache } from '../config/redis.js';
+
 export interface HttpMetric {
   method: string;
   route: string;
@@ -16,7 +18,7 @@ class MetricsService {
   private auditEventsCount = 0;
 
   /**
-   * Records an HTTP request execution
+   * Records an HTTP request execution in memory and Redis hash
    */
   public recordHttpRequest(metric: HttpMetric): void {
     this.totalRequests += 1;
@@ -24,6 +26,7 @@ class MetricsService {
 
     if (metric.isSlow) {
       this.slowRequests += 1;
+      redisCache.hincrby('metrics:http', 'slowRequests', 1).catch(() => {});
     }
 
     const statusKey = `${Math.floor(metric.statusCode / 100)}xx`;
@@ -31,6 +34,9 @@ class MetricsService {
 
     const routeKey = `${metric.method} ${metric.route}`;
     this.routeCounts[routeKey] = (this.routeCounts[routeKey] || 0) + 1;
+
+    redisCache.hincrby('metrics:http', 'totalRequests', 1).catch(() => {});
+    redisCache.hincrby('metrics:status', statusKey, 1).catch(() => {});
   }
 
   /**
@@ -38,6 +44,7 @@ class MetricsService {
    */
   public recordDbQuery(): void {
     this.dbQueriesCount += 1;
+    redisCache.hincrby('metrics:system', 'dbQueries', 1).catch(() => {});
   }
 
   /**
@@ -45,6 +52,7 @@ class MetricsService {
    */
   public recordAuditEvent(): void {
     this.auditEventsCount += 1;
+    redisCache.hincrby('metrics:system', 'auditEvents', 1).catch(() => {});
   }
 
   /**
@@ -81,6 +89,9 @@ class MetricsService {
       },
       audit: {
         eventsRecorded: this.auditEventsCount,
+      },
+      redis: {
+        isOnline: redisCache.isOnline(),
       },
     };
   }

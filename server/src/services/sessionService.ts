@@ -1,8 +1,19 @@
 import { prisma } from '../config/database.js';
+import { redisCache } from '../config/redis.js';
 
 export class SessionService {
   static async getUserSessions(userId: string) {
-    return await prisma.session.findMany({
+    const cacheKey = `sessions:${userId}`;
+    const cached = await redisCache.get(cacheKey);
+    if (cached) {
+      try {
+        return JSON.parse(cached);
+      } catch (_e) {
+        // Ignore
+      }
+    }
+
+    const sessions = await prisma.session.findMany({
       where: {
         userId,
         isRevoked: false,
@@ -20,6 +31,9 @@ export class SessionService {
       },
       orderBy: { createdAt: 'desc' },
     });
+
+    await redisCache.set(cacheKey, JSON.stringify(sessions), 120);
+    return sessions;
   }
 
   static async revokeSession(userId: string, sessionId: string) {
@@ -35,6 +49,10 @@ export class SessionService {
       where: { id: sessionId },
       data: { isRevoked: true },
     });
+
+    // Invalidate Redis session caches
+    await redisCache.del(`sessions:${userId}`);
+    await redisCache.set(`revoked_session:${sessionId}`, 'true', 86400);
 
     return { message: 'Session revoked successfully.' };
   }

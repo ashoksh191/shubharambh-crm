@@ -1,4 +1,5 @@
 import { prisma } from '../config/database.js';
+import { redisCache } from '../config/redis.js';
 
 export interface CreateBookingDto {
   plotId: string;
@@ -133,7 +134,7 @@ export const createBookingService = async (dto: CreateBookingDto) => {
       },
     });
 
-    return {
+    const result = {
       bookingId: booking.bookingNumber,
       dbId: booking.id,
       plotNumber: plot.plotNumber,
@@ -142,9 +143,15 @@ export const createBookingService = async (dto: CreateBookingDto) => {
       balanceDue: booking.balanceDue,
       status: booking.bookingStatus,
       plotVersion: updatedPlot.version,
-      paymentTxnId: payment.txnReference,
-      date: booking.createdAt.toISOString(),
+      paymentId: payment.id,
+      createdAt: booking.createdAt,
     };
+
+    // Invalidate Redis plot cache so map updates instantly across all connected clients
+    await redisCache.invalidatePattern('plots:*');
+    await redisCache.invalidatePattern(`plot:detail:${plot.id}`);
+
+    return result;
   });
 };
 
