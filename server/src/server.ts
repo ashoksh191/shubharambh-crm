@@ -54,6 +54,7 @@ app.get('/api/uploads/:filename', publicRateLimiter, serveSecureUploadedFile);
 
 // Enterprise REST API v1 Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/v1/auth', authRoutes);
 app.use('/api/sessions', verifyCsrfToken, sessionRoutes);
 app.use('/api/users', verifyCsrfToken, userRoutes);
 app.use('/api/audit', verifyCsrfToken, auditRoutes);

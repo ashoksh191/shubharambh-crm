@@ -15,7 +15,7 @@ const getCookieOptions = (maxAgeMs?: number) => ({
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
   sameSite: 'strict' as const,
-  path: '/api/auth',
+  path: '/',
   ...(maxAgeMs ? { maxAge: maxAgeMs } : {}),
 });
 
@@ -121,7 +121,7 @@ export class AuthController {
       if (!rawRefreshToken) {
         res.status(401).json({
           success: false,
-          error: 'Refresh Token Missing',
+          error: 'UNAUTHORIZED',
           message: 'No refresh token provided in HTTP-Only cookie.',
         });
         return;
@@ -164,6 +164,27 @@ export class AuthController {
       });
     } catch (error) {
       res.clearCookie('refreshToken', getCookieOptions());
+      next(error);
+    }
+  }
+
+  static async getMe(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({
+          success: false,
+          error: 'UNAUTHORIZED',
+          message: 'Authentication required.',
+        });
+        return;
+      }
+
+      const user = await AuthService.getUserProfile(req.user.userId);
+      res.status(200).json({
+        success: true,
+        user,
+      });
+    } catch (error) {
       next(error);
     }
   }

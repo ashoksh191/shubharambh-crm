@@ -39,3 +39,5 @@ export const validateRequest = (targets: ValidationTargets | ZodSchema) => {
     }
   };
 };
+
+export const validate = validateRequest;

@@ -393,4 +393,35 @@ export class AuthService {
 
     return { secret, qrCodeDataUrl, backupCodes };
   }
+
+  static async getUserProfile(userId: string) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        fullName: true,
+        phone: true,
+        role: true,
+        status: true,
+        createdAt: true,
+      },
+    });
+
+    if (!user) throw { statusCode: 404, message: 'User profile not found.' };
+
+    const rolePermissions = await prisma.rolePermission.findMany({
+      where: { role: user.role },
+      include: { permission: true },
+    });
+
+    const permissions = rolePermissions.map((rp) => rp.permission.code);
+
+    return {
+      ...user,
+      permissions,
+    };
+  }
 }
+

@@ -5,7 +5,10 @@ export interface AuthenticatedRequest extends Request {
   user?: TokenPayload;
 }
 
-export const authenticateJwt = (
+/**
+ * Primary Authentication Middleware verifying JWT Access Token
+ */
+export const authenticate = (
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
@@ -13,7 +16,7 @@ export const authenticateJwt = (
   try {
     let token: string | undefined;
 
-    // Check Authorization Header
+    // Check Authorization Header or HTTP-Only Cookie
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {
       token = authHeader.split(' ')[1];
@@ -51,3 +54,6 @@ export const authenticateJwt = (
     });
   }
 };
+
+// Backward Compatibility Alias
+export const authenticateJwt = authenticate;
