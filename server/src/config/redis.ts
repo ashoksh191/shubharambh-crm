@@ -180,6 +180,23 @@ export const redisCache = {
     }
     return await memoryFallback.hgetall(key);
   },
+
+  /**
+   * Distributed Lock Helper for cross-process atomic resource synchronization
+   */
+  acquireLock: async (lockName: string, ttlSeconds = 10): Promise<boolean> => {
+    const lockKey = `lock:${lockName}`;
+    const result = await redisCache.set(lockKey, 'locked', ttlSeconds);
+    return result === 'OK';
+  },
+
+  /**
+   * Releases distributed lock
+   */
+  releaseLock: async (lockName: string): Promise<void> => {
+    const lockKey = `lock:${lockName}`;
+    await redisCache.del(lockKey);
+  },
 };
 
 export default redisCache;
