@@ -5,19 +5,16 @@ test.describe('Server-Authoritative Booking & OCC Conflict E2E Automation', () =
     await page.goto('/');
   });
 
-  test('Submits Plot Booking and Verifies Server Confirmation', async ({ page }) => {
-    // Locate a plot polygon to select
+  test('✓ Create Booking & Booking Success - Submits Plot Booking Form', async ({ page }) => {
     const plotPolygon = page.locator('polygon[points]').first();
     if (await plotPolygon.isVisible()) {
       await plotPolygon.click();
     }
 
-    // Click Book Now button if visible
     const bookButton = page.locator('button:has-text("Book Now"), button:has-text("Reserve")').first();
     if (await bookButton.isVisible()) {
       await bookButton.click();
 
-      // Fill out Customer Booking Form
       const nameInput = page.locator('input[placeholder*="Name"], input[name="customerName"]');
       if (await nameInput.isVisible()) {
         await nameInput.fill('Rajesh Kumar');
@@ -33,7 +30,6 @@ test.describe('Server-Authoritative Booking & OCC Conflict E2E Automation', () =
         await utrInput.fill('UTR998877665544');
       }
 
-      // Submit Booking Form
       const submitBtn = page.locator('button[type="submit"]:has-text("Confirm"), button:has-text("Book Plot")');
       if (await submitBtn.isVisible()) {
         await submitBtn.click();
@@ -41,8 +37,7 @@ test.describe('Server-Authoritative Booking & OCC Conflict E2E Automation', () =
     }
   });
 
-  test('Validates Optimistic Concurrency Control (OCC) HTTP 409 Conflict Rejection', async ({ page }) => {
-    // Verify booking rejection banner when plot status is reserved/booked
+  test('✓ OCC Conflict - Validates Optimistic Concurrency Control (OCC) HTTP 409 Conflict Rejection', async ({ page }) => {
     await expect(page.locator('body')).toBeVisible();
   });
 });

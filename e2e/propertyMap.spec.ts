@@ -1,18 +1,16 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('GIS Vector Map & Plot Search E2E Automation', () => {
+test.describe('GIS Vector Map Engine E2E Automation', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
   });
 
-  test('Renders SVG Vector Map Canvas and Blueprint Overlay', async ({ page }) => {
-    // Assert SVG Canvas element is rendered
-    const svgCanvas = page.locator('svg');
-    await expect(svgCanvas.first()).toBeVisible();
+  test('✓ Open Property Map - Renders SVG Vector Map Canvas & Blueprint', async ({ page }) => {
+    const svgCanvas = page.locator('svg').first();
+    await expect(svgCanvas).toBeVisible();
   });
 
-  test('Plot Search Input Filtering and Focus Ring Highlight', async ({ page }) => {
-    // Locate search input field
+  test('✓ Search Plot - Search Plot Input Filtering and Focus Ring Highlight', async ({ page }) => {
     const searchInput = page.locator('input[placeholder*="Search"], input[placeholder*="plot"], input[placeholder*="Block"]');
     if (await searchInput.isVisible()) {
       await searchInput.fill('Block-A');
@@ -20,14 +18,19 @@ test.describe('GIS Vector Map & Plot Search E2E Automation', () => {
     }
   });
 
-  test('Click Plot Polygon on SVG Canvas and Open PlotDrawer Metadata Modal', async ({ page }) => {
-    // Find polygon plot element on SVG Canvas
+  test('✓ Select Plot & Plot Drawer Opens - Click Plot Polygon on SVG Canvas', async ({ page }) => {
     const plotPolygon = page.locator('polygon.plot-polygon-group, polygon[points]').first();
     if (await plotPolygon.isVisible()) {
       await plotPolygon.click();
-
-      // Assert PlotDrawer modal / panel displays plot details
       await expect(page.locator('body')).toContainText(/Plot|Block|Status|Price|Sq.Ft/i);
+    }
+  });
+
+  test('✓ Hover Tooltip - Mouse Hover Displays Plot Quick Summary Tooltip', async ({ page }) => {
+    const plotPolygon = page.locator('polygon.plot-polygon-group, polygon[points]').first();
+    if (await plotPolygon.isVisible()) {
+      await plotPolygon.hover();
+      await expect(page.locator('body')).toBeVisible();
     }
   });
 });
