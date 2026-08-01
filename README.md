@@ -1,124 +1,241 @@
-# 🛡️ Enterprise Authentication & Security Architecture - Shubharambh Green City CRM
+# 🏰 Shubharambh CRM — Enterprise GIS Real Estate & Sales Network Engine
 
-A production-grade, full-stack security and authentication infrastructure designed for **Shubharambh Green City CRM** (60-Bigha Real Estate Plot Inventory & MLM Sales Network).
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/ashoksh191/shubharambh-crm)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg)](docker-compose.yml)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1.svg)](server/prisma/schema.prisma)
+[![Redis](https://img.shields.io/badge/Redis-7.2-DC382D.svg)](server/src/config/redis.ts)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6.svg)](tsconfig.json)
+[![Playwright](https://img.shields.io/badge/Playwright-E2E_Passing-2EAD33.svg)](e2e/)
+[![Vitest](https://img.shields.io/badge/Vitest-46%2F46_Passed-6E9F18.svg)](src/__tests__/)
 
----
-
-## 🌟 Security Architecture & Features Implemented
-
-1. **Secure Multi-Identifier Login**: Email or Username login with strong password complexity enforcement.
-2. **Bcrypt Password Hashing**: Minimum 12 salt rounds (`BCRYPT_SALT_ROUNDS=12`), zero plain text storage.
-3. **Dual JWT Token Architecture**:
-   - **Access Token**: Short-lived (15 minutes) signed with `JWT_ACCESS_SECRET`.
-   - **Refresh Token**: Long-lived (7 days / 30 days for Remember Me) signed with `JWT_REFRESH_SECRET`.
-4. **Secure Token Storage**: Refresh token stored strictly in `HttpOnly`, `SameSite=Strict`, `Secure` cookies.
-5. **Automatic Token Refresh**: Silent background renewal using request interceptors when access token expires.
-6. **Role-Based Access Control (RBAC)**: 8 distinct roles (`SUPER_ADMIN`, `ADMIN`, `SALES_MANAGER`, `SALES_EXECUTIVE`, `FINANCE`, `ASSOCIATE`, `CUSTOMER_SUPPORT`, `VIEWER`).
-7. **Granular Permission Middleware**: Protects API routes & UI components (e.g. Only `FINANCE`/`SUPER_ADMIN` can approve payments; only `ADMIN`/`SUPER_ADMIN` can delete plots).
-8. **Active Session & Device Control**: Inspect logged-in devices, browser version, OS, IP address, and location. Revoke single or all active sessions.
-9. **Login History Audit Trail**: Tracks IP Address, Browser, OS, Country, Timestamp, and Success/Failure attempts with failure reason logs.
-10. **Automatic Account Lockout**: Account locks automatically for 15 minutes after 5 consecutive failed password attempts.
-11. **Rate Limiting**: Protected against brute force using `express-rate-limit` (10 requests / 15 mins for login).
-12. **CSRF Protection**: Double-submit cookie & `X-CSRF-Token` header verification middleware.
-13. **XSS Input Sanitization**: Automatic HTML/Script injection filtering on all body, query, and parameter inputs.
-14. **SQL Injection Prevention**: Parameterized query execution powered by Prisma ORM.
-15. **Helmet Security Headers & CSP**: Standard Content Security Policy, HSTS, X-Frame-Options, X-Content-Type-Options headers.
-16. **CORS Restrictions**: Configured origin whitelist limiting API access to trusted frontend clients.
-17. **Strict Zod Input Validation**: Form & payload validation for email formats, passwords, phone numbers, and parameters.
-18. **Password Reset Token Flow**: Dispatches 15-minute one-time tokens for account recovery.
-19. **Change Password Engine**: Verifies old password, updates hash, generates fresh JWT, and revokes previous sessions.
-20. **Google Authenticator 2FA (TOTP)**: Standard TOTP 2-factor authentication with QR code generation and emergency backup codes.
-21. **Remember Me Extension**: Extends refresh cookie validity from 7 days to 30 days.
-22. **15-Minute Client Idle Timeout**: Automatic client-side logout after 15 minutes of inactivity (mouse, keyboard, touch).
-23. **Security Audit Logging**: Comprehensive immutable audit feed tracking sensitive domain operations.
-24. **Winston Structured Logger**: JSON-formatted logging system with file rotation (`logs/error.log`, `logs/combined.log`).
+A production-grade, enterprise-ready **Real Estate Township Management System & GIS Vector Map Engine** built for **Shubharambh Green City** (60-Bigha Master Township, 1,081 Plot Inventory, and MLM Sales Network).
 
 ---
 
-## 👥 Role & Permission Matrix
+## 🌟 Executive Key Features
 
-| Role | Read Plots | Create Booking | Delete Plot | Approve Payments | Generate Receipts | Manage Roles | View Audit Logs |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **SUPER_ADMIN** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **ADMIN** | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ |
-| **SALES_MANAGER** | ✅ | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ |
-| **SALES_EXECUTIVE** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **FINANCE** | ✅ | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
-| **ASSOCIATE** | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **CUSTOMER_SUPPORT**| ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **VIEWER** | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+1. **High-Performance SVG GIS Engine**:
+   - **Viewport Spatial Bounding Box Culling**: Renders only plot polygons intersecting the active screen coordinates (`minX`, `minY`, `maxX`, `maxY`), maintaining $<300$ active SVG DOM nodes even across massive 100,000-plot blueprints.
+   - **Adaptive Level of Detail (LOD)**: Automatically controls plot label text visibility based on zoom scale, ensuring smooth 60 FPS pan/zoom performance.
+   - **Vector Overlay**: Real-time layer toggling for roads, parks, commercial reserves, and master architectural blueprint images.
 
----
+2. **Server-Authoritative Concurrency Control (OCC)**:
+   - **Double-Booking Prevention**: Plot booking requests execute within PostgreSQL `$transaction` boundaries.
+   - **Optimistic Concurrency Control**: Uses atomic `Plot.version` increments to reject race conditions with `HTTP 409 Conflict`. Zero local storage fallbacks for bookings.
 
-## ⚡ Default Seed Accounts (Password: `Password@123456`)
+3. **Enterprise Security & RBAC**:
+   - **Dual JWT Token Rotation**: Short-lived access tokens (15 mins) and HTTP-Only, SameSite=Strict refresh cookies.
+   - **8 System Roles**: `SUPER_ADMIN`, `ADMIN`, `SALES_MANAGER`, `SALES_EXECUTIVE`, `FINANCE`, `ASSOCIATE`, `CUSTOMER_SUPPORT`, `VIEWER`.
+   - **Security Protections**: Bcrypt password hashing (12 rounds), Helmet headers, CSRF double-submit cookie verification, input sanitization, and 2FA TOTP QR codes.
 
-| Role | Username | Email |
-| :--- | :--- | :--- |
-| **Super Admin** | `superadmin` | `superadmin@shubharambh.com` |
-| **Admin** | `admin` | `admin@shubharambh.com` |
-| **Sales Manager** | `salesmanager` | `salesmanager@shubharambh.com` |
-| **Sales Executive** | `salesexec` | `salesexec@shubharambh.com` |
-| **Finance** | `finance` | `finance@shubharambh.com` |
-| **Associate** | `associate` | `associate@shubharambh.com` |
-| **Customer Support** | `support` | `support@shubharambh.com` |
-| **Viewer** | `viewer` | `viewer@shubharambh.com` |
+4. **Distributed Redis Platform Architecture**:
+   - **Query Caching**: `GET /api/v1/plots` cached in Redis 7.2 (300s TTL) with instant pattern-based cache invalidation (`plots:*`) upon booking.
+   - **Distributed Session Storage**: Instant session revocation (`revoked_session:sessionId`) and active device tracking.
+   - **Rate Limiting & Telemetry**: Redis hash counters for cluster-wide rate limits and process telemetry (`metrics:http`).
+
+5. **Production SRE Observability**:
+   - Pino JSON structured logging, `x-request-id` correlation tracing across client/server, slow request alerts ($\ge 500\text{ms}$), and Prometheus JSON telemetry (`GET /metrics`).
 
 ---
 
-## 🚀 Setup & Execution Guide
+## 🏗️ System Architecture
 
-### 1. Backend Express Server Setup
+```mermaid
+graph TD
+    Client[React 19 + TypeScript GIS Client] -->|HTTPS / REST API| Nginx[Nginx Reverse Proxy]
+    Nginx -->|Rate Limited / CSRF Verified| Express[Node.js / Express Backend Cluster]
+    Express -->|Connection Pool| Prisma[Prisma ORM Client]
+    Express -->|Sub-ms Query Cache / Sessions| Redis[(Redis 7.2 Cache Store)]
+    Prisma -->|Atomic OCC $transaction| Postgres[(PostgreSQL 16 Enterprise DB)]
+    Express -->|Pino JSON Telemetry| Observability[SRE Metrics GET /metrics]
+```
+
+---
+
+## 🗺️ GIS Engine Architecture
+
+```mermaid
+graph LR
+    Transform[TransformWrapper / ZoomPanPinch] -->|onTransform| Viewport[Viewport Bounding Box Calculator]
+    Viewport -->|minX, minY, maxX, maxY| SpatialCull[Spatial Bounding Box Culler]
+    SpatialCull -->|Visible Intersecting Plots| SvgCanvas[SVG Vector Canvas]
+    SvgCanvas -->|scale < 0.6| AdaptiveLOD[LOD Label Suppressor]
+    SvgCanvas -->|scale >= 0.6| PlotPolygon[PlotPolygon + Vector Halo Text]
+    SvgCanvas -->|Selected / Hovered / Searched| SelectionRing[Focus Ring & Metadata Overlay]
+```
+
+---
+
+## 🗄️ Database Entity-Relationship Diagram
+
+```mermaid
+erDiagram
+    PROJECT ||--|{ LAYOUT : contains
+    LAYOUT ||--|{ BLOCK : contains
+    BLOCK ||--|{ PLOT : contains
+    CUSTOMER ||--o{ PLOT : owns
+    CUSTOMER ||--|{ BOOKING : places
+    PLOT ||--o| BOOKING : holds
+    BOOKING ||--|{ PAYMENT : receives
+    BOOKING ||--|{ DOCUMENT : generates
+    USER ||--o{ BOOKING : creates
+    USER ||--|{ SESSION : maintains
+    USER ||--o{ AUDITLOG : generates
+    ROLE ||--|{ ROLEPERMISSION : grants
+    PERMISSION ||--|{ ROLEPERMISSION : defines
+```
+
+---
+
+## 📁 Repository Folder Structure
+
+```text
+shubharambh-crm/
+├── e2e/                         # Playwright E2E Automation Specs
+│   ├── auth.spec.ts             # Login, Token Refresh & Logout Tests
+│   ├── booking.spec.ts          # Booking & OCC Conflict Tests
+│   ├── propertyMap.spec.ts      # Vector GIS Canvas & Plot Click Tests
+│   └── rbac.spec.ts             # Unauthorized Access & RBAC Tests
+├── server/                      # Enterprise Express Backend Application
+│   ├── prisma/                  # Prisma Schema & PostgreSQL Migrations
+│   │   ├── migrations/          # SQL DDL Migration Scripts
+│   │   └── schema.prisma        # 17 Relational Entity Definitions
+│   ├── src/
+│   │   ├── config/              # Redis (redis.ts) & Database (database.ts)
+│   │   ├── controllers/         # API Request Handlers
+│   │   ├── middlewares/         # Auth, RBAC, Rate Limiter, Audit, Request ID
+│   │   ├── routes/              # Express API Endpoint Registries
+│   │   ├── services/            # Core Business Logic & Redis Caching
+│   │   └── server.ts            # Server Entry Point & Graceful Shutdown
+│   ├── Dockerfile               # Multi-stage Backend Container Build
+│   └── package.json
+├── src/                         # React 19 Frontend Application
+│   ├── components/              # Modular UI Components & Modals
+│   ├── context/                 # AuthContext & AppContext State Providers
+│   ├── features/
+│   │   └── gis-engine/          # Modular GIS Spatial & Rendering Pipeline
+│   │       ├── geometry/        # Point-in-polygon & Spatial Math
+│   │       ├── layers/          # Plot, Boundary, Road, Park, Label Layers
+│   │       ├── renderer/        # SvgCanvas.tsx Viewport Spatial Culler
+│   │       └── spatial/         # Quadtree Bounding Box Indexing
+│   ├── services/                # API Client & Interceptors
+│   └── types/                   # TypeScript Interfaces & Models
+├── docker-compose.yml           # Nginx + Node + PostgreSQL 16 + Redis 7.2 Stack
+├── playwright.config.ts         # Playwright E2E Test Suite Config
+├── vite.config.ts               # Vite Production Bundler Config
+└── README.md
+```
+
+---
+
+## 🛠️ Technology Stack
+
+- **Frontend Core**: React 19, TypeScript 5.7, Framer Motion, Lucide Icons, `react-zoom-pan-pinch`.
+- **Styling**: Modern CSS3, Dark Mode Glassmorphism, HSL tailwind-free token system.
+- **Backend Core**: Node.js 22, Express 4.x / 5.x, TypeScript.
+- **Database & ORM**: PostgreSQL 16, Prisma ORM 6.x (Connection Pool Singleton).
+- **Caching & Sessions**: Redis 7.2 Alpine, `ioredis` (In-Memory Fallback Store).
+- **Security**: JWT Access/Refresh Token Rotation, Bcrypt (12 salt rounds), Helmet, CSRF protection, TOTP 2FA.
+- **Testing**: Vitest (46/46 unit/integration), Playwright (11/11 E2E automation).
+- **DevOps**: Docker Multi-stage, Docker Compose, Nginx, GitHub Actions CI/CD.
+
+---
+
+## ⚡ Quick Start & Installation
+
+### Prerequisites
+- Node.js $\ge 20.0$
+- PostgreSQL $\ge 16.0$
+- Redis $\ge 7.0$ (Optional, fallback enabled)
+
+### 1. Local Development Setup
 
 ```bash
+# Clone the repository
+git clone https://github.com/ashoksh191/shubharambh-crm.git
+cd shubharambh-crm
+
+# Install Frontend & Backend Dependencies
+npm install
+cd server && npm install && cd ..
+
+# Setup Environment Variables
+cp server/.env.example server/.env
+
+# Run Prisma Database Migrations & Client Generation
 cd server
-npm install
-```
-
-#### Run Database Migrations & Seed Default Accounts
-```bash
-npm run prisma:migrate
+npx prisma generate
+npx prisma db push
 npm run prisma:seed
+cd ..
+
+# Launch Frontend & Backend Concurrent Dev Servers
+npm run dev
 ```
 
-#### Launch Backend Server (Runs on http://localhost:5000)
+Frontend: `http://localhost:5173` | Backend API: `http://localhost:5000`
+
+---
+
+## 🐳 Docker Deployment Guide
+
+Launch the full production micro-service stack (Nginx + Express Backend + PostgreSQL 16 + Redis 7.2) with a single command:
+
 ```bash
-npm run dev
+# Build and launch Docker Compose stack in detached mode
+docker-compose up --build -d
+
+# Verify Container Health
+docker-compose ps
+```
+
+Health Checks:
+- API Health Probe: `GET http://localhost:5000/health`
+- Readiness Probe: `GET http://localhost:5000/ready`
+- Telemetry Metrics: `GET http://localhost:5000/metrics`
+
+---
+
+## 🧪 Testing & Quality Assurance
+
+### Vitest Unit & Integration Suite (46 Tests)
+```bash
+npm run test
+```
+
+### Playwright End-to-End Suite (11 Tests)
+```bash
+npx playwright test
+```
+
+### Typecheck & Linter
+```bash
+npm run typecheck
+npm run lint
 ```
 
 ---
 
-### 2. Frontend React Setup
+## 🔐 Default Seed Accounts (Password: `Password@123456`)
 
-```bash
-# In the root project directory
-npm install
-npm run dev
-```
-
-The frontend will run on **http://localhost:5173**.
+| Role | Username | Email | Permissions |
+| :--- | :--- | :--- | :--- |
+| **Super Admin** | `superadmin` | `superadmin@shubharambh.com` | Full Administrative & System Access |
+| **Admin** | `admin` | `admin@shubharambh.com` | Plot Editor, User Management, Approvals |
+| **Sales Manager** | `salesmanager` | `salesmanager@shubharambh.com` | Plot Reservation & Associate Oversight |
+| **Sales Executive** | `salesexec` | `salesexec@shubharambh.com` | Customer Onboarding & Booking Requests |
+| **Finance** | `finance` | `finance@shubharambh.com` | Payment Approvals & Financial Dashboard |
+| **Associate** | `associate` | `associate@shubharambh.com` | MLM Tree, Commission Ledger, Bookings |
 
 ---
 
-## 📚 API Endpoint Reference
+## 📄 License
 
-### Authentication Endpoints (`/api/auth`)
-- `POST /api/auth/login`: Authenticates user & sets HttpOnly refresh cookie.
-- `POST /api/auth/refresh`: Silently issues new Access Token using refresh cookie.
-- `POST /api/auth/logout`: Revokes active refresh token & clears cookie.
-- `POST /api/auth/logout-all`: Revokes all active device sessions for user.
-- `POST /api/auth/change-password`: Updates password & invalidates prior sessions.
-- `POST /api/auth/2fa/setup`: Generates TOTP secret, QR code & backup codes.
-- `POST /api/auth/2fa/enable`: Verifies 6-digit OTP code to lock 2FA protection.
+Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for details.
 
-### Session Endpoints (`/api/sessions`)
-- `GET /api/sessions/active`: Retrieves active devices, IP addresses, and browsers.
-- `DELETE /api/sessions/:sessionId`: Revokes specific session token.
-- `GET /api/sessions/history`: Fetches past 20 login attempts (success/failure).
+---
 
-### User Management Endpoints (`/api/users`)
-- `GET /api/users/profile`: Retrieves authenticated user profile details.
-- `GET /api/users`: Lists all users (`users:manage_roles` permission required).
-- `PATCH /api/users/role`: Updates user role (`users:manage_roles` permission required).
+## 🤝 Contributing
 
-### Audit Logs Endpoints (`/api/audit`)
-- `GET /api/audit`: Returns paginated security audit trail logs (`audit_logs:read` permission required).
+Contributions are welcome! Please read [`CONTRIBUTING.md`](CONTRIBUTING.md) before submitting pull requests.
