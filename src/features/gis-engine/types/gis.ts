@@ -1,5 +1,7 @@
 export type Point2D = [number, number];
 
+export type GisRenderMode = 'production' | 'developer';
+
 export interface GISFeatureBase {
   id: string;
   name: string;

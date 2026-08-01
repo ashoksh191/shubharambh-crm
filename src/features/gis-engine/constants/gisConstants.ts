@@ -1,5 +1,9 @@
 import type { PlotStatus } from '../types/gis';
 
+export type GisRenderMode = 'production' | 'developer';
+
+export const GIS_RENDER_MODE: GisRenderMode = 'production';
+
 export const GIS_COLORS: Record<PlotStatus | 'selected' | 'searched' | 'background' | 'grid' | 'boundary' | 'road' | 'park' | 'commercial', string> = {
   available: '#059669',
   reserved: '#d97706',

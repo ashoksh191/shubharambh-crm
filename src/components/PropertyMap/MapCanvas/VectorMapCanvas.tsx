@@ -1,20 +1,11 @@
 import React, { useRef, useState, useEffect, useCallback, memo } from 'react';
 import { TransformWrapper, TransformComponent, type ReactZoomPanPinchRef } from 'react-zoom-pan-pinch';
 import type { EnhancedPlot, EnhancedPlotStatus } from '../../../types/propertyMap';
-import { PlotPolygon } from '../PlotPolygon/PlotPolygon';
+import type { GisRenderMode } from '../../../features/gis-engine/types/gis';
+import { GIS_RENDER_MODE } from '../../../features/gis-engine/constants/gisConstants';
+import { SvgCanvas } from '../../../features/gis-engine/renderer/SvgCanvas';
 import { MapLegend } from '../Legend/MapLegend';
-import { ZoomIn, ZoomOut, RotateCcw, Maximize, Minimize, Tag, Keyboard, X, Layers } from 'lucide-react';
-
-import roadsData from '../../../features/gis-engine/data/roads.json';
-import parksData from '../../../features/gis-engine/data/parks.json';
-import commercialData from '../../../features/gis-engine/data/commercial.json';
-import boundariesData from '../../../features/gis-engine/data/boundaries.json';
-
-import { BoundaryLayer } from '../../../features/gis-engine/layers/BoundaryLayer';
-import { RoadLayer } from '../../../features/gis-engine/layers/RoadLayer';
-import { ParkLayer } from '../../../features/gis-engine/layers/ParkLayer';
-import { CommercialLayer } from '../../../features/gis-engine/layers/CommercialLayer';
-import { LabelLayer } from '../../../features/gis-engine/layers/LabelLayer';
+import { ZoomIn, ZoomOut, RotateCcw, Maximize, Minimize, Tag, Keyboard, X, Layers, Code } from 'lucide-react';
 
 interface VectorMapCanvasProps {
   plots: EnhancedPlot[];
@@ -42,6 +33,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
   const [showBlueprintImage, setShowBlueprintImage] = useState<boolean>(true);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [showKeyboardHelp, setShowKeyboardHelp] = useState<boolean>(false);
+  const [renderMode, setRenderMode] = useState<GisRenderMode>(GIS_RENDER_MODE);
 
   // Exact plot centering based on container bounds & target scale
   const handleZoomToPlot = useCallback((plot: EnhancedPlot) => {
@@ -143,10 +135,6 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
 
   const isZoomedIn = zoomScale >= 1.2;
 
-  const baseAssetUrl = (import.meta.env.BASE_URL || './').replace(/\/+$/, '');
-  const svgBlueprintUrl = `${baseAssetUrl}/assets/layout_plan_master.svg`;
-  const pngBlueprintUrl = `${baseAssetUrl}/assets/layout_map_hd.png`;
-
   return (
     <div
       ref={containerRef}
@@ -199,7 +187,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
           boxShadow: '0 8px 20px rgba(0,0,0,0.4)',
         }}
       >
-        💡 SVG Vector Engine • Pinch / Wheel to zoom (up to 10x) • Drag to pan
+        💡 Enterprise GIS Engine • Mode: <span style={{ color: renderMode === 'production' ? '#10b981' : '#38bdf8', fontWeight: 700 }}>{renderMode.toUpperCase()}</span> • Pinch / Wheel to zoom (up to 10x) • Drag to pan
       </div>
 
       {/* Keyboard Shortcuts Help Modal */}
@@ -324,6 +312,20 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
                 <Layers size={15} /> Blueprint Map
               </button>
 
+              {/* GIS Render Mode Toggle (Production vs Developer) */}
+              <button
+                onClick={() => setRenderMode((prev) => (prev === 'production' ? 'developer' : 'production'))}
+                style={{
+                  ...controlBtnStyle,
+                  background: renderMode === 'developer' ? 'rgba(124, 58, 237, 0.3)' : 'rgba(255,255,255,0.08)',
+                  borderColor: renderMode === 'developer' ? '#7c3aed' : 'transparent',
+                  color: renderMode === 'developer' ? '#a78bfa' : '#ffffff',
+                }}
+                title="Toggle GIS Architecture Mode (Production / Developer)"
+              >
+                <Code size={15} /> {renderMode === 'production' ? 'Dev Mode' : 'Prod Mode'}
+              </button>
+
               <button
                 onClick={() => setIsFullscreen((prev) => !prev)}
                 style={controlBtnStyle}
@@ -341,79 +343,24 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
               </button>
             </div>
 
-            {/* Transform Canvas Surface - Pure SVG Vector Rendering */}
+            {/* Transform Canvas Surface - Pure SVG Vector Rendering delegated to SvgCanvas */}
             <TransformComponent
               wrapperStyle={{ width: '100%', height: '100%' }}
               contentStyle={{ width: '100%', height: '100%', willChange: 'transform' }}
             >
-              <svg
-                viewBox="0 0 2384 1684"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  display: 'block',
-                  shapeRendering: 'geometricPrecision',
-                  background: '#0b0f19',
-                }}
-              >
-                {/* Layer 0: SVG Background Canvas */}
-                <rect x="0" y="0" width="2384" height="1684" fill="#0b0f19" />
-
-                {/* SVG Grid Overlay Lines */}
-                <defs>
-                  <pattern id="vector-grid" width="100" height="100" patternUnits="userSpaceOnUse">
-                    <path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255, 255, 255, 0.04)" strokeWidth="1" />
-                  </pattern>
-                </defs>
-                <rect x="0" y="0" width="2384" height="1684" fill="url(#vector-grid)" />
-
-                {/* Layer 1: Master CAD Vector Drawing (ALWAYS present: 0.85 when Blueprint ON, 0.40 when Blueprint OFF) */}
-                <image
-                  href={svgBlueprintUrl}
-                  x="0"
-                  y="0"
-                  width="2384"
-                  height="1684"
-                  preserveAspectRatio="none"
-                  style={{ pointerEvents: 'none' }}
-                  opacity={showBlueprintImage ? 0.85 : 0.40}
-                  onError={(e) => {
-                    (e.currentTarget as SVGImageElement).setAttribute('href', pngBlueprintUrl);
-                  }}
-                />
-
-                {/* Layer 2: Township Outer Perimeter Boundary Layer */}
-                <BoundaryLayer boundaries={boundariesData as any[]} visible={true} />
-
-                {/* Layer 3: Central Parks & Amenity Reserves Layer */}
-                <ParkLayer parks={parksData as any[]} visible={true} />
-
-                {/* Layer 4: Commercial Reserves Layer */}
-                <CommercialLayer commercialAreas={commercialData as any[]} visible={true} />
-
-                {/* Layer 5: Road Network Corridors Layer */}
-                <RoadLayer roads={roadsData as any[]} visible={true} />
-
-                {/* Layer 6: Pure Vector SVG Plot Polygons Layer */}
-                <g className="plots-layer">
-                  {plots.map((plot) => (
-                    <PlotPolygon
-                      key={plot.id}
-                      plot={plot}
-                      isSelected={selectedPlot?.id === plot.id}
-                      isSearched={searchedPlot?.id === plot.id}
-                      isHovered={hoveredPlotState?.id === plot.id}
-                      showLabels={showLabelsOverride}
-                      isZoomedIn={isZoomedIn}
-                      onSelect={onSelectPlot}
-                      onHover={handlePlotHover}
-                    />
-                  ))}
-                </g>
-
-                {/* Layer 7: Adaptive Level-of-Detail Vector Labels Layer */}
-                <LabelLayer scale={zoomScale} visible={true} />
-              </svg>
+              <SvgCanvas
+                mode={renderMode}
+                scale={zoomScale}
+                showBlueprintImage={showBlueprintImage}
+                plots={plots}
+                selectedPlot={selectedPlot}
+                searchedPlot={searchedPlot}
+                hoveredPlot={hoveredPlotState}
+                showLabels={showLabelsOverride}
+                isZoomedIn={isZoomedIn}
+                onSelectPlot={onSelectPlot}
+                onHoverPlot={handlePlotHover}
+              />
             </TransformComponent>
           </>
         )}
