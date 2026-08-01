@@ -27,6 +27,176 @@ enum UserStatus {
   DEACTIVATED
 }
 
+enum PlotStatus {
+  AVAILABLE
+  RESERVED
+  BOOKED
+  SOLD
+  UNRELEASED
+}
+
+enum BookingStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PARTIAL
+  PAID
+  REFUNDED
+}
+
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Project {
+  id          String   @id @default(uuid())
+  name        String
+  code        String   @unique
+  description String?
+  location    String?
+  totalBigha  Float?   @default(60.0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  layouts Layout[]
+  plots   Plot[]
+}
+
+model Layout {
+  id              String   @id @default(uuid())
+  projectId       String
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name            String
+  svgBlueprintUrl String?
+  viewBox         String   @default("0 0 2384 1684")
+  widthPx         Int      @default(2384)
+  heightPx        Int      @default(1684)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  blocks Block[]
+  plots  Plot[]
+}
+
+model Block {
+  id        String   @id @default(uuid())
+  layoutId  String
+  layout    Layout   @relation(fields: [layoutId], references: [id], onDelete: Cascade)
+  name      String
+  code      String   // e.g. "BLOCK_A", "BLOCK_B"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  plots Plot[]
+}
+
+model Plot {
+  id          String     @id @default(uuid())
+  geometryId  String     @unique // SVG / Canvas plot ID mapping (e.g. "A-101")
+  plotNumber  String
+  blockId     String
+  block       Block      @relation(fields: [blockId], references: [id])
+  layoutId    String
+  layout      Layout     @relation(fields: [layoutId], references: [id])
+  projectId   String
+  project     Project    @relation(fields: [projectId], references: [id])
+  status      PlotStatus @default(AVAILABLE)
+  price       Float
+  areaSqFt    Float
+  facing      String     @default("East")
+  widthFt     Float?
+  lengthFt    Float?
+  ratePerSqFt Float?
+  version     Int        @default(1) // Optimistic Concurrency Control Counter
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  bookingId String?   @unique
+  booking   Booking?  @relation("PlotCurrentBooking")
+
+  createdBookings Booking[] @relation("PlotHistoryBookings")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  fullName  String
+  phone     String   @unique
+  email     String?
+  aadhaar   String?
+  pan       String?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  plots    Plot[]
+  bookings Booking[]
+}
+
+model Booking {
+  id            String        @id @default(uuid())
+  bookingNumber String        @unique // UK e.g. "BK-2026-101"
+  plotId        String        @unique
+  plot          Plot          @relation("PlotCurrentBooking", fields: [plotId], references: [id])
+  historyPlotId String?
+  historicalPlot Plot?        @relation("PlotHistoryBookings", fields: [historyPlotId], references: [id])
+  customerId    String
+  customer      Customer      @relation(fields: [customerId], references: [id])
+  bookingStatus BookingStatus @default(PENDING)
+  bookingAmount Float
+  totalAmount   Float
+  balanceDue    Float
+  paymentStatus PaymentStatus @default(UNPAID)
+  version       Int           @default(1) // Optimistic Concurrency Control Counter
+
+  createdById String
+  createdBy   User    @relation("BookingCreator", fields: [createdById], references: [id])
+
+  approvedById String?
+  approvedBy   User?   @relation("BookingApprover", fields: [approvedById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  payments  Payment[]
+  documents Document[]
+}
+
+model Payment {
+  id                 String             @id @default(uuid())
+  bookingId          String
+  booking            Booking            @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  txnReference       String             @unique // UTR Number / Cheque No
+  amount             Float
+  paymentMode        String             // "NEFT" | "RTGS" | "UPI" | "CHEQUE"
+  verificationStatus VerificationStatus @default(PENDING)
+
+  verifiedById String?
+  verifiedBy   User?   @relation(fields: [verifiedById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Document {
+  id          String   @id @default(uuid())
+  bookingId   String
+  booking     Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  type        String   // "RECEIPT" | "BOND" | "AGREEMENT" | "KYC"
+  fileUrl     String
+  generatedAt DateTime @default(now())
+}
+
 model User {
   id                    String                   @id @default(uuid())
   email                 String                   @unique
@@ -47,16 +217,38 @@ model User {
   createdAt             DateTime                 @default(now())
   updatedAt             DateTime                 @updatedAt
 
-  sessions              Session[]
-  loginHistories        LoginHistory[]
-  auditLogs             AuditLog[]
-  twoFactorAuth         TwoFactorAuth?
-  passwordResetTokens   PasswordResetToken[]
+  sessions                Session[]
+  loginHistories          LoginHistory[]
+  auditLogs               AuditLog[]
+  twoFactorAuth           TwoFactorAuth?
+  passwordResetTokens     PasswordResetToken[]
   emailVerificationTokens EmailVerificationToken[]
-  webAuthnCredentials   WebAuthnCredential[]
-  trustedDevices        TrustedDevice[]
-  passwordHistories     PasswordHistory[]
-  riskLogs              RiskLog[]
+  webAuthnCredentials     WebAuthnCredential[]
+  trustedDevices          TrustedDevice[]
+  passwordHistories       PasswordHistory[]
+  riskLogs                RiskLog[]
+  createdBookings         Booking[]                @relation("BookingCreator")
+  approvedBookings        Booking[]                @relation("BookingApprover")
+  verifiedPayments        Payment[]
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  code        String   @unique // e.g. "PLOT_WRITE", "BOOKING_CREATE", "FINANCE_VERIFY"
+  description String?
+  createdAt   DateTime @default(now())
+
+  rolePermissions RolePermission[]
+}
+
+model RolePermission {
+  id           String     @id @default(uuid())
+  role         Role
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+
+  @@unique([role, permissionId])
 }
 
 model WebAuthnCredential {
@@ -89,31 +281,31 @@ model PasswordHistory {
 }
 
 model RiskLog {
-  id         String   @id @default(uuid())
-  userId     String?
-  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  ipAddress  String
-  riskScore  Int
-  riskLevel  String   // "LOW" | "MEDIUM" | "HIGH" | "CRITICAL"
-  factors    String   // JSON string array of risk factors
-  createdAt  DateTime @default(now())
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  ipAddress String
+  riskScore Int
+  riskLevel String
+  factors   String
+  createdAt DateTime @default(now())
 }
 
 model Session {
-  id            String   @id @default(uuid())
-  userId        String
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tokenHash     String   @unique
-  ipAddress     String
-  userAgent     String
-  device        String   @default("Desktop")
-  browser       String   @default("Unknown Browser")
-  os            String   @default("Unknown OS")
-  country       String   @default("Unknown")
-  expiresAt     DateTime
-  isRevoked     Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  ipAddress String
+  userAgent String
+  device    String   @default("Desktop")
+  browser   String   @default("Unknown Browser")
+  os        String   @default("Unknown OS")
+  country   String   @default("Unknown")
+  expiresAt DateTime
+  isRevoked Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model LoginHistory {
@@ -127,7 +319,7 @@ model LoginHistory {
   browser       String   @default("Unknown Browser")
   os            String   @default("Unknown OS")
   country       String   @default("Unknown")
-  status        String   // "SUCCESS" | "FAILED"
+  status        String
   failureReason String?
   createdAt     DateTime @default(now())
 }
@@ -138,11 +330,11 @@ model AuditLog {
   user             User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   username         String
   role             String
-  action           String   // e.g. "PLOT_DELETE", "PAYMENT_APPROVE", "USER_ROLE_CHANGE"
-  targetEntity     String   // e.g. "Plot", "Booking", "User"
+  action           String
+  targetEntity     String
   targetId         String?
-  encryptedPayload String?  // AES-256 encrypted payload
-  metadata         String?  // JSON string
+  encryptedPayload String?
+  metadata         String?
   ipAddress        String
   userAgent        String
   createdAt        DateTime @default(now())
@@ -152,8 +344,8 @@ model TwoFactorAuth {
   id          String   @id @default(uuid())
   userId      String   @unique
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  secret      String   // Encrypted AES-256 secret
-  backupCodes String   // Encrypted AES-256 comma-separated backup codes
+  secret      String
+  backupCodes String
   isEnabled   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
