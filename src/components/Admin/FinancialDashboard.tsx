@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
+import { motion } from 'framer-motion';
 import {
   DollarSign,
   TrendingUp,
@@ -39,7 +40,11 @@ export const FinancialDashboard: React.FC = () => {
   );
 
   return (
-    <div>
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
+    >
       {/* Financial Overview Header */}
       <div style={{
         background: 'var(--bg-card)',
@@ -90,7 +95,10 @@ export const FinancialDashboard: React.FC = () => {
 
       {/* SRS Required 4 Key Financial Metrics */}
       <div className="dashboard-grid">
-        <div className="kpi-card green">
+        <motion.div
+          whileHover={{ y: -4, transition: { duration: 0.2 } }}
+          className="kpi-card green"
+        >
           <div className="kpi-icon">
             <DollarSign size={24} />
           </div>
@@ -101,9 +109,12 @@ export const FinancialDashboard: React.FC = () => {
               Verified UTR Cash Inflow
             </span>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="kpi-card amber">
+        <motion.div
+          whileHover={{ y: -4, transition: { duration: 0.2 } }}
+          className="kpi-card amber"
+        >
           <div className="kpi-icon">
             <Clock size={24} />
           </div>
@@ -114,9 +125,12 @@ export const FinancialDashboard: React.FC = () => {
               Pending Customer Installments
             </span>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="kpi-card gold">
+        <motion.div
+          whileHover={{ y: -4, transition: { duration: 0.2 } }}
+          className="kpi-card gold"
+        >
           <div className="kpi-icon">
             <ArrowUpRight size={24} />
           </div>
@@ -127,9 +141,12 @@ export const FinancialDashboard: React.FC = () => {
               Commissions Paid to Associates
             </span>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="kpi-card red">
+        <motion.div
+          whileHover={{ y: -4, transition: { duration: 0.2 } }}
+          className="kpi-card red"
+        >
           <div className="kpi-icon">
             <AlertCircle size={24} />
           </div>
@@ -140,7 +157,7 @@ export const FinancialDashboard: React.FC = () => {
               Awaiting Accountant Disbursement
             </span>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Tab 1: UTR Verification Queue (Accountant Feature) */}
@@ -354,6 +371,6 @@ export const FinancialDashboard: React.FC = () => {
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
