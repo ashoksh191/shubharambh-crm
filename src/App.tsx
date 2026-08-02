@@ -8,19 +8,28 @@ import { InteractiveMap } from './components/Map/InteractiveMap';
 import { CommandPalette } from './components/UI/CommandPalette';
 import { ToastContainer, type ToastMessage } from './components/UI/ToastContainer';
 import {
-  PhoneCall,
   Sparkles,
   Loader2,
   CheckCircle2,
   Clock,
-  Ban,
-  Layers,
   TrendingUp,
-  Activity,
   ArrowUpRight,
   ShieldCheck,
   Zap,
   Search,
+  Bell,
+  Calendar as CalendarIcon,
+  DollarSign,
+  TrendingDown,
+  FileText,
+  UserCheck,
+  PieChart as PieChartIcon,
+  Award,
+  RefreshCw,
+  MapPin,
+  FileCheck,
+  CreditCard,
+  Building,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Plot } from './types';
@@ -68,7 +77,7 @@ const ComponentFallback = memo(() => (
 ComponentFallback.displayName = 'ComponentFallback';
 
 // Live Animated Counter Helper Component
-const AnimatedCount: React.FC<{ value: number; suffix?: string }> = memo(({ value, suffix = '' }) => {
+const AnimatedCount: React.FC<{ value: number; prefix?: string; suffix?: string }> = memo(({ value, prefix = '', suffix = '' }) => {
   const [displayValue, setDisplayValue] = useState(0);
 
   useEffect(() => {
@@ -78,7 +87,7 @@ const AnimatedCount: React.FC<{ value: number; suffix?: string }> = memo(({ valu
       setDisplayValue(end);
       return;
     }
-    const duration = 600;
+    const duration = 650;
     const stepTime = 16;
     const steps = Math.ceil(duration / stepTime);
     const increment = (end - start) / steps;
@@ -99,6 +108,7 @@ const AnimatedCount: React.FC<{ value: number; suffix?: string }> = memo(({ valu
 
   return (
     <span>
+      {prefix}
       {displayValue.toLocaleString('en-IN')}
       {suffix}
     </span>
@@ -110,6 +120,7 @@ const MainLayout: React.FC = () => {
   const { plots } = useApp();
   const { user: authUser } = useAuth();
   const [activeTab, setActiveTab] = useState<'map' | 'mlm' | 'finance' | 'usps' | 'profile' | 'audit' | 'approvals'>('map');
+  const [chartTimeframe, setChartTimeframe] = useState<'7D' | '30D' | '90D' | '1Y'>('30D');
 
   // Command Palette & Toast System States
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
@@ -120,6 +131,13 @@ const MainLayout: React.FC = () => {
   const [activeReceiptBookingId, setActiveReceiptBookingId] = useState<string | null>(null);
   const [activeBondBookingId, setActiveBondBookingId] = useState<string | null>(null);
   const [activeQRBookingId, setActiveQRBookingId] = useState<string | null>(null);
+
+  // Time & Date Clock State
+  const [currentTime, setCurrentTime] = useState(new Date());
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Global Ctrl + K Keyboard Shortcut Listener
   useEffect(() => {
@@ -163,14 +181,40 @@ const MainLayout: React.FC = () => {
 
   const userName = authUser?.fullName || authUser?.username || 'Ashok Kumar';
 
-  // Mock Recent Activity Feed for Enterprise Timeline
+  // 6 Premium KPI Cards Data
+  const kpiCards = useMemo(() => {
+    return [
+      { id: '1', title: 'Available Inventory', value: availableCount, prefix: '', suffix: ' Plots', trend: '+4.2%', isUp: true, icon: CheckCircle2, color: '#10b981', desc: 'Ready for instant booking', sparkline: 'M0,15 Q15,5 30,12 T60,8 T90,2' },
+      { id: '2', title: "Booked Today", value: 3, prefix: '', suffix: ' Plots', trend: '+12.5%', isUp: true, icon: Clock, color: '#f59e0b', desc: 'Advance token confirmed', sparkline: 'M0,18 Q15,12 30,8 T60,5 T90,1' },
+      { id: '3', title: "Today's Revenue", value: 150000, prefix: '₹', suffix: '', trend: '+18.4%', isUp: true, icon: DollarSign, color: '#0284c7', desc: 'Verified UTR inflow', sparkline: 'M0,20 Q15,15 30,10 T60,4 T90,0' },
+      { id: '4', title: 'Monthly Revenue', value: 6400000, prefix: '₹', suffix: '', trend: '+28.4%', isUp: true, icon: TrendingUp, color: '#a855f7', desc: 'Current Month Target: ₹75L', sparkline: 'M0,16 Q15,10 30,12 T60,6 T90,2' },
+      { id: '5', title: 'Pending Approvals', value: 2, prefix: '', suffix: ' Requests', trend: '-50%', isUp: false, icon: UserCheck, color: '#ef4444', desc: 'Registration & KYC Audit', sparkline: 'M0,2 Q15,8 30,12 T60,16 T90,20' },
+      { id: '6', title: 'Collection Rate', value: 94.8, prefix: '', suffix: '%', trend: '+3.1%', isUp: true, icon: ShieldCheck, color: '#38bdf8', desc: 'Installment UTR Efficiency', sparkline: 'M0,15 Q15,8 30,5 T60,3 T90,1' },
+    ];
+  }, [availableCount]);
+
+  // Recent Activity Timeline
   const recentActivities = useMemo(() => {
     return [
-      { id: '1', title: 'Plot 104 Booked', desc: 'Advance token ₹50,000 received via Bank UTR', time: '10 mins ago', type: 'booking', icon: CheckCircle2, color: '#10b981' },
-      { id: '2', title: 'UTR Ref #849204 Verified', desc: 'Accountant approved customer installment payment', time: '42 mins ago', type: 'finance', icon: TrendingUp, color: '#0284c7' },
-      { id: '3', title: 'New Associate Registration', desc: 'Level-2 Associate assigned to Sales Manager Desk', time: '2 hours ago', type: 'user', icon: ShieldCheck, color: '#f59e0b' },
+      { id: '1', title: 'New Plot 104 Booked', desc: 'Customer Ramesh Kumar paid ₹50,000 token via Bank HDFC UTR', time: '10 mins ago', badge: 'NEW BOOKING', color: '#10b981' },
+      { id: '2', title: 'Payment UTR Verified', desc: 'Accountant approved ₹4,50,000 second installment for Plot A-12', time: '35 mins ago', badge: 'PAYMENT RECEIVED', color: '#0284c7' },
+      { id: '3', title: 'Sub-Registrar Deed Executed', desc: 'Plot B-45 Registry Deed successfully completed & signed', time: '2 hours ago', badge: 'REGISTRY COMPLETED', color: '#a855f7' },
+      { id: '4', title: 'User Registration Pending', desc: 'Level-2 Associate request queued for Super Admin approval', time: '3 hours ago', badge: 'APPROVAL PENDING', color: '#f59e0b' },
     ];
   }, []);
+
+  // Top Performing Associates Leaderboard
+  const topAssociates = useMemo(() => {
+    return [
+      { rank: 1, name: 'Rajesh Sharma', level: 'Senior VP', sales: 14, revenue: '₹1.84 Cr', conversion: '32.4%', photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80' },
+      { rank: 2, name: 'Priya Verma', level: 'Vice President', sales: 11, revenue: '₹1.42 Cr', conversion: '28.1%', photo: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&auto=format&fit=crop&q=80' },
+      { rank: 3, name: 'Amitabh Gupta', level: 'Director', sales: 9, revenue: '₹1.15 Cr', conversion: '24.6%', photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80' },
+      { rank: 4, name: 'Sunita Yadav', level: 'Senior Associate', sales: 7, revenue: '₹88 Lakhs', conversion: '21.0%', photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80' },
+    ];
+  }, []);
+
+  const formattedDate = currentTime.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  const formattedTime = currentTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
   return (
     <div className="sidebar-app-layout">
@@ -179,199 +223,361 @@ const MainLayout: React.FC = () => {
 
       {/* Right Main Viewport */}
       <div className="main-viewport-container">
-        {/* Top Enterprise Hero Header Banner */}
+        {/* TOP ENTERPRISE COMMAND CENTER HEADER */}
         <motion.header
           initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          className="dashboard-welcome-banner"
+          className="command-center-header"
         >
-          <div className="welcome-text-block">
-            <div className="greeting-pill">
+          <div className="header-greeting-section">
+            <div className="header-subtitle-row">
               <span className="live-status-dot"></span>
-              <Sparkles size={14} /> Shubharambh Command Center v1.0
+              <span className="command-center-tag">Shubharambh Executive Command Center</span>
             </div>
-            <h2>Welcome back, {userName} 👋</h2>
-            <p>
-              Real-time 60-Bigha township layout inventory, associate tree hierarchy, and server-authoritative OCC booking engine.
+            <h1 className="header-user-greeting">Good Morning, {userName} 👋</h1>
+            <p className="header-subtext">
+              Real-time 60-Bigha Lucknow township telemetry, bank UTR settlement engine & associate network tree.
             </p>
           </div>
 
-          <div className="welcome-action-buttons">
-            <motion.button
-              whileHover={{ scale: 1.03, y: -2 }}
-              whileTap={{ scale: 0.97 }}
-              className="primary-action-btn"
-              onClick={() => setIsCommandPaletteOpen(true)}
-            >
-              <Search size={16} /> Quick Search (Ctrl+K)
-            </motion.button>
+          <div className="header-telemetry-controls">
+            {/* Live Clock & Date Card */}
+            <div className="telemetry-pill">
+              <CalendarIcon size={14} color="#0284c7" />
+              <span>{formattedDate}</span>
+              <span className="telemetry-divider">•</span>
+              <Clock size={14} color="#10b981" />
+              <strong style={{ color: '#0f172a' }}>{formattedTime}</strong>
+            </div>
 
-            <motion.button
-              whileHover={{ scale: 1.03, y: -2 }}
-              whileTap={{ scale: 0.97 }}
-              className="secondary-call-btn"
-              onClick={() => {
-                addToast('info', 'Helpline Active', 'Connecting to 24x7 Customer Support Hotline...');
-                alert('Support Line: +91 98765 43210 (24x7 Helpline)');
-              }}
-            >
-              <PhoneCall size={16} /> Call Support
-            </motion.button>
+            {/* Online Users & Sync Indicator */}
+            <div className="telemetry-pill">
+              <span className="online-user-dot"></span>
+              <span>48 Online</span>
+              <span className="telemetry-divider">•</span>
+              <RefreshCw size={13} color="#64748b" />
+              <span>Synced</span>
+            </div>
+
+            {/* Quick Actions Buttons */}
+            <div className="header-action-group">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="icon-action-btn"
+                onClick={() => setIsCommandPaletteOpen(true)}
+                title="Quick Search (Ctrl+K)"
+              >
+                <Search size={18} />
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="icon-action-btn notification-btn"
+                onClick={() => addToast('info', 'Notifications', '2 Pending User Approvals & 3 UTR Verifications queued.')}
+                title="Notification Center"
+              >
+                <Bell size={18} />
+                <span className="notification-badge-dot">2</span>
+              </motion.button>
+
+              <div className="header-profile-avatar" title="Ashok Kumar (Super Admin)">
+                <span>{userName.charAt(0)}</span>
+              </div>
+            </div>
           </div>
         </motion.header>
 
-        {/* Dashboard Summary Metric Cards Grid */}
+        {/* FIRST ROW: 6 PREMIUM KPI CARDS */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.08 }}
-          className="dashboard-summary-cards"
+          className="kpi-six-cards-grid"
         >
-          <motion.div
-            whileHover={{ y: -4, transition: { duration: 0.2 } }}
-            className="metric-card available"
-          >
-            <div className="metric-header-row">
-              <span className="metric-label">Available Plots</span>
-              <div className="metric-icon-badge green">
-                <CheckCircle2 size={18} />
-              </div>
-            </div>
-            <div className="metric-value">
-              <AnimatedCount value={availableCount} />
-            </div>
-            <div className="metric-footer-row">
-              <span className="trend-pill positive">
-                <ArrowUpRight size={12} /> Ready for Booking
-              </span>
-            </div>
-          </motion.div>
+          {kpiCards.map((kpi) => {
+            const IconComp = kpi.icon;
+            return (
+              <motion.div
+                key={kpi.id}
+                whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                className="kpi-floating-card"
+                style={{ borderColor: `${kpi.color}30` }}
+              >
+                <div className="kpi-card-header">
+                  <span className="kpi-card-title">{kpi.title}</span>
+                  <div className="kpi-card-icon" style={{ background: `${kpi.color}15`, color: kpi.color }}>
+                    <IconComp size={18} />
+                  </div>
+                </div>
 
-          <motion.div
-            whileHover={{ y: -4, transition: { duration: 0.2 } }}
-            className="metric-card booked"
-          >
-            <div className="metric-header-row">
-              <span className="metric-label">Booked Plots</span>
-              <div className="metric-icon-badge amber">
-                <Clock size={18} />
-              </div>
-            </div>
-            <div className="metric-value">
-              <AnimatedCount value={bookedCount} />
-            </div>
-            <div className="metric-footer-row">
-              <span className="trend-pill warning">
-                <Clock size={12} /> Tokens / UTR Verification
-              </span>
-            </div>
-          </motion.div>
+                <div className="kpi-card-value">
+                  <AnimatedCount value={kpi.value} prefix={kpi.prefix} suffix={kpi.suffix} />
+                </div>
 
-          <motion.div
-            whileHover={{ y: -4, transition: { duration: 0.2 } }}
-            className="metric-card sold"
-          >
-            <div className="metric-header-row">
-              <span className="metric-label">Sold Out</span>
-              <div className="metric-icon-badge red">
-                <Ban size={18} />
-              </div>
-            </div>
-            <div className="metric-value">
-              <AnimatedCount value={soldCount} />
-            </div>
-            <div className="metric-footer-row">
-              <span className="trend-pill danger">
-                <ShieldCheck size={12} /> Registry Executed
-              </span>
-            </div>
-          </motion.div>
-
-          <motion.div
-            whileHover={{ y: -4, transition: { duration: 0.2 } }}
-            className="metric-card total"
-          >
-            <div className="metric-header-row">
-              <span className="metric-label">Total Inventory</span>
-              <div className="metric-icon-badge blue">
-                <Layers size={18} />
-              </div>
-            </div>
-            <div className="metric-value">
-              <AnimatedCount value={plots.length} />
-            </div>
-            <div className="metric-footer-row">
-              <span className="trend-pill info">
-                <Activity size={12} /> {occupancyRate}% Township Booked
-              </span>
-            </div>
-          </motion.div>
+                <div className="kpi-card-footer">
+                  <span className={`kpi-trend-pill ${kpi.isUp ? 'up' : 'down'}`}>
+                    {kpi.isUp ? <ArrowUpRight size={13} /> : <TrendingDown size={13} />}
+                    {kpi.trend}
+                  </span>
+                  <svg className="kpi-sparkline" viewBox="0 0 100 24">
+                    <path d={kpi.sparkline} fill="none" stroke={kpi.color} strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                </div>
+              </motion.div>
+            );
+          })}
         </motion.div>
 
-        {/* Enterprise Widgets Bar (Sales Velocity Progress & Live Activity Feed) */}
+        {/* SECOND ROW & RIGHT PANEL GRID (ANALYTICS AREA CHART + LIVE RECENT ACTIVITY) */}
         {activeTab === 'map' && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.15 }}
-            className="enterprise-widgets-row"
-          >
-            {/* Sales Velocity Overview Widget */}
-            <div className="widget-card glass">
-              <div className="widget-header">
-                <div className="widget-title">
-                  <TrendingUp size={18} color="#0284c7" />
-                  <span>Township Inventory Sales Velocity</span>
+          <div className="dashboard-second-row-grid">
+            {/* Revenue & Booking Trend Area Chart Widget */}
+            <div className="analytics-chart-card glass">
+              <div className="chart-header">
+                <div>
+                  <h3 className="chart-title">Revenue & Booking Conversion Velocity</h3>
+                  <span className="chart-subtitle">Real-time revenue inflow vs monthly target benchmark</span>
                 </div>
-                <span className="widget-badge">{occupancyRate}% Complete</span>
+                <div className="chart-timeframe-selector">
+                  {(['7D', '30D', '90D', '1Y'] as const).map((tf) => (
+                    <button
+                      key={tf}
+                      className={`timeframe-chip ${chartTimeframe === tf ? 'active' : ''}`}
+                      onClick={() => setChartTimeframe(tf)}
+                    >
+                      {tf}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="progress-bar-track">
-                <motion.div
-                  className="progress-bar-fill"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${occupancyRate}%` }}
-                  transition={{ duration: 0.8, ease: 'easeOut' }}
-                />
-              </div>
-              <div className="widget-legend-row">
-                <span className="legend-item"><span className="dot green"></span> Available ({availableCount})</span>
-                <span className="legend-item"><span className="dot amber"></span> Booked ({bookedCount})</span>
-                <span className="legend-item"><span className="dot red"></span> Sold ({soldCount})</span>
+
+              {/* Large Area Chart Visualisation */}
+              <div className="area-chart-container">
+                <svg className="area-chart-svg" viewBox="0 0 800 220" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#0284c7" stopOpacity="0.4" />
+                      <stop offset="100%" stopColor="#0284c7" stopOpacity="0.0" />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    d="M 0,180 Q 100,120 200,150 T 400,80 T 600,100 T 800,20 L 800,220 L 0,220 Z"
+                    fill="url(#areaGradient)"
+                  />
+                  <motion.path
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 1.2, ease: 'easeOut' }}
+                    d="M 0,180 Q 100,120 200,150 T 400,80 T 600,100 T 800,20"
+                    fill="none"
+                    stroke="#0284c7"
+                    strokeWidth="3.5"
+                  />
+                </svg>
+                <div className="chart-x-axis-labels">
+                  <span>Week 1</span>
+                  <span>Week 2</span>
+                  <span>Week 3</span>
+                  <span>Week 4</span>
+                  <span>Week 5</span>
+                </div>
               </div>
             </div>
 
-            {/* Live Activity Feed Widget */}
-            <div className="widget-card glass">
-              <div className="widget-header">
-                <div className="widget-title">
-                  <Zap size={18} color="#f59e0b" />
-                  <span>Live Audit & Transaction Activity</span>
-                </div>
-                <span className="widget-badge pulse">Realtime Sync</span>
+            {/* Right Activity Timeline Panel */}
+            <div className="activity-timeline-card glass">
+              <div className="timeline-header">
+                <h3 className="timeline-title">
+                  <Zap size={18} color="#f59e0b" /> Live Transaction Activity
+                </h3>
+                <span className="pulse-tag">Realtime Stream</span>
               </div>
-              <div className="activity-timeline-list">
-                {recentActivities.map((act) => {
-                  const IconComp = act.icon;
-                  return (
-                    <div key={act.id} className="activity-timeline-item">
-                      <div className="activity-icon-bubble" style={{ background: `${act.color}15`, color: act.color }}>
-                        <IconComp size={14} />
+
+              <div className="timeline-items-wrapper">
+                {recentActivities.map((act) => (
+                  <div key={act.id} className="timeline-item">
+                    <div className="timeline-dot-connector" style={{ background: act.color }}></div>
+                    <div className="timeline-content">
+                      <div className="timeline-badge-row">
+                        <span className="activity-badge" style={{ background: `${act.color}15`, color: act.color, border: `1px solid ${act.color}40` }}>
+                          {act.badge}
+                        </span>
+                        <span className="activity-time">{act.time}</span>
                       </div>
-                      <div className="activity-details">
-                        <div className="activity-title-row">
-                          <strong>{act.title}</strong>
-                          <span className="activity-time">{act.time}</span>
-                        </div>
-                        <span className="activity-desc">{act.desc}</span>
-                      </div>
+                      <strong className="activity-item-title">{act.title}</strong>
+                      <p className="activity-item-desc">{act.desc}</p>
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
+
+        {/* THIRD ROW: TOP PERFORMING ASSOCIATES LEADERBOARD */}
+        {activeTab === 'map' && (
+          <div className="dashboard-third-row">
+            <div className="associates-leaderboard-card glass">
+              <div className="leaderboard-header">
+                <h3 className="leaderboard-title">
+                  <Award size={18} color="#f59e0b" /> Top Performing Sales Associates
+                </h3>
+                <span className="leaderboard-badge">Monthly Revenue Rank</span>
+              </div>
+
+              <div className="associates-grid">
+                {topAssociates.map((assoc) => (
+                  <div key={assoc.rank} className="associate-rank-card">
+                    <div className="rank-badge-number">#{assoc.rank}</div>
+                    <img src={assoc.photo} alt={assoc.name} className="associate-avatar-img" />
+                    <div className="associate-info-block">
+                      <strong>{assoc.name}</strong>
+                      <span>{assoc.level}</span>
+                    </div>
+                    <div className="associate-stat-pill">
+                      <span className="stat-label">Sales</span>
+                      <strong className="stat-val">{assoc.sales} Plots</strong>
+                    </div>
+                    <div className="associate-stat-pill">
+                      <span className="stat-label">Revenue</span>
+                      <strong className="stat-val green">{assoc.revenue}</strong>
+                    </div>
+                    <div className="associate-stat-pill">
+                      <span className="stat-label">Conversion</span>
+                      <strong className="stat-val blue">{assoc.conversion}</strong>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* FOURTH ROW: PROJECT HEALTH PROGRESS RADIAL RINGS */}
+        {activeTab === 'map' && (
+          <div className="dashboard-fourth-row">
+            <div className="project-health-card glass">
+              <div className="health-header">
+                <h3 className="health-title">
+                  <PieChartIcon size={18} color="#0284c7" /> 60-Bigha Township Inventory & Project Health
+                </h3>
+                <span className="health-badge">Master Layout Allocation</span>
+              </div>
+
+              <div className="health-metrics-row">
+                <div className="health-progress-item">
+                  <div className="radial-progress green">
+                    <span>{occupancyRate}%</span>
+                  </div>
+                  <strong>Inventory Occupancy</strong>
+                  <p>{bookedCount + soldCount} of {plots.length} plots allocated</p>
+                </div>
+
+                <div className="health-progress-item">
+                  <div className="radial-progress red">
+                    <span>{Math.round((soldCount / plots.length) * 100)}%</span>
+                  </div>
+                  <strong>Executed Registries</strong>
+                  <p>{soldCount} Plots Sub-Registrar Signed</p>
+                </div>
+
+                <div className="health-progress-item">
+                  <div className="radial-progress amber">
+                    <span>{Math.round((bookedCount / plots.length) * 100)}%</span>
+                  </div>
+                  <strong>Tokens & UTR Hold</strong>
+                  <p>{bookedCount} Plots Awaiting Registry</p>
+                </div>
+
+                <div className="health-progress-item">
+                  <div className="radial-progress blue">
+                    <span>88%</span>
+                  </div>
+                  <strong>Construction Progress</strong>
+                  <p>Roads, Electricity & Gate complete</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* BOTTOM FLOATING QUICK ACTIONS TOOLBAR */}
+        <div className="bottom-quick-actions-bar">
+          <motion.button
+            whileHover={{ scale: 1.04, y: -2 }}
+            whileTap={{ scale: 0.96 }}
+            className="quick-action-pill primary"
+            onClick={() => setActiveTab('map')}
+          >
+            <Sparkles size={16} /> Book Plot
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.04, y: -2 }}
+            whileTap={{ scale: 0.96 }}
+            className="quick-action-pill"
+            onClick={() => {
+              setActiveTab('map');
+              addToast('info', 'Receipt PDF', 'Select a plot or booking to generate PDF Receipt');
+            }}
+          >
+            <FileText size={16} /> Generate Receipt
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.04, y: -2 }}
+            whileTap={{ scale: 0.96 }}
+            className="quick-action-pill"
+            onClick={() => setIsCommandPaletteOpen(true)}
+          >
+            <Search size={16} /> Customer Search
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.04, y: -2 }}
+            whileTap={{ scale: 0.96 }}
+            className="quick-action-pill"
+            onClick={() => setActiveTab('map')}
+          >
+            <MapPin size={16} /> View Map
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.04, y: -2 }}
+            whileTap={{ scale: 0.96 }}
+            className="quick-action-pill"
+            onClick={() => setActiveTab('finance')}
+          >
+            <CreditCard size={16} /> Payment Entry
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.04, y: -2 }}
+            whileTap={{ scale: 0.96 }}
+            className="quick-action-pill"
+            onClick={() => {
+              setActiveTab('map');
+              addToast('info', 'Registry Status', 'Inspect plot sub-registrar status on GIS canvas');
+            }}
+          >
+            <Building size={16} /> Registry
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.04, y: -2 }}
+            whileTap={{ scale: 0.96 }}
+            className="quick-action-pill"
+            onClick={() => {
+              setActiveTab('map');
+              addToast('info', 'Agreement Bond', 'Agreement Bond Generator ready');
+            }}
+          >
+            <FileCheck size={16} /> Create Agreement
+          </motion.button>
+        </div>
 
         {/* Dynamic Module Content View */}
         <main className="main-content-body">
