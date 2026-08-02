@@ -25,11 +25,16 @@ import {
   UserCheck,
   PieChart as PieChartIcon,
   Award,
-  RefreshCw,
   MapPin,
   FileCheck,
   CreditCard,
   Building,
+  UserPlus,
+  CloudSun,
+  Database,
+  CheckCircle,
+  Download,
+  PlusCircle,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Plot } from './types';
@@ -70,7 +75,7 @@ const QRVerificationModal = lazy(() =>
 
 const ComponentFallback = memo(() => (
   <div className="component-fallback-container">
-    <Loader2 className="animate-spin" size={26} color="#0284c7" />
+    <Loader2 className="animate-spin" size={26} color="#0EA5E9" />
     <span>Loading Enterprise Module...</span>
   </div>
 ));
@@ -179,27 +184,27 @@ const MainLayout: React.FC = () => {
     return { availableCount: available, bookedCount: booked, soldCount: sold, occupancyRate: rate };
   }, [plots]);
 
-  const userName = authUser?.fullName || authUser?.username || 'Ashok Kumar';
+  const userName = authUser?.fullName || authUser?.username || 'Vikramaditya Singh';
 
   // 6 Premium KPI Cards Data
   const kpiCards = useMemo(() => {
     return [
-      { id: '1', title: 'Available Inventory', value: availableCount, prefix: '', suffix: ' Plots', trend: '+4.2%', isUp: true, icon: CheckCircle2, color: '#10b981', desc: 'Ready for instant booking', sparkline: 'M0,15 Q15,5 30,12 T60,8 T90,2' },
-      { id: '2', title: "Booked Today", value: 3, prefix: '', suffix: ' Plots', trend: '+12.5%', isUp: true, icon: Clock, color: '#f59e0b', desc: 'Advance token confirmed', sparkline: 'M0,18 Q15,12 30,8 T60,5 T90,1' },
-      { id: '3', title: "Today's Revenue", value: 150000, prefix: '₹', suffix: '', trend: '+18.4%', isUp: true, icon: DollarSign, color: '#0284c7', desc: 'Verified UTR inflow', sparkline: 'M0,20 Q15,15 30,10 T60,4 T90,0' },
-      { id: '4', title: 'Monthly Revenue', value: 6400000, prefix: '₹', suffix: '', trend: '+28.4%', isUp: true, icon: TrendingUp, color: '#a855f7', desc: 'Current Month Target: ₹75L', sparkline: 'M0,16 Q15,10 30,12 T60,6 T90,2' },
-      { id: '5', title: 'Pending Approvals', value: 2, prefix: '', suffix: ' Requests', trend: '-50%', isUp: false, icon: UserCheck, color: '#ef4444', desc: 'Registration & KYC Audit', sparkline: 'M0,2 Q15,8 30,12 T60,16 T90,20' },
-      { id: '6', title: 'Collection Rate', value: 94.8, prefix: '', suffix: '%', trend: '+3.1%', isUp: true, icon: ShieldCheck, color: '#38bdf8', desc: 'Installment UTR Efficiency', sparkline: 'M0,15 Q15,8 30,5 T60,3 T90,1' },
+      { id: '1', title: 'Available Inventory', value: availableCount, prefix: '', suffix: ' Plots', trend: '+4.2%', isUp: true, icon: CheckCircle2, color: '#10B981', desc: 'Ready for instant booking', sparkline: 'M0,15 Q15,5 30,12 T60,8 T90,2' },
+      { id: '2', title: "Booked Today", value: 3, prefix: '', suffix: ' Plots', trend: '+12.5%', isUp: true, icon: Clock, color: '#F59E0B', desc: 'Advance token confirmed', sparkline: 'M0,18 Q15,12 30,8 T60,5 T90,1' },
+      { id: '3', title: "Today's Revenue", value: 150000, prefix: '₹', suffix: '', trend: '+18.4%', isUp: true, icon: DollarSign, color: '#0EA5E9', desc: 'Verified UTR inflow', sparkline: 'M0,20 Q15,15 30,10 T60,4 T90,0' },
+      { id: '4', title: 'Monthly Revenue', value: 6400000, prefix: '₹', suffix: '', trend: '+28.4%', isUp: true, icon: TrendingUp, color: '#A855F7', desc: 'Current Month Target: ₹75L', sparkline: 'M0,16 Q15,10 30,12 T60,6 T90,2' },
+      { id: '5', title: 'Pending Approvals', value: 2, prefix: '', suffix: ' Requests', trend: '-50%', isUp: false, icon: UserCheck, color: '#EF4444', desc: 'Registration & KYC Audit', sparkline: 'M0,2 Q15,8 30,12 T60,16 T90,20' },
+      { id: '6', title: 'Collection Rate', value: 94.8, prefix: '', suffix: '%', trend: '+3.1%', isUp: true, icon: ShieldCheck, color: '#38BDF8', desc: 'Installment UTR Efficiency', sparkline: 'M0,15 Q15,8 30,5 T60,3 T90,1' },
     ];
   }, [availableCount]);
 
   // Recent Activity Timeline
   const recentActivities = useMemo(() => {
     return [
-      { id: '1', title: 'New Plot 104 Booked', desc: 'Customer Ramesh Kumar paid ₹50,000 token via Bank HDFC UTR', time: '10 mins ago', badge: 'NEW BOOKING', color: '#10b981' },
-      { id: '2', title: 'Payment UTR Verified', desc: 'Accountant approved ₹4,50,000 second installment for Plot A-12', time: '35 mins ago', badge: 'PAYMENT RECEIVED', color: '#0284c7' },
-      { id: '3', title: 'Sub-Registrar Deed Executed', desc: 'Plot B-45 Registry Deed successfully completed & signed', time: '2 hours ago', badge: 'REGISTRY COMPLETED', color: '#a855f7' },
-      { id: '4', title: 'User Registration Pending', desc: 'Level-2 Associate request queued for Super Admin approval', time: '3 hours ago', badge: 'APPROVAL PENDING', color: '#f59e0b' },
+      { id: '1', title: 'New Plot 104 Booked', desc: 'Customer Ramesh Kumar paid ₹50,000 token via Bank HDFC UTR', time: '10 mins ago', badge: 'NEW BOOKING', color: '#10B981' },
+      { id: '2', title: 'Payment UTR Verified', desc: 'Accountant approved ₹4,50,000 second installment for Plot A-12', time: '35 mins ago', badge: 'PAYMENT RECEIVED', color: '#0EA5E9' },
+      { id: '3', title: 'Sub-Registrar Deed Executed', desc: 'Plot B-45 Registry Deed successfully completed & signed', time: '2 hours ago', badge: 'REGISTRY COMPLETED', color: '#A855F7' },
+      { id: '4', title: 'User Registration Pending', desc: 'Level-2 Associate request queued for Super Admin approval', time: '3 hours ago', badge: 'APPROVAL PENDING', color: '#F59E0B' },
     ];
   }, []);
 
@@ -223,69 +228,151 @@ const MainLayout: React.FC = () => {
 
       {/* Right Main Viewport */}
       <div className="main-viewport-container">
-        {/* TOP ENTERPRISE COMMAND CENTER HEADER */}
+        {/* REDESIGNED EXECUTIVE COMMAND CENTER MAIN HEADER */}
         <motion.header
-          initial={{ opacity: 0, y: -16 }}
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          className="command-center-header"
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="executive-command-center-header"
         >
-          <div className="header-greeting-section">
-            <div className="header-subtitle-row">
-              <span className="live-status-dot"></span>
-              <span className="command-center-tag">Shubharambh Executive Command Center</span>
+          {/* Ambient Soft Glowing Radial Blobs */}
+          <div className="header-ambient-glow-blob top-left"></div>
+          <div className="header-ambient-glow-blob bottom-right"></div>
+          <div className="header-subtle-grid-overlay"></div>
+
+          {/* LEFT SIDE: HERO GREETING & SYNOPSIS */}
+          <div className="header-left-hero-block">
+            <div className="header-small-label-tag">
+              <span className="live-status-pulse-dot"></span>
+              EXECUTIVE COMMAND CENTER
             </div>
-            <h1 className="header-user-greeting">Good Morning, {userName} 👋</h1>
-            <p className="header-subtext">
-              Real-time 60-Bigha Lucknow township telemetry, bank UTR settlement engine & associate network tree.
+
+            <h1 className="header-hero-greeting-title">
+              Good Morning,<br />
+              <span className="greeting-user-name">{userName}</span>
+              <motion.span
+                animate={{ rotate: [0, 14, -8, 14, 0] }}
+                transition={{ repeat: Infinity, repeatDelay: 3, duration: 1.5 }}
+                style={{ display: 'inline-block', marginLeft: '10px', transformOrigin: '70% 70%' }}
+              >
+                👋
+              </motion.span>
+            </h1>
+
+            <p className="header-synopsis-sentence">
+              Real-time township monitoring, sales analytics, booking intelligence and financial overview.
             </p>
           </div>
 
-          <div className="header-telemetry-controls">
-            {/* Live Clock & Date Card */}
-            <div className="telemetry-pill">
-              <CalendarIcon size={14} color="#0284c7" />
-              <span>{formattedDate}</span>
-              <span className="telemetry-divider">•</span>
-              <Clock size={14} color="#10b981" />
-              <strong style={{ color: '#0f172a' }}>{formattedTime}</strong>
-            </div>
-
-            {/* Online Users & Sync Indicator */}
-            <div className="telemetry-pill">
-              <span className="online-user-dot"></span>
-              <span>48 Online</span>
-              <span className="telemetry-divider">•</span>
-              <RefreshCw size={13} color="#64748b" />
-              <span>Synced</span>
-            </div>
-
-            {/* Quick Actions Buttons */}
-            <div className="header-action-group">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="icon-action-btn"
-                onClick={() => setIsCommandPaletteOpen(true)}
-                title="Quick Search (Ctrl+K)"
-              >
-                <Search size={18} />
-              </motion.button>
-
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="icon-action-btn notification-btn"
-                onClick={() => addToast('info', 'Notifications', '2 Pending User Approvals & 3 UTR Verifications queued.')}
-                title="Notification Center"
-              >
-                <Bell size={18} />
-                <span className="notification-badge-dot">2</span>
-              </motion.button>
-
-              <div className="header-profile-avatar" title="Ashok Kumar (Super Admin)">
-                <span>{userName.charAt(0)}</span>
+          {/* RIGHT SIDE: TELEMETRY GLASS PILLS & ANIMATED QUICK ACTIONS */}
+          <div className="header-right-telemetry-block">
+            {/* TOP ROW: TELEMETRY GLASS PILLS */}
+            <div className="header-top-telemetry-pills-row">
+              <div className="telemetry-glass-pill">
+                <CalendarIcon size={14} color="#0EA5E9" />
+                <span>{formattedDate}</span>
               </div>
+
+              <div className="telemetry-glass-pill">
+                <Clock size={14} color="#10B981" />
+                <strong>{formattedTime}</strong>
+              </div>
+
+              <div className="telemetry-glass-pill">
+                <CloudSun size={14} color="#F59E0B" />
+                <span>⛅ 28°C Lucknow</span>
+              </div>
+
+              <div className="telemetry-glass-pill">
+                <span className="live-online-user-dot"></span>
+                <span>48 Active</span>
+              </div>
+
+              <div className="telemetry-glass-pill">
+                <Database size={13} color="#10B981" />
+                <span>🟢 Connected</span>
+              </div>
+
+              <div className="telemetry-glass-pill">
+                <CheckCircle size={13} color="#10B981" />
+                <span>🟢 Operational</span>
+              </div>
+
+              <div className="header-icon-actions-group">
+                <motion.button
+                  whileHover={{ scale: 1.06 }}
+                  whileTap={{ scale: 0.94 }}
+                  className="glass-icon-btn notification"
+                  onClick={() => addToast('info', 'Notifications', '2 Pending User Approvals & 3 UTR Verifications queued.')}
+                  title="Notification Center"
+                >
+                  <Bell size={18} />
+                  <span className="glass-badge-counter">2</span>
+                </motion.button>
+
+                <div className="header-user-avatar-glass" title={`${userName} (Super Admin)`}>
+                  <span>{userName.charAt(0)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* BELOW ROW: ANIMATED QUICK ACTION BUTTONS */}
+            <div className="header-below-quick-actions-row">
+              <motion.button
+                whileHover={{ scale: 1.04, y: -2 }}
+                whileTap={{ scale: 0.96 }}
+                className="header-quick-action-btn primary"
+                onClick={() => {
+                  setActiveTab('map');
+                  addToast('info', 'New Booking', 'Select an available plot on the layout map grid to book');
+                }}
+              >
+                <PlusCircle size={15} /> + New Booking
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.04, y: -2 }}
+                whileTap={{ scale: 0.96 }}
+                className="header-quick-action-btn"
+                onClick={() => {
+                  setActiveTab('approvals');
+                  addToast('info', 'Add Customer', 'Navigated to Pending User Approvals & Customer Registration');
+                }}
+              >
+                <UserPlus size={15} /> + Add Customer
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.04, y: -2 }}
+                whileTap={{ scale: 0.96 }}
+                className="header-quick-action-btn"
+                onClick={() => setActiveTab('map')}
+              >
+                <MapPin size={15} /> Open GIS Map
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.04, y: -2 }}
+                whileTap={{ scale: 0.96 }}
+                className="header-quick-action-btn"
+                onClick={() => {
+                  setActiveTab('finance');
+                  addToast('success', 'Report Generated', 'Master Financial & Inventory Report ready');
+                }}
+              >
+                <FileText size={15} /> Generate Report
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.04, y: -2 }}
+                whileTap={{ scale: 0.96 }}
+                className="header-quick-action-btn"
+                onClick={() => {
+                  addToast('info', 'Export Started', 'Exporting township inventory dataset to CSV...');
+                }}
+              >
+                <Download size={15} /> Export Data
+              </motion.button>
             </div>
           </div>
         </motion.header>
@@ -359,8 +446,8 @@ const MainLayout: React.FC = () => {
                 <svg className="area-chart-svg" viewBox="0 0 800 220" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#0284c7" stopOpacity="0.4" />
-                      <stop offset="100%" stopColor="#0284c7" stopOpacity="0.0" />
+                      <stop offset="0%" stopColor="#0EA5E9" stopOpacity="0.4" />
+                      <stop offset="100%" stopColor="#0EA5E9" stopOpacity="0.0" />
                     </linearGradient>
                   </defs>
                   <path
@@ -373,7 +460,7 @@ const MainLayout: React.FC = () => {
                     transition={{ duration: 1.2, ease: 'easeOut' }}
                     d="M 0,180 Q 100,120 200,150 T 400,80 T 600,100 T 800,20"
                     fill="none"
-                    stroke="#0284c7"
+                    stroke="#0EA5E9"
                     strokeWidth="3.5"
                   />
                 </svg>
@@ -391,7 +478,7 @@ const MainLayout: React.FC = () => {
             <div className="activity-timeline-card glass">
               <div className="timeline-header">
                 <h3 className="timeline-title">
-                  <Zap size={18} color="#f59e0b" /> Live Transaction Activity
+                  <Zap size={18} color="#F59E0B" /> Live Transaction Activity
                 </h3>
                 <span className="pulse-tag">Realtime Stream</span>
               </div>
@@ -423,7 +510,7 @@ const MainLayout: React.FC = () => {
             <div className="associates-leaderboard-card glass">
               <div className="leaderboard-header">
                 <h3 className="leaderboard-title">
-                  <Award size={18} color="#f59e0b" /> Top Performing Sales Associates
+                  <Award size={18} color="#F59E0B" /> Top Performing Sales Associates
                 </h3>
                 <span className="leaderboard-badge">Monthly Revenue Rank</span>
               </div>
@@ -462,7 +549,7 @@ const MainLayout: React.FC = () => {
             <div className="project-health-card glass">
               <div className="health-header">
                 <h3 className="health-title">
-                  <PieChartIcon size={18} color="#0284c7" /> 60-Bigha Township Inventory & Project Health
+                  <PieChartIcon size={18} color="#0EA5E9" /> 60-Bigha Township Inventory & Project Health
                 </h3>
                 <span className="health-badge">Master Layout Allocation</span>
               </div>
