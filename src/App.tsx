@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, lazy, Suspense, memo, useCallback } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { ProtectedRoute } from './components/Auth/ProtectedRoute';
 import { RoleGuard } from './components/Auth/RoleGuard';
 import { Sidebar } from './components/Navigation/Sidebar';
@@ -35,6 +36,8 @@ import {
   CheckCircle,
   Download,
   PlusCircle,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Plot } from './types';
@@ -217,6 +220,7 @@ KpiCardItem.displayName = 'KpiCardItem';
 const MainLayout: React.FC = () => {
   const { plots } = useApp();
   const { user: authUser } = useAuth();
+  const { resolvedTheme, toggleTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<'map' | 'mlm' | 'finance' | 'usps' | 'profile' | 'audit' | 'approvals'>('map');
   const [chartTimeframe, setChartTimeframe] = useState<'7D' | '30D' | '90D' | '1Y'>('30D');
 
@@ -392,6 +396,17 @@ const MainLayout: React.FC = () => {
               </div>
 
               <div className="header-icon-actions-group">
+                {/* Theme Mode Toggle Button */}
+                <motion.button
+                  whileHover={{ scale: 1.08 }}
+                  whileTap={{ scale: 0.92 }}
+                  className="glass-icon-btn"
+                  onClick={toggleTheme}
+                  title={`Current Theme: ${resolvedTheme.toUpperCase()}. Click to switch.`}
+                >
+                  {resolvedTheme === 'dark' ? <Sun size={18} color="#F59E0B" /> : <Moon size={18} color="#0EA5E9" />}
+                </motion.button>
+
                 <motion.button
                   whileHover={{ scale: 1.06 }}
                   whileTap={{ scale: 0.94 }}
@@ -897,13 +912,15 @@ const MainLayout: React.FC = () => {
 
 export const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <AppProvider>
-        <ProtectedRoute>
-          <MainLayout />
-        </ProtectedRoute>
-      </AppProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <AppProvider>
+          <ProtectedRoute>
+            <MainLayout />
+          </ProtectedRoute>
+        </AppProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 };
 

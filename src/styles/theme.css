@@ -1,54 +1,74 @@
-/* Design System Tokens for Shubharambh Green City CRM */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+/* Complete Enterprise Design System Tokens for Shubharambh Green City CRM */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* Brand Palettes */
-  --primary-forest: #0f382c;
-  --primary-forest-dark: #08221b;
-  --primary-forest-light: #1b4d3e;
-  --primary-forest-subtle: #e8f3ef;
+  /* ─── SPACING SCALE ─── */
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-40: 40px;
+  --space-48: 48px;
+  --space-64: 64px;
 
-  --accent-gold: #d4af37;
-  --accent-gold-light: #f3e5ab;
-  --accent-gold-dark: #a8851c;
-  --accent-gold-glow: rgba(212, 175, 55, 0.25);
+  /* ─── BORDER RADIUS STANDARDS ─── */
+  --radius-btn: 14px;
+  --radius-input: 16px;
+  --radius-card: 24px;
+  --radius-dialog: 28px;
+  --radius-drawer: 32px;
+  --radius-map: 32px;
 
-  /* Status Colors */
-  --status-available: #10b981;
-  --status-available-bg: #ecfdf5;
-  --status-available-border: #6ee7b7;
+  /* ─── LIGHT MODE COLOR SYSTEM ─── */
+  --color-primary: #0ea5e9;
+  --color-secondary: #2563eb;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-surface: #ffffff;
+  --color-bg-main: #f7f9fc;
+  --color-glass: rgba(255, 255, 255, 0.72);
+  --color-border: rgba(226, 232, 240, 0.8);
+  --color-text-main: #0f172a;
+  --color-text-muted: #64748b;
 
-  --status-booked: #f59e0b;
-  --status-booked-bg: #fffbeb;
-  --status-booked-border: #fcd34d;
-
-  --status-sold: #ef4444;
-  --status-sold-bg: #fef2f2;
-  --status-sold-border: #fca5a5;
-
-  /* Neutral Spectrum */
-  --bg-main: #f8fafc;
+  /* Legacy Compat Tokens */
+  --primary-forest: #0ea5e9;
+  --primary-forest-dark: #0284c7;
+  --accent-gold: #f59e0b;
+  --bg-main: #f7f9fc;
   --bg-card: #ffffff;
-  --bg-card-subtle: #f1f5f9;
   --text-main: #0f172a;
   --text-muted: #64748b;
-  --text-inverse: #ffffff;
   --border-color: #e2e8f0;
-  --border-hover: #cbd5e1;
+  --glass-bg: rgba(255, 255, 255, 0.72);
 
-  /* Shadows & Glassmorphism */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(15, 56, 44, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --glass-bg: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(255, 255, 255, 0.4);
+  /* ─── GLOBAL SHADOWS ─── */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.12);
+  --shadow-2xl: 0 30px 70px rgba(0, 0, 0, 0.2);
+}
 
-  /* Layout Constants */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+/* ─── DARK MODE COLOR SYSTEM OVERRIDES ─── */
+[data-theme="dark"] {
+  --color-surface: #0f172a;
+  --color-bg-main: #0b0f19;
+  --color-glass: rgba(15, 23, 42, 0.85);
+  --color-border: rgba(255, 255, 255, 0.12);
+  --color-text-main: #f8fafc;
+  --color-text-muted: #94a3b8;
+
+  --bg-main: #0b0f19;
+  --bg-card: #0f172a;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: rgba(255, 255, 255, 0.12);
+  --glass-bg: rgba(15, 23, 42, 0.85);
 }
 
 * {
@@ -59,26 +79,38 @@
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: var(--bg-main);
-  color: var(--text-main);
+  background-color: var(--color-bg-main);
+  color: var(--color-text-main);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Outfit', 'Inter', sans-serif;
-  font-weight: 700;
-  color: var(--primary-forest);
+/* ─── CUSTOM MODERN THIN ROUNDED SCROLLBARS ─── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-button {
-  font-family: 'Inter', sans-serif;
-  cursor: pointer;
-  border: none;
-  outline: none;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-input, select, textarea {
-  font-family: 'Inter', sans-serif;
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.35);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(14, 165, 233, 0.6);
+}
+
+/* Reduced Motion Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
