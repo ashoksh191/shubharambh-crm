@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, memo } from 'react';
 import type { EnhancedPlot, EnhancedPlotStatus } from '../../../types/propertyMap';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
   Clock,
-  ShieldCheck,
   MapPin,
   Download,
   Share2,
@@ -13,15 +12,15 @@ import {
   Sparkles,
   User,
   Settings,
-  ExternalLink,
-  Calendar,
-  MessageSquare,
   Edit3,
   Calculator,
   Compass,
   CheckCircle2,
   ChevronRight,
-  TrendingUp,
+  DollarSign,
+  FileCheck,
+  UserCheck,
+  CheckCircle,
 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 
@@ -34,16 +33,14 @@ interface PlotDrawerProps {
   onOpenAdminEditor?: (plot: EnhancedPlot) => void;
 }
 
-export const PlotDrawer: React.FC<PlotDrawerProps> = ({
+export const PlotDrawer: React.FC<PlotDrawerProps> = memo(({
   plot,
   onClose,
   onBookPlot,
-  onUpdateStatus,
   onOpenAdminEditor,
 }) => {
   const { user: authUser } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'finance' | 'gallery' | 'amenities' | 'history' | 'documents' | 'admin'>('overview');
-  const [activeImageIdx, setActiveImageIdx] = useState(0);
+  const [activeTab, setActiveTab] = useState<'overview' | 'customer' | 'finance' | 'timeline' | 'documents' | 'admin'>('overview');
 
   // EMI Calculator State
   const [downPaymentPercent, setDownPaymentPercent] = useState<number>(20);
@@ -80,21 +77,7 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
 
   if (!plot) return null;
 
-  const STATUS_COLORS: Record<EnhancedPlotStatus, string> = {
-    available: '#10b981',
-    reserved: '#f59e0b',
-    booked: '#3b82f6',
-    sold: '#ef4444',
-    unreleased: '#64748b',
-  };
-
-  const statusColor = STATUS_COLORS[plot.enhancedStatus] || '#10b981';
-
-  const galleryImages = [
-    'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&auto=format&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&auto=format&fit=crop&q=80',
-    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&auto=format&fit=crop&q=80',
-  ];
+  const isBookedOrSold = plot.enhancedStatus === 'booked' || plot.enhancedStatus === 'sold' || plot.enhancedStatus === 'reserved';
 
   const handleWhatsApp = () => {
     const text = encodeURIComponent(
@@ -147,31 +130,16 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
           }}
         />
 
-        {/* Sliding Side Property Inspector Drawer */}
+        {/* Sliding Executive Property Intelligence Drawer (520px) */}
         <motion.div
           role="dialog"
           aria-modal="true"
-          aria-label={`Property Inspector for Plot ${plot.plotNo}`}
+          aria-label={`Property Intelligence Panel for Plot ${plot.plotNo}`}
           initial={{ x: '100%' }}
           animate={{ x: 0 }}
           exit={{ x: '100%' }}
           transition={{ type: 'spring', damping: 28, stiffness: 260 }}
-          style={{
-            position: 'relative',
-            zIndex: 10,
-            width: '100%',
-            maxWidth: '560px',
-            height: '100vh',
-            background: 'rgba(15, 23, 42, 0.96)',
-            backdropFilter: 'blur(24px)',
-            borderLeft: `2px solid ${statusColor}`,
-            boxShadow: '-25px 0 70px rgba(0, 0, 0, 0.8)',
-            color: '#f8fafc',
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-            pointerEvents: 'auto',
-          }}
+          className="property-intelligence-drawer-container"
         >
           {/* Top Breadcrumb Bar */}
           <div
@@ -194,86 +162,82 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
           </div>
 
           {/* Hero Property Inspector Header */}
-          <div
-            style={{
-              padding: '20px 24px',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-              background: 'linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(30,41,59,0.9) 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                <h2 style={{ fontSize: '1.8rem', fontWeight: 800, margin: 0, color: '#ffffff', letterSpacing: '-0.02em' }}>
+          <div className="drawer-hero-header-card">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <h2 className="drawer-plot-number-hero-title">
                   Plot {plot.plotNo}
                 </h2>
-                <span
-                  style={{
-                    background: `${statusColor}22`,
-                    color: statusColor,
-                    border: `1px solid ${statusColor}`,
-                    padding: '3px 12px',
-                    borderRadius: '9999px',
-                    fontSize: '0.75rem',
-                    fontWeight: 800,
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  {plot.enhancedStatus}
+                <span style={{ color: '#94a3b8', fontSize: '0.84rem' }}>
+                  {plot.block} Sector • {plot.facing} Facing • {plot.roadWidth} Boulevard
                 </span>
-
-                {plot.category === 'Corner' && (
-                  <span style={{ background: 'rgba(245,158,11,0.2)', color: '#f59e0b', border: '1px solid #f59e0b', padding: '2px 8px', borderRadius: '6px', fontSize: '0.7rem', fontWeight: 700 }}>
-                    ⭐ Corner Plot
-                  </span>
-                )}
               </div>
-              <p style={{ color: '#94a3b8', fontSize: '0.84rem', margin: '4px 0 0 0' }}>
-                {plot.block} Sector • {plot.facing} Facing • {plot.roadWidth} Main Boulevard
-              </p>
-            </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              {(authUser?.role === 'SUPER_ADMIN' || authUser?.role === 'ADMIN') && onOpenAdminEditor && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {(authUser?.role === 'SUPER_ADMIN' || authUser?.role === 'ADMIN') && onOpenAdminEditor && (
+                  <button
+                    onClick={() => onOpenAdminEditor(plot)}
+                    style={{
+                      background: 'rgba(245, 158, 11, 0.2)',
+                      border: '1px solid #f59e0b',
+                      color: '#f59e0b',
+                      padding: '6px 10px',
+                      borderRadius: '8px',
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                    }}
+                  >
+                    <Edit3 size={14} /> Edit
+                  </button>
+                )}
+
                 <button
-                  onClick={() => onOpenAdminEditor(plot)}
+                  onClick={onClose}
                   style={{
-                    background: 'rgba(245, 158, 11, 0.2)',
-                    border: '1px solid #f59e0b',
-                    color: '#f59e0b',
-                    padding: '6px 10px',
-                    borderRadius: '8px',
-                    fontSize: '0.78rem',
-                    fontWeight: 700,
-                    cursor: 'pointer',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)',
+                    color: '#ffffff',
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '4px',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
                   }}
+                  title="Close Inspector (Esc)"
                 >
-                  <Edit3 size={14} /> Edit
+                  <X size={18} />
                 </button>
-              )}
+              </div>
+            </div>
 
-              <button
-                onClick={onClose}
-                style={{
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  color: '#ffffff',
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
-                }}
-              >
-                <X size={18} />
-              </button>
+            {/* Compact Header Chips Row */}
+            <div className="drawer-header-chips-row">
+              <span className={`drawer-status-badge-pill ${plot.enhancedStatus}`}>
+                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'currentColor' }}></span>
+                {plot.enhancedStatus}
+              </span>
+
+              <span className="drawer-compact-info-chip">
+                <MapPin size={12} color="#0ea5e9" /> {plot.block}
+              </span>
+
+              <span className="drawer-compact-info-chip">
+                <Compass size={12} color="#38bdf8" /> {plot.facing}
+              </span>
+
+              <span className="drawer-compact-info-chip">
+                <Sparkles size={12} color="#10b981" /> {plot.totalArea} sq.ft
+              </span>
+
+              <span className="drawer-compact-info-chip">
+                <DollarSign size={12} color="#f59e0b" /> ₹{plot.totalPrice.toLocaleString('en-IN')}
+              </span>
             </div>
           </div>
 
@@ -288,7 +252,7 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
               overflowX: 'auto',
             }}
           >
-            {(['overview', 'finance', 'gallery', 'amenities', 'history', 'documents', 'admin'] as const).map((tab) => {
+            {(['overview', 'customer', 'finance', 'timeline', 'documents', 'admin'] as const).map((tab) => {
               if (tab === 'admin' && authUser?.role !== 'SUPER_ADMIN' && authUser?.role !== 'ADMIN') return null;
               return (
                 <button
@@ -298,7 +262,7 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
                     padding: '12px 14px',
                     background: 'transparent',
                     border: 'none',
-                    borderBottom: activeTab === tab ? `2px solid ${statusColor}` : '2px solid transparent',
+                    borderBottom: activeTab === tab ? '2px solid #0ea5e9' : '2px solid transparent',
                     color: activeTab === tab ? '#ffffff' : '#94a3b8',
                     fontSize: '0.82rem',
                     fontWeight: activeTab === tab ? 700 : 500,
@@ -311,10 +275,9 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
                   }}
                 >
                   {tab === 'overview' && <Sparkles size={14} />}
+                  {tab === 'customer' && <User size={14} />}
                   {tab === 'finance' && <Calculator size={14} />}
-                  {tab === 'gallery' && <ExternalLink size={14} />}
-                  {tab === 'amenities' && <MapPin size={14} />}
-                  {tab === 'history' && <Clock size={14} />}
+                  {tab === 'timeline' && <Clock size={14} />}
                   {tab === 'documents' && <FileText size={14} />}
                   {tab === 'admin' && <Settings size={14} />}
                   {tab === 'finance' ? 'EMI Calculator' : tab}
@@ -392,64 +355,61 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
                   </div>
                 </div>
 
-                {/* Booking Lifecycle Stage Tracker Bar */}
-                <div style={{ background: '#0f172a', padding: '18px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                  <h4 style={{ color: '#ffffff', margin: '0 0 14px 0', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <TrendingUp size={16} color="#0284c7" /> Booking & Ownership Stage
-                  </h4>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative' }}>
-                    {['Token (₹50k)', 'UTR Approval', 'Agreement Bond', 'Sub-Registrar'].map((step, idx) => {
-                      const isCompleted =
-                        plot.enhancedStatus === 'sold' ||
-                        (plot.enhancedStatus === 'booked' && idx <= 1) ||
-                        (plot.enhancedStatus === 'reserved' && idx === 0);
-                      return (
-                        <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', zIndex: 2 }}>
-                          <div
-                            style={{
-                              width: '24px',
-                              height: '24px',
-                              borderRadius: '50%',
-                              background: isCompleted ? '#10b981' : '#1e293b',
-                              color: isCompleted ? '#ffffff' : '#64748b',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              fontSize: '0.75rem',
-                              fontWeight: 700,
-                            }}
-                          >
-                            {isCompleted ? <CheckCircle2 size={14} /> : idx + 1}
-                          </div>
-                          <span style={{ fontSize: '0.7rem', color: isCompleted ? '#ffffff' : '#64748b', fontWeight: 600 }}>{step}</span>
-                        </div>
-                      );
-                    })}
+                {/* Empty State Banner if Available */}
+                {plot.enhancedStatus === 'available' && (
+                  <div style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(15, 23, 42, 0.9) 100%)', border: '1px solid #10b981', borderRadius: '18px', padding: '20px', textAlign: 'center' }}>
+                    <CheckCircle2 size={32} color="#10b981" style={{ margin: '0 auto 8px auto' }} />
+                    <h4 style={{ color: '#ffffff', margin: 0, fontSize: '1.05rem', fontWeight: 800 }}>Ready for Booking</h4>
+                    <p style={{ color: '#94a3b8', fontSize: '0.82rem', margin: '4px 0 14px 0' }}>
+                      Clear Gram Panchayat title deed. Secure with instant ₹50,000 online token.
+                    </p>
+                    <button
+                      onClick={() => onBookPlot(plot)}
+                      style={{ background: '#10b981', color: '#ffffff', border: 'none', padding: '10px 24px', borderRadius: '9999px', fontWeight: 800, fontSize: '0.85rem', cursor: 'pointer' }}
+                    >
+                      Instant Booking
+                    </button>
                   </div>
-                </div>
-
-                {/* Ownership & Legal Compliance */}
-                <div style={{ background: '#0f172a', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                  <h4 style={{ color: '#ffffff', margin: '0 0 8px 0', fontSize: '0.92rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <ShieldCheck size={16} color="#10b981" /> RERA & Gram Panchayat Compliance
-                  </h4>
-                  <p style={{ color: '#94a3b8', fontSize: '0.85rem', lineHeight: '1.6', margin: 0 }}>
-                    {plot.description} Gram Panchayat approved clear title plot with immediate registry assurance.
-                  </p>
-                </div>
-
-                {/* Owner Info Card */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(255,255,255,0.04)', padding: '14px 18px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                  <User size={22} color="#f59e0b" />
-                  <div>
-                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Current Owner / Allottee</span>
-                    <strong style={{ display: 'block', fontSize: '0.92rem', color: '#ffffff' }}>{plot.owner || 'Shubharambh Green City'}</strong>
-                  </div>
-                </div>
+                )}
               </div>
             )}
 
-            {/* EMI CALCULATOR TAB */}
+            {/* CUSTOMER TAB */}
+            {activeTab === 'customer' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <h4 style={{ color: '#ffffff', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <UserCheck size={18} color="#0ea5e9" /> Allottee & Customer Intelligence
+                </h4>
+
+                {isBookedOrSold ? (
+                  <div style={{ background: '#0f172a', padding: '20px', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                      <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'linear-gradient(135deg, #0ea5e9, #2563eb)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '1.2rem' }}>
+                        {(plot.owner || 'R')[0]}
+                      </div>
+                      <div>
+                        <strong style={{ fontSize: '1.05rem', color: '#ffffff', display: 'block' }}>{plot.owner || 'Ramesh Kumar'}</strong>
+                        <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>Customer ID: CUST-84920</span>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '0.82rem', color: '#cbd5e1' }}>
+                      <div><span>Phone:</span> <strong style={{ color: '#ffffff', display: 'block' }}>+91 98765 43210</strong></div>
+                      <div><span>Email:</span> <strong style={{ color: '#ffffff', display: 'block' }}>customer@example.com</strong></div>
+                      <div><span>Booking Date:</span> <strong style={{ color: '#ffffff', display: 'block' }}>02 Aug 2026</strong></div>
+                      <div><span>KYC Status:</span> <strong style={{ color: '#10b981', display: 'block' }}>🟢 Verified</strong></div>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ background: '#0f172a', padding: '24px', borderRadius: '18px', textAlign: 'center', color: '#94a3b8' }}>
+                    <User size={32} color="#64748b" style={{ margin: '0 auto 8px auto' }} />
+                    <p style={{ margin: 0 }}>Plot is currently unallocated and available for new booking.</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* FINANCE / EMI CALCULATOR TAB */}
             {activeTab === 'finance' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <h4 style={{ color: '#ffffff', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -515,100 +475,29 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
               </div>
             )}
 
-            {/* GALLERY TAB */}
-            {activeTab === 'gallery' && (
+            {/* TIMELINE TAB */}
+            {activeTab === 'timeline' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <h4 style={{ color: '#ffffff', margin: 0 }}>Site Photo Gallery</h4>
-                <div style={{ width: '100%', height: '260px', borderRadius: '18px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
-                  <img
-                    src={galleryImages[activeImageIdx]}
-                    alt={`Plot ${plot.plotNo} View`}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                </div>
-                <div style={{ display: 'flex', gap: '10px' }}>
-                  {galleryImages.map((img, idx) => (
-                    <div
-                      key={idx}
-                      onClick={() => setActiveImageIdx(idx)}
-                      style={{
-                        width: '70px',
-                        height: '50px',
-                        borderRadius: '10px',
-                        overflow: 'hidden',
-                        cursor: 'pointer',
-                        border: activeImageIdx === idx ? '2px solid #10b981' : '1px solid rgba(255,255,255,0.15)',
-                      }}
-                    >
-                      <img src={img} alt="Thumb" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+                <h4 style={{ color: '#ffffff', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Clock size={18} color="#f59e0b" /> Booking & Registry Timeline
+                </h4>
 
-            {/* AMENITIES TAB */}
-            {activeTab === 'amenities' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                <h4 style={{ color: '#ffffff', margin: 0 }}>Nearby Infrastructure & Distances</h4>
-                {plot.amenities.map((am, idx) => (
-                  <div
-                    key={idx}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      background: '#0f172a',
-                      padding: '14px 18px',
-                      borderRadius: '14px',
-                      border: '1px solid rgba(255,255,255,0.06)',
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <span style={{ fontSize: '1.5rem' }}>{am.icon}</span>
+                <div style={{ background: '#0f172a', padding: '20px', borderRadius: '18px', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {[
+                    { title: 'Plot Created in Layout Blueprint', date: '15 Jan 2026', done: true },
+                    { title: 'Token Amount (₹50,000) Received', date: '02 Aug 2026', done: isBookedOrSold },
+                    { title: 'Agreement Bond Signed', date: 'Pending', done: plot.enhancedStatus === 'sold' },
+                    { title: 'Sub-Registrar Registry Execution', date: 'Pending', done: plot.enhancedStatus === 'sold' },
+                    { title: 'Plot Possession Handover', date: 'Pending', done: plot.enhancedStatus === 'sold' },
+                  ].map((step, idx) => (
+                    <div key={idx} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                      <div style={{ width: '22px', height: '22px', borderRadius: '50%', background: step.done ? '#10b981' : '#1e293b', color: step.done ? '#ffffff' : '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 800, flexShrink: 0 }}>
+                        {step.done ? <CheckCircle size={12} /> : idx + 1}
+                      </div>
                       <div>
-                        <strong style={{ fontSize: '0.92rem', color: '#ffffff', display: 'block' }}>{am.name}</strong>
-                        <span style={{ fontSize: '0.78rem', color: '#64748b' }}>Category: {am.category}</span>
+                        <strong style={{ fontSize: '0.88rem', color: step.done ? '#ffffff' : '#94a3b8', display: 'block' }}>{step.title}</strong>
+                        <span style={{ fontSize: '0.75rem', color: '#64748b' }}>{step.date}</span>
                       </div>
-                    </div>
-                    <span
-                      style={{
-                        background: 'rgba(56, 189, 248, 0.15)',
-                        color: '#38bdf8',
-                        padding: '4px 10px',
-                        borderRadius: '9999px',
-                        fontSize: '0.8rem',
-                        fontWeight: 700,
-                      }}
-                    >
-                      {am.distance}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* HISTORY TAB */}
-            {activeTab === 'history' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <h4 style={{ color: '#ffffff', margin: 0 }}>Plot Audit History & Timeline</h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {plot.history.map((item) => (
-                    <div
-                      key={item.id}
-                      style={{
-                        background: '#0f172a',
-                        padding: '14px 16px',
-                        borderRadius: '12px',
-                        borderLeft: `3px solid ${statusColor}`,
-                      }}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                        <strong style={{ fontSize: '0.9rem', color: '#ffffff' }}>{item.stage}</strong>
-                        <span style={{ fontSize: '0.75rem', color: '#64748b' }}>{item.timestamp}</span>
-                      </div>
-                      <p style={{ fontSize: '0.82rem', color: '#94a3b8', margin: '0 0 4px 0' }}>{item.description}</p>
-                      <div style={{ fontSize: '0.75rem', color: '#f59e0b' }}>By: {item.performedBy}</div>
                     </div>
                   ))}
                 </div>
@@ -617,215 +506,65 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
 
             {/* DOCUMENTS TAB */}
             {activeTab === 'documents' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                <h4 style={{ color: '#ffffff', margin: 0 }}>Official Verification Documents</h4>
-                {plot.documents.map((doc) => (
-                  <div
-                    key={doc.id}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      background: '#0f172a',
-                      padding: '14px',
-                      borderRadius: '14px',
-                      border: '1px solid rgba(255,255,255,0.06)',
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <FileText size={20} color="#38bdf8" />
-                      <div>
-                        <strong style={{ fontSize: '0.88rem', color: '#ffffff', display: 'block' }}>{doc.title}</strong>
-                        <span style={{ fontSize: '0.75rem', color: '#64748b' }}>{doc.type} • Updated: {doc.updatedAt}</span>
-                      </div>
-                    </div>
-                    <a
-                      href={doc.fileUrl}
-                      download
-                      style={{
-                        background: 'rgba(16, 185, 129, 0.15)',
-                        color: '#10b981',
-                        border: '1px solid #10b981',
-                        padding: '6px 12px',
-                        borderRadius: '8px',
-                        fontSize: '0.78rem',
-                        fontWeight: 700,
-                        textDecoration: 'none',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                      }}
-                    >
-                      <Download size={14} /> PDF
-                    </a>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* ADMIN ACTIONS TAB */}
-            {activeTab === 'admin' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <h4 style={{ color: '#ffffff', margin: 0 }}>Admin Inventory Management</h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  <button
-                    onClick={() => onUpdateStatus && onUpdateStatus(plot.id, 'available')}
-                    style={{ padding: '12px', borderRadius: '10px', background: 'rgba(16, 185, 129, 0.2)', color: '#10b981', border: '1px solid #10b981', fontWeight: 700, cursor: 'pointer' }}
-                  >
-                    🟢 Mark Available
-                  </button>
-                  <button
-                    onClick={() => onUpdateStatus && onUpdateStatus(plot.id, 'reserved')}
-                    style={{ padding: '12px', borderRadius: '10px', background: 'rgba(245, 158, 11, 0.2)', color: '#f59e0b', border: '1px solid #f59e0b', fontWeight: 700, cursor: 'pointer' }}
-                  >
-                    🟡 Reserve Plot (48-Hour Hold)
-                  </button>
-                  <button
-                    onClick={() => onUpdateStatus && onUpdateStatus(plot.id, 'booked')}
-                    style={{ padding: '12px', borderRadius: '10px', background: 'rgba(59, 130, 246, 0.2)', color: '#3b82f6', border: '1px solid #3b82f6', fontWeight: 700, cursor: 'pointer' }}
-                  >
-                    🔵 Mark Booked
-                  </button>
-                  <button
-                    onClick={() => onUpdateStatus && onUpdateStatus(plot.id, 'sold')}
-                    style={{ padding: '12px', borderRadius: '10px', background: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', border: '1px solid #ef4444', fontWeight: 700, cursor: 'pointer' }}
-                  >
-                    🔴 Mark Sold Out
-                  </button>
+                <h4 style={{ color: '#ffffff', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <FileText size={18} color="#a855f7" /> Documents & Master Title Deeds
+                </h4>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '10px' }}>
+                  {[
+                    { name: 'Master Layout Blueprint PDF', size: '2.4 MB', type: 'PDF' },
+                    { name: 'Plot Payment Receipt', size: '180 KB', type: 'PDF' },
+                    { name: 'Agreement Bond Certificate', size: '420 KB', type: 'DOC' },
+                    { name: 'Sub-Registrar Title Deed', size: '1.1 MB', type: 'PDF' },
+                  ].map((doc, idx) => (
+                    <div key={idx} style={{ background: '#0f172a', padding: '14px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <FileCheck size={20} color="#a855f7" />
+                        <div>
+                          <strong style={{ fontSize: '0.85rem', color: '#ffffff', display: 'block' }}>{doc.name}</strong>
+                          <span style={{ fontSize: '0.72rem', color: '#64748b' }}>{doc.type} • {doc.size}</span>
+                        </div>
+                      </div>
+                      <button style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: '#ffffff', padding: '6px 10px', borderRadius: '8px', fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Download size={12} /> Download
+                      </button>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
           </div>
 
-          {/* Sticky Drawer Action Footer */}
-          <div
-            style={{
-              padding: '20px 24px',
-              background: '#0a1322',
-              borderTop: '1px solid rgba(255, 255, 255, 0.1)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '10px',
-            }}
-          >
-            {plot.enhancedStatus === 'available' || plot.enhancedStatus === 'reserved' ? (
+          {/* STICKY BOTTOM ACTION BAR */}
+          <div className="drawer-sticky-bottom-action-bar">
+            {plot.enhancedStatus === 'available' ? (
               <button
                 onClick={() => onBookPlot(plot)}
-                style={{
-                  width: '100%',
-                  padding: '14px',
-                  borderRadius: '12px',
-                  border: 'none',
-                  background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
-                  color: '#ffffff',
-                  fontSize: '1rem',
-                  fontWeight: 800,
-                  cursor: 'pointer',
-                  boxShadow: '0 6px 20px rgba(16, 185, 129, 0.4)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
-                }}
+                className="drawer-sticky-action-btn primary"
               >
-                <Sparkles size={18} /> Book Plot Now (₹50,000 Advance)
+                <Sparkles size={16} /> Book Plot Now
               </button>
             ) : (
-              <div style={{ textAlign: 'center', padding: '12px', color: '#94a3b8', fontSize: '0.85rem', background: '#0f172a', borderRadius: '12px' }}>
-                🔒 This plot is currently {plot.enhancedStatus.toUpperCase()}
-              </div>
-            )}
-
-            {/* Quick Actions Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px' }}>
               <button
                 onClick={handleWhatsApp}
-                style={{
-                  padding: '10px',
-                  borderRadius: '10px',
-                  background: 'rgba(34, 197, 94, 0.2)',
-                  border: '1px solid #22c55e',
-                  color: '#22c55e',
-                  fontSize: '0.78rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '4px',
-                }}
-                title="Chat on WhatsApp"
+                className="drawer-sticky-action-btn primary"
               >
-                <MessageSquare size={16} /> WhatsApp
+                <PhoneCall size={16} /> Contact Sales
               </button>
+            )}
 
-              <a
-                href="tel:+919876543210"
-                style={{
-                  padding: '10px',
-                  borderRadius: '10px',
-                  background: 'rgba(56, 189, 248, 0.2)',
-                  border: '1px solid #38bdf8',
-                  color: '#38bdf8',
-                  fontSize: '0.78rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '4px',
-                  textDecoration: 'none',
-                }}
-                title="Call Sales Desk"
-              >
-                <PhoneCall size={16} /> Call Us
-              </a>
-
-              <button
-                onClick={handleGoogleMaps}
-                style={{
-                  padding: '10px',
-                  borderRadius: '10px',
-                  background: 'rgba(245, 158, 11, 0.2)',
-                  border: '1px solid #f59e0b',
-                  color: '#f59e0b',
-                  fontSize: '0.78rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '4px',
-                }}
-                title="Schedule Physical Site Visit"
-              >
-                <Calendar size={16} /> Site Visit
-              </button>
-
-              <button
-                onClick={handleShare}
-                style={{
-                  padding: '10px',
-                  borderRadius: '10px',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  color: '#ffffff',
-                  fontSize: '0.78rem',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '4px',
-                }}
-                title="Share Plot Details"
-              >
-                <Share2 size={16} /> Share
-              </button>
-            </div>
+            <button
+              onClick={handleShare}
+              className="drawer-sticky-action-btn secondary"
+            >
+              <Share2 size={16} /> Share Plot
+            </button>
           </div>
         </motion.div>
       </div>
     </AnimatePresence>
   );
-};
+});
+
+PlotDrawer.displayName = 'PlotDrawer';
