@@ -7,39 +7,49 @@
   overflow-x: hidden;
 }
 
-/* SehatMitra Style Top Header Navbar */
+/* ─── ENTERPRISE HORIZONTAL NAVIGATION BAR (72px Sticky Glassmorphism) ─── */
 .sehat-navbar {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 12px 24px;
+  height: 72px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
 }
 
 .sehat-navbar-inner {
-  max-width: 1300px;
+  max-width: 1360px;
+  width: 100%;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 24px;
 }
 
+/* Left Brand Block */
 .sehat-brand {
   display: flex;
   align-items: center;
   gap: 12px;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .sehat-logo-icon {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 10px;
   overflow: hidden;
-  border: 1px solid rgba(245, 158, 11, 0.4);
+  border: 1px solid rgba(14, 165, 233, 0.4);
   background: #0f172a;
+  flex-shrink: 0;
+  box-shadow: 0 0 12px rgba(14, 165, 233, 0.25);
 }
 
 .sehat-logo-icon img {
@@ -48,20 +58,95 @@
   object-fit: cover;
 }
 
-.sehat-brand-left-group {
+.sehat-brand-text-wrapper {
   display: flex;
-  align-items: center;
-  gap: 16px;
+  flex-direction: column;
 }
 
-/* Left-aligned 3-dots button right next to logo */
-.landing-three-dots-btn.left-aligned {
-  background: rgba(56, 189, 248, 0.1);
-  color: #f8fafc;
-  border: 1px solid rgba(56, 189, 248, 0.3);
-  padding: 8px 16px;
-  border-radius: 9999px;
+.sehat-brand-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.sehat-brand-subtitle {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+/* Center Horizontal Enterprise Nav Links */
+.enterprise-center-nav-list {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.enterprise-nav-item-btn {
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: #cbd5e1;
   font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.enterprise-nav-item-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.enterprise-nav-item-btn.active {
+  color: #38bdf8;
+  font-weight: 700;
+  background: rgba(14, 165, 233, 0.12);
+}
+
+.enterprise-nav-item-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: #0ea5e9;
+  border-radius: 9999px;
+  transform: translateX(-50%);
+  transition: width 0.2s ease;
+}
+
+.enterprise-nav-item-btn:hover::after,
+.enterprise-nav-item-btn.active::after {
+  width: 70%;
+}
+
+/* Right Action Buttons */
+.sehat-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sehat-signin-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  padding: 9px 18px;
+  border-radius: 14px;
+  font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
   display: flex;
@@ -70,84 +155,34 @@
   transition: all 0.2s ease;
 }
 
-.landing-three-dots-btn.left-aligned:hover,
-.landing-three-dots-btn.left-aligned.active {
-  background: #0284c7;
+.sehat-signin-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
   border-color: #38bdf8;
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
-}
-
-.three-dots-svg {
   color: #38bdf8;
 }
 
-.landing-three-dots-btn.left-aligned.active .three-dots-svg {
+.sehat-get-started-btn {
+  background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+  border: none;
   color: #ffffff;
-}
-
-.chevron-svg {
-  transition: transform 0.2s ease;
-}
-
-.chevron-svg.open {
-  transform: rotate(180deg);
-}
-
-/* Full Space Cover Menu Overlay */
-.full-space-menu-overlay {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(15, 23, 42, 0.97);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  z-index: 99999;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  animation: fullSpaceFade 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes fullSpaceFade {
-  from { opacity: 0; transform: scale(0.98); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-.full-space-menu-header {
-  padding: 20px 32px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(15, 23, 42, 0.8);
-}
-
-.full-space-brand {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.full-space-close-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #ffffff;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 10px 22px;
+  border-radius: 14px;
+  font-size: 0.88rem;
+  font-weight: 700;
   cursor: pointer;
+  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.35);
   transition: all 0.2s ease;
 }
 
-.full-space-close-btn:hover {
-  background: #ef4444;
-  border-color: #ef4444;
-  transform: rotate(90deg);
+.sehat-get-started-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(14, 165, 233, 0.5);
+}
+
+@media (max-width: 992px) {
+  .enterprise-center-nav-list {
+    display: none;
+  }
 }
 
 .full-space-menu-body {
