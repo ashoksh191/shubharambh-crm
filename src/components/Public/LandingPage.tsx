@@ -10,6 +10,7 @@ import {
   Compass,
   Building,
   ChevronDown,
+  Star,
   Award,
   Trees,
   Car,
@@ -18,6 +19,7 @@ import {
   LogIn,
   Home,
   Tag,
+  Calendar,
 } from 'lucide-react';
 import '../../styles/LandingPage.css';
 
@@ -139,7 +141,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
               <li>
                 <button
                   className={`enterprise-nav-item-btn ${activeNavSection === 'pricing' ? 'active' : ''}`}
-                  onClick={() => scrollToSection('inventory', 'pricing')}
+                  onClick={() => scrollToSection('how-it-works', 'pricing')}
                 >
                   <Tag size={16} /> Pricing
                 </button>
@@ -148,7 +150,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
               <li>
                 <button
                   className={`enterprise-nav-item-btn ${activeNavSection === 'gallery' ? 'active' : ''}`}
-                  onClick={() => scrollToSection('amenities', 'gallery')}
+                  onClick={() => scrollToSection('government', 'gallery')}
                 >
                   <Trees size={16} /> Gallery
                 </button>
@@ -157,7 +159,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
               <li>
                 <button
                   className={`enterprise-nav-item-btn ${activeNavSection === 'contact' ? 'active' : ''}`}
-                  onClick={() => scrollToSection('site-visit', 'contact')}
+                  onClick={() => scrollToSection('book-visit', 'contact')}
                 >
                   <PhoneCall size={16} /> Contact
                 </button>
@@ -190,228 +192,305 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
         </div>
       </header>
 
-      {/* HERO SECTION */}
-      <section className="sehat-hero">
-        <div className="sehat-hero-inner">
-          <div className="hero-badge">
+      {/* Top Floating Announcement Banner */}
+      <div className="announcement-banner">
+        <span>🎉 <strong>SPECIAL LAUNCH OFFER:</strong> Get 40 Ft Main Boulevard Plots at ₹1,200/sq.ft • Free Site Visit Available Today!</span>
+      </div>
+
+      {/* HERO TWO-COLUMN GRID SECTION */}
+      <section className="hero-section" id="home">
+        {/* HERO LEFT COLUMN */}
+        <div className="hero-left">
+          <div className="trust-pill-badge">
             <span className="pulse-dot"></span>
-            Govt RERA & Gram Panchayat Approved Plotting
+            Govt RERA & Gram Panchayat Approved Township
           </div>
 
-          <h1 className="sehat-hero-title">
-            Prime Residential Land in <span className="gradient-text">Shubharambh Green City</span>
+          <h1 className="hero-headline">
+            Apne Sapnon Ka Ghar Banayein <br />
+            <span className="hero-gradient-text">Shubharambh Green City Me</span>
           </h1>
 
-          <p className="sehat-hero-subtitle">
-            Lucknow-Varanasi Highway connect township with 40 Ft RCC Roads, Gated Security, Underground Drainage, 24/7 Water & Solar Lights. Instant Possession with Sub-Registrar Registry guarantee.
+          <p className="hero-subheading">
+            Lucknow-Varanasi Highway connect 60-Bigha master planned gated township with 50 Ft Entrance Gate,
+            40 Ft Main Boulevard Road, Mandir, Commercial Zone, Central Parks, aur 100% Instant Daakhil-Kharij Registry.
           </p>
 
-          <div className="sehat-hero-ctas">
-            <button className="cta-primary-large" onClick={onNavigateToMap}>
-              <Compass size={20} /> View Live 2D Layout Map Grid ({availableCount} Available)
+          <div className="hero-cta-buttons">
+            <button className="btn-primary-gradient" onClick={onNavigateToMap}>
+              <Compass size={18} /> Explore Interactive 2D Layout Map ({availableCount} Available)
             </button>
-
-            <a href="./assets/layout_plan_master.pdf" download="Shubharambh_Layout_Blueprint.pdf" className="cta-secondary-large">
-              <Download size={20} /> Download Master Blueprint (PDF)
+            <a
+              href="./assets/layout_plan_master.pdf"
+              download="Shubharambh_Green_City_Layout.pdf"
+              className="btn-secondary-outline"
+            >
+              <Download size={18} /> Download Blueprint PDF
             </a>
           </div>
 
-          <div className="sehat-hero-stats">
-            <div className="hero-stat-card">
-              <div className="stat-value">60 Bigha</div>
-              <div className="stat-label">Township Expansion</div>
+          {/* HERO TRUST METRICS */}
+          <div className="hero-trust-metrics">
+            <div className="trust-metric-item">
+              <span className="count">{availableCount}+</span>
+              <span className="label">Plots Available</span>
             </div>
-
-            <div className="hero-stat-card">
-              <div className="stat-value">40 & 30 FT</div>
-              <div className="stat-label">Wide Main Roads</div>
+            <div className="divider-line" />
+            <div className="trust-metric-item">
+              <span className="count">40 Ft</span>
+              <span className="label">Main Boulevard Road</span>
             </div>
-
-            <div className="hero-stat-card">
-              <div className="stat-value">₹900 / sq.ft</div>
-              <div className="stat-label">Starting Price</div>
+            <div className="divider-line" />
+            <div className="trust-metric-item">
+              <span className="count">90 Days</span>
+              <span className="label">Fast-Track Registry</span>
             </div>
+          </div>
+        </div>
 
-            <div className="hero-stat-card">
-              <div className="stat-value">100%</div>
-              <div className="stat-label">Clear Title Land</div>
+        {/* HERO RIGHT COLUMN: INTERACTIVE PREVIEW CARD */}
+        <div className="hero-right">
+          <div className="hero-preview-card">
+            <div className="hero-card-badge">
+              <Star size={12} fill="#f59e0b" color="#f59e0b" /> Grand Entrance Gate Render
+            </div>
+            <img
+              src="./assets/logo_and_entrance.jpg"
+              alt="Shubharambh Green City Grand Entrance Gate"
+              className="hero-card-img"
+            />
+            <div className="hero-card-footer">
+              <div className="hero-card-title">
+                <h4>स्वागतं आपका हार्दिक अभिनंदन</h4>
+                <p><MapPin size={14} color="#f59e0b" /> Village Hasnapur, Amethi, Lucknow Road</p>
+              </div>
+              <button className="hero-card-btn" onClick={onNavigateToMap}>
+                View 980 Plots →
+              </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* INVENTORY HIGHLIGHTS SECTION */}
-      <section className="sehat-features" id="inventory">
-        <div className="sehat-features-inner">
-          <div className="section-header text-center">
-            <span className="sub-badge">Plot Sizes & Options</span>
-            <h2 className="section-title">Designed for Modern Villas & Investment Growth</h2>
-            <p className="section-subtitle">Choose from ready-to-construct plots with immediate bank loan support</p>
+      {/* FEATURE CARDS GRID (6 FEATURES) */}
+      <section className="features-section" id="features">
+        <div className="section-header">
+          <span className="section-badge">TOWNSHIP HIGHLIGHTS</span>
+          <h2>Kyun Khas Hai Shubharambh Green City?</h2>
+          <p>Adhunik suvidhaon aur shandar location ke sath premium residential plots</p>
+        </div>
+
+        <div className="features-grid">
+          <div className="feature-card">
+            <div className="feature-icon-box">
+              <Car size={24} color="#10b981" />
+            </div>
+            <h3>40 Ft & 30 Ft Wide Roads</h3>
+            <p>Chaudi aur paka RCC roads wide boulevards ke sath har plot tak aasan pahunch sunishchit karti hain.</p>
           </div>
 
-          <div className="features-grid">
-            <div className="feature-card">
-              <div className="feature-icon-box">
-                <Building size={24} color="#0ea5e9" />
-              </div>
-              <h3>Standard Villa Plot</h3>
-              <p className="plot-dim">20' x 50' • 1,000 Sq.Ft</p>
-              <p>Ideal for 3BHK duplex villa construction. Frontage 20 Ft on 30 Ft RCC road.</p>
-              <div className="card-footer-price">Starting ₹10.0 Lakhs</div>
+          <div className="feature-card">
+            <div className="feature-icon-box">
+              <Shield size={24} color="#f59e0b" />
             </div>
+            <h3>24x7 Gated Security Entry</h3>
+            <p>50 Ft Grand Gate entry, CCTV surveillance cameras, aur security guards safety ke liye 24/7 tayar.</p>
+          </div>
 
-            <div className="feature-card highlight">
-              <div className="recommended-badge">MOST POPULAR</div>
-              <div className="feature-icon-box">
-                <Trees size={24} color="#10b981" />
-              </div>
-              <h3>Premium Park Facing</h3>
-              <p className="plot-dim">25' x 50' • 1,250 Sq.Ft</p>
-              <p>Direct view of 1-acre central lush green park with Mandir zone proximity.</p>
-              <div className="card-footer-price">Starting ₹12.5 Lakhs</div>
+          <div className="feature-card">
+            <div className="feature-icon-box">
+              <Trees size={24} color="#3b82f6" />
             </div>
+            <h3>Mandir & Central Parks</h3>
+            <p>Shant vatavaran ke liye dedicated Shri Ganesha Mandir zone aur bachon ke liye green parks.</p>
+          </div>
 
-            <div className="feature-card">
-              <div className="feature-icon-box">
-                <Award size={24} color="#f59e0b" />
-              </div>
-              <h3>Executive Commercial Plot</h3>
-              <p className="plot-dim">30' x 60' • 1,800 Sq.Ft</p>
-              <p>Corner plot location on 50 Ft Grand Entrance Boulevard for shop & showroom.</p>
-              <div className="card-footer-price">Starting ₹21.6 Lakhs</div>
+          <div className="feature-card">
+            <div className="feature-icon-box">
+              <Building size={24} color="#ec4899" />
             </div>
+            <h3>Commercial Shops Zone</h3>
+            <p>Rozmarra ki zarooraton ke liye dedicated 20,440 sq.ft Commercial Market aur Mixed-Use Zone.</p>
+          </div>
+
+          <div className="feature-card">
+            <div className="feature-icon-box">
+              <FileCheck size={24} color="#8b5cf6" />
+            </div>
+            <h3>Instant Registry & Mutation</h3>
+            <p>100% Clear Title Land. Booking ke baad 90 dino ke andar complete Legal Registry aur Daakhil-Kharij.</p>
+          </div>
+
+          <div className="feature-card">
+            <div className="feature-icon-box">
+              <Award size={24} color="#eab308" />
+            </div>
+            <h3>80% Bank Loan Facility</h3>
+            <p>Sabhi pramukh sarkari aur private banks se easy EMI installment aur instant plot loan approval.</p>
           </div>
         </div>
       </section>
 
-      {/* TOWNSHIP FEATURES & AMENITIES SECTION */}
-      <section className="sehat-highlights" id="features">
-        <div className="sehat-highlights-inner">
-          <div className="section-header text-center">
-            <span className="sub-badge">World Class Infrastructure</span>
-            <h2 className="section-title">Everything You Need for Peaceful Living</h2>
+      {/* 3-STEP BUYING PROCESS */}
+      <section className="steps-section" id="how-it-works">
+        <div className="section-header">
+          <span className="section-badge">EASY BUYING PROCESS</span>
+          <h2>Sirf 3 Aasan Kadam Me Apne Plot Ke Malik Banein</h2>
+          <p>Koi mushkil documentation nahi, bilkul clear aur transparent process</p>
+        </div>
+
+        <div className="steps-grid">
+          <div className="step-card">
+            <div className="step-number">1</div>
+            <h3>Interactive Map Par Plot Chunein</h3>
+            <p>Hamare Interactive 2D Map se Block A, B ya C me apna pasandida plot, dimension aur facing filter karein.</p>
           </div>
 
-          <div className="highlights-grid">
-            <div className="highlight-item">
-              <div className="item-icon"><Car size={22} color="#0ea5e9" /></div>
-              <div>
-                <h4>50 & 40 FT RCC Roads</h4>
-                <p>Heavy-duty interlocking RCC concrete main boulevard roads with street lighting</p>
-              </div>
-            </div>
+          <div className="step-card">
+            <div className="step-number">2</div>
+            <h3>Free Site Visit Ya Token Amount Book Karein</h3>
+            <p>Free Cab se site visit karein aur sirf 5% Token Amount dekar apna plot instant hold/reserve karein.</p>
+          </div>
 
-            <div className="highlight-item">
-              <div className="item-icon"><Shield size={22} color="#10b981" /></div>
-              <div>
-                <h4>24/7 Gated Security</h4>
-                <p>CCTV surveillance cameras, boom barriers, and round-the-clock security guards</p>
-              </div>
-            </div>
-
-            <div className="highlight-item">
-              <div className="item-icon"><Trees size={22} color="#10b981" /></div>
-              <div>
-                <h4>Lush Central Parks</h4>
-                <p>Tree-lined avenues, kids play area, walking track & landscaped botanical gardens</p>
-              </div>
-            </div>
-
-            <div className="highlight-item">
-              <div className="item-icon"><FileCheck size={22} color="#a855f7" /></div>
-              <div>
-                <h4>Immediate Registry & Mutation</h4>
-                <p>100% legal registry at Govt Sub-Registrar Office with immediate Daakhil Kharij</p>
-              </div>
-            </div>
+          <div className="step-card">
+            <div className="step-number">3</div>
+            <h3>Registry & Possession Hath Me Lein</h3>
+            <p>90 dino me baki payment complete karein aur official Sub-Registrar office me apne naam registry praapt karein.</p>
           </div>
         </div>
       </section>
 
-      {/* AMENITIES GALLERY SECTION */}
-      <section className="sehat-features" id="amenities">
-        <div className="sehat-features-inner">
-          <div className="section-header text-center">
-            <span className="sub-badge">Project Gallery</span>
-            <h2 className="section-title">Actual On-Site Development Progress</h2>
-          </div>
-
-          <div className="features-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
-            <div className="feature-card" style={{ padding: '0', overflow: 'hidden' }}>
-              <img src="./assets/logo_and_entrance.jpg" alt="Grand Entrance Gate" style={{ width: '100%', height: '200px', objectFit: 'cover' }} />
-              <div style={{ padding: '16px' }}>
-                <h4>50 Ft Grand Entrance Arch</h4>
-                <p style={{ fontSize: '0.82rem', color: '#64748b', margin: '4px 0 0 0' }}>Security Guard Cabin & Boom Barrier Gate</p>
-              </div>
-            </div>
-
-            <div className="feature-card" style={{ padding: '0', overflow: 'hidden' }}>
-              <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&auto=format&fit=crop&q=80" alt="Central Park" style={{ width: '100%', height: '200px', objectFit: 'cover' }} />
-              <div style={{ padding: '16px' }}>
-                <h4>Central Park & Jogging Track</h4>
-                <p style={{ fontSize: '0.82rem', color: '#64748b', margin: '4px 0 0 0' }}>Greenery plantation & childrens play zone</p>
-              </div>
-            </div>
-
-            <div className="feature-card" style={{ padding: '0', overflow: 'hidden' }}>
-              <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800&auto=format&fit=crop&q=80" alt="RCC Roads" style={{ width: '100%', height: '200px', objectFit: 'cover' }} />
-              <div style={{ padding: '16px' }}>
-                <h4>40 Ft RCC Main Road</h4>
-                <p style={{ fontSize: '0.82rem', color: '#64748b', margin: '4px 0 0 0' }}>Completed solar light poles & underground drainage</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* FREE SITE VISIT FORM SECTION */}
-      <section className="sehat-site-visit" id="site-visit">
-        <div className="sehat-site-visit-inner">
-          <div className="site-visit-content">
-            <span className="sub-badge yellow">Free Transport Facility</span>
-            <h2>Book Your VIP Site Visit Today</h2>
-            <p>We provide FREE AC Cab Pick & Drop service from Lucknow & Amethi. Inspect the layout map in person with our expert consultants.</p>
-
-            <div className="visit-perks">
-              <div className="perk-item">
+      {/* GOVERNMENT & LEGAL ASSURANCE CARD */}
+      <section className="trust-card-section" id="government">
+        <div className="trust-card-inner">
+          <div className="trust-card-left">
+            <span className="trust-badge">100% LEGAL GUARANTEE</span>
+            <h2>Zameen Ki Clean Title Aur Legal Transparency</h2>
+            <p>
+              Shubharambh Green City Gram Panchayat approved aur Daakhil-Kharij verified township hai. Har khareed ke sath
+              aapko official Digital Payment Receipt, Legal Agreement Bond, aur QR-code verified allotment letter milta hai.
+            </p>
+            <div className="trust-list">
+              <div className="trust-list-item">
                 <CheckCircle size={18} color="#10b981" />
-                <span>Zero Inspection Fees</span>
+                <span>Clear Title Ownership Deed & Daakhil Kharij Guarantee</span>
               </div>
-              <div className="perk-item">
+              <div className="trust-list-item">
                 <CheckCircle size={18} color="#10b981" />
-                <span>Free Legal Document Verification</span>
+                <span>Zero Hidden Fees • Direct Company Allotment</span>
               </div>
-              <div className="perk-item">
+              <div className="trust-list-item">
                 <CheckCircle size={18} color="#10b981" />
-                <span>Instant Token Hold Option</span>
+                <span>50+ Bank Loan Partners Pre-Approved</span>
               </div>
             </div>
           </div>
-
-          <div className="site-visit-card-form">
-            <h3>Schedule Free Pick & Drop</h3>
-
-            {formSubmitted ? (
-              <div className="form-success-alert">
-                <CheckCircle size={36} color="#10b981" />
-                <h4>Site Visit Request Sent!</h4>
-                <p>Our sales desk representative will call you within 15 minutes to confirm cab timing.</p>
+          <div className="trust-card-right">
+            <div className="blueprint-thumbnail-box" onClick={onNavigateToMap}>
+              <img
+                src="./assets/logo_and_entrance.jpg"
+                alt="Layout Blueprint Map"
+                className="blueprint-img"
+              />
+              <div className="blueprint-overlay">
+                <Compass size={24} />
+                <span>View Full 980-Plot Layout Map</span>
               </div>
-            ) : (
-              <form onSubmit={handleFormSubmit}>
-                <div className="form-group">
-                  <label>Full Name *</label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CUSTOMER TESTIMONIALS */}
+      <section className="testimonials-section" id="stories">
+        <div className="section-header">
+          <span className="section-badge">CUSTOMER STORIES</span>
+          <h2>Suno Unki Zubani Jinhone Shubharambh Ko Chuna</h2>
+        </div>
+
+        <div className="testimonials-grid">
+          <div className="testimonial-card">
+            <div className="stars">⭐⭐⭐⭐⭐</div>
+            <p>“Amethi-Lucknow road par itna shandar aur well-planned township peheli baar dekha. 40Ft road aur Grand Entrance Gate bohot hi premium lagta hai.”</p>
+            <div className="user-info">
+              <strong>Suresh Chandra Sharma</strong>
+              <span>Government Employee, Amethi</span>
+            </div>
+          </div>
+
+          <div className="testimonial-card">
+            <div className="stars">⭐⭐⭐⭐⭐</div>
+            <p>“Interactive 2D Map se ghar baithe Plot A-102 choose kiya. Site visit cab facility bohot acchi thi aur 15 din me token ke baad saari paperwork ready mili.”</p>
+            <div className="user-info">
+              <strong>Rameshwar Prasad Patel</strong>
+              <span>Business Owner, Lucknow</span>
+            </div>
+          </div>
+
+          <div className="testimonial-card">
+            <div className="stars">⭐⭐⭐⭐⭐</div>
+            <p>“Investment ke lihaz se ye Jagah sabse best hai. Road connectivity aur bank loan help dono bohot fast the.”</p>
+            <div className="user-info">
+              <strong>Sunita Verma</strong>
+              <span>Teacher, Sultanpur</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ ACCORDION */}
+      <section className="faq-section" id="faq">
+        <div className="section-header">
+          <span className="section-badge">FAQ</span>
+          <h2>Aapke Sawal, Hamare Jawab</h2>
+        </div>
+
+        <div className="faq-accordion">
+          {faqs.map((item, idx) => (
+            <div
+              key={idx}
+              className={`faq-item ${openFaqIndex === idx ? 'open' : ''}`}
+              onClick={() => setOpenFaqIndex(openFaqIndex === idx ? null : idx)}
+            >
+              <div className="faq-question">
+                <span>{item.q}</span>
+                <ChevronDown size={18} className="faq-arrow" />
+              </div>
+              {openFaqIndex === idx && <div className="faq-answer">{item.a}</div>}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* SITE VISIT LEAD CAPTURE FORM */}
+      <section className="lead-form-section" id="book-visit">
+        <div className="lead-form-container">
+          <div className="lead-form-header">
+            <h2>Book Your Free Site Visit Today</h2>
+            <p>Lucknow ya Amethi se Nishulk Pick & Drop facility ke sath township visit karein</p>
+          </div>
+
+          {formSubmitted ? (
+            <div className="form-success-alert">
+              <CheckCircle size={32} color="#10b981" />
+              <h3>Aapki Free Site Visit Booking Confirm Ho Gayi Hai!</h3>
+              <p>Hamari sales team aapko agli 15 mins me call karke time aur location schedule karegi.</p>
+            </div>
+          ) : (
+            <form onSubmit={handleFormSubmit} className="site-visit-form">
+              <div className="form-row">
+                <div className="form-field">
+                  <label>Aapka Naam / Name *</label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Ramesh Kumar"
+                    placeholder="Enter your full name"
                     value={siteVisitForm.name}
                     onChange={(e) => setSiteVisitForm({ ...siteVisitForm, name: e.target.value })}
                   />
                 </div>
-
-                <div className="form-group">
-                  <label>Mobile Number *</label>
+                <div className="form-field">
+                  <label>Mobile Number (For OTP / Confirmation) *</label>
                   <input
                     type="tel"
                     required
@@ -420,82 +499,82 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
                     onChange={(e) => setSiteVisitForm({ ...siteVisitForm, phone: e.target.value })}
                   />
                 </div>
+              </div>
 
-                <div className="form-group">
+              <div className="form-row">
+                <div className="form-field">
                   <label>Preferred Plot Size</label>
                   <select
                     value={siteVisitForm.plotSize}
                     onChange={(e) => setSiteVisitForm({ ...siteVisitForm, plotSize: e.target.value })}
                   >
-                    <option value="20' x 50' (1000 sq.ft)">20' x 50' (1000 sq.ft)</option>
-                    <option value="25' x 50' (1250 sq.ft)">25' x 50' (1250 sq.ft)</option>
-                    <option value="30' x 60' (1800 sq.ft)">30' x 60' (1800 sq.ft)</option>
+                    <option value="30' x 50' (1500 sq.ft)">30' x 50' (1500 sq.ft) — Block A Main Road</option>
+                    <option value="25' x 50' (1250 sq.ft)">25' x 50' (1250 sq.ft) — Block A Sector</option>
+                    <option value="20' x 50' (1000 sq.ft)">20' x 50' (1000 sq.ft) — Block A Standard</option>
+                    <option value="25' x 40' (1000 sq.ft)">25' x 40' (1000 sq.ft) — Block B Park Facing</option>
+                    <option value="20' x 40' (800 sq.ft)">20' x 40' (800 sq.ft) — Block B / C</option>
+                    <option value="15' x 40' (600 sq.ft)">15' x 40' (600 sq.ft) — Budget Plot</option>
                   </select>
                 </div>
-
-                <button type="submit" className="submit-visit-btn">
-                  <Send size={18} /> Confirm Free Site Visit
-                </button>
-              </form>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ SECTION */}
-      <section className="sehat-faq" id="faq">
-        <div className="sehat-faq-inner">
-          <div className="section-header text-center">
-            <span className="sub-badge">Frequently Asked Questions</span>
-            <h2 className="section-title">Everything You Need to Know</h2>
-          </div>
-
-          <div className="faq-accordion-list">
-            {faqs.map((faq, index) => {
-              const isOpen = openFaqIndex === index;
-              return (
-                <div key={index} className={`faq-accordion-item ${isOpen ? 'active' : ''}`}>
-                  <button
-                    className="faq-question-btn"
-                    onClick={() => setOpenFaqIndex(isOpen ? null : index)}
-                  >
-                    <span>{faq.q}</span>
-                    <ChevronDown size={18} className={`faq-chevron ${isOpen ? 'open' : ''}`} />
-                  </button>
-                  {isOpen && (
-                    <div className="faq-answer-content">
-                      <p>{faq.a}</p>
-                    </div>
-                  )}
+                <div className="form-field">
+                  <label>Preferred Visit Date</label>
+                  <input
+                    type="date"
+                    value={siteVisitForm.visitDate}
+                    onChange={(e) => setSiteVisitForm({ ...siteVisitForm, visitDate: e.target.value })}
+                  />
                 </div>
-              );
-            })}
-          </div>
+              </div>
+
+              <button type="submit" className="btn-form-submit">
+                <Send size={18} /> Confirm Free Site Visit & Cab Pickup
+              </button>
+            </form>
+          )}
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="sehat-footer">
-        <div className="sehat-footer-inner">
-          <div className="footer-brand-col">
-            <div className="sehat-brand">
-              <div className="sehat-logo-icon">
-                <img src="./assets/logo_and_entrance.jpg" alt="Shubharambh Logo" />
-              </div>
-              <span className="sehat-brand-title">Shubharambh Green City</span>
+      <footer className="lovable-footer">
+        <div className="footer-grid">
+          <div className="footer-col brand-col">
+            <div className="footer-logo">
+              <img src="./assets/logo_and_entrance.jpg" alt="Logo" className="footer-logo-img" />
+              <span>Shubharambh Green City</span>
             </div>
-            <p>Government Approved 60-Bigha Master Planned Township with Immediate Registry & Bank Loan Approval.</p>
+            <p>Village Hasnapur, Amethi, Lucknow Road. 60-Bigha Master Planned Gated Township with 100% Registry Guarantee.</p>
           </div>
 
-          <div className="footer-contact-col">
-            <h4>Sales & Enquiry Office</h4>
-            <p><MapPin size={16} /> Lucknow-Varanasi National Highway, Near Amethi Junction</p>
-            <p><PhoneCall size={16} /> Hotline: +91 98765 43210 / +91 91234 56789</p>
+          <div className="footer-col">
+            <h4>Quick Links</h4>
+            <ul>
+              <li><a href="#features">Township Features</a></li>
+              <li><a href="#how-it-works">3-Step Buying Guide</a></li>
+              <li><a href="#government">Legal & Registry Info</a></li>
+              <li><a href="#faq">Frequently Asked Questions</a></li>
+            </ul>
+          </div>
+
+          <div className="footer-col">
+            <h4>Plot Categories</h4>
+            <ul>
+              <li>Block A: 40Ft Main Boulevard (1500, 1250, 1000 sqft)</li>
+              <li>Block B: Park Facing (1000, 800, 600 sqft)</li>
+              <li>Block C: Garden Facing (1000, 800, 600 sqft)</li>
+              <li>Commercial Shops: 20,440 sq.ft Zone</li>
+            </ul>
+          </div>
+
+          <div className="footer-col contact-col">
+            <h4>Site & Contact Office</h4>
+            <p><MapPin size={16} color="#f59e0b" /> Village Hasnapur, Amethi, Lucknow Highway, UP</p>
+            <p><PhoneCall size={16} color="#10b981" /> +91 98765 43210 / +91 98111 22334</p>
+            <p><Calendar size={16} color="#3b82f6" /> Open All 7 Days: 9:00 AM - 7:00 PM</p>
           </div>
         </div>
 
-        <div className="footer-bottom-bar">
-          <p>© 2026 Shubharambh Green City. All rights reserved. Registered Real Estate Township System.</p>
+        <div className="footer-bottom">
+          <p>© 2026 Shubharambh Green City Township. All Rights Reserved. Gram Panchayat & RERA Compliant Project.</p>
         </div>
       </footer>
     </div>
