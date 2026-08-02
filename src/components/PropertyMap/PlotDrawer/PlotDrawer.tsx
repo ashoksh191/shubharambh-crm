@@ -1,7 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import type { EnhancedPlot, EnhancedPlotStatus } from '../../../types/propertyMap';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Clock, ShieldCheck, MapPin, Download, Share2, PhoneCall, FileText, Sparkles, User, Settings, ExternalLink, Calendar, MessageSquare, Edit3 } from 'lucide-react';
+import {
+  X,
+  Clock,
+  ShieldCheck,
+  MapPin,
+  Download,
+  Share2,
+  PhoneCall,
+  FileText,
+  Sparkles,
+  User,
+  Settings,
+  ExternalLink,
+  Calendar,
+  MessageSquare,
+  Edit3,
+  Calculator,
+  Compass,
+  CheckCircle2,
+  ChevronRight,
+  TrendingUp,
+} from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 
 interface PlotDrawerProps {
@@ -21,8 +42,13 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
   onOpenAdminEditor,
 }) => {
   const { user: authUser } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'gallery' | 'amenities' | 'history' | 'documents' | 'admin'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'finance' | 'gallery' | 'amenities' | 'history' | 'documents' | 'admin'>('overview');
   const [activeImageIdx, setActiveImageIdx] = useState(0);
+
+  // EMI Calculator State
+  const [downPaymentPercent, setDownPaymentPercent] = useState<number>(20);
+  const [interestRate, setInterestRate] = useState<number>(8.5);
+  const [loanTenureYears, setLoanTenureYears] = useState<number>(10);
 
   // Close drawer on Escape key press
   useEffect(() => {
@@ -35,6 +61,22 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [plot, onClose]);
+
+  // EMI Calculation Formula
+  const emiCalculated = useMemo(() => {
+    if (!plot) return 0;
+    const loanAmount = plot.totalPrice * (1 - downPaymentPercent / 100);
+    const monthlyRate = interestRate / 12 / 100;
+    const totalMonths = loanTenureYears * 12;
+
+    if (monthlyRate === 0) return Math.round(loanAmount / totalMonths);
+
+    const emi =
+      (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) /
+      (Math.pow(1 + monthlyRate, totalMonths) - 1);
+
+    return Math.round(emi);
+  }, [plot, downPaymentPercent, interestRate, loanTenureYears]);
 
   if (!plot) return null;
 
@@ -56,7 +98,7 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
 
   const handleWhatsApp = () => {
     const text = encodeURIComponent(
-      `Hello Shubharambh Green City Sales Team! I am interested in Plot ${plot.plotNo} (${plot.dimensions}, ${plot.totalArea} sq.ft) in ${plot.block}. Please share details.`
+      `Hello Shubharambh Green City Sales Desk! I am interested in Plot ${plot.plotNo} (${plot.dimensions}, ${plot.totalArea} sq.ft) in ${plot.block}. Please share brochure.`
     );
     window.open(`https://wa.me/919876543210?text=${text}`, '_blank');
   };
@@ -74,7 +116,7 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
       });
     } else {
       navigator.clipboard.writeText(window.location.href);
-      alert('Plot link copied to clipboard!');
+      alert('Plot details link copied to clipboard!');
     }
   };
 
@@ -99,31 +141,31 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'rgba(11, 15, 25, 0.7)',
-            backdropFilter: 'blur(8px)',
+            background: 'rgba(11, 15, 25, 0.75)',
+            backdropFilter: 'blur(10px)',
             pointerEvents: 'auto',
           }}
         />
 
-        {/* Sliding Side Drawer Card */}
+        {/* Sliding Side Property Inspector Drawer */}
         <motion.div
           role="dialog"
           aria-modal="true"
-          aria-label={`Plot Details Drawer for Plot ${plot.plotNo}`}
+          aria-label={`Property Inspector for Plot ${plot.plotNo}`}
           initial={{ x: '100%' }}
           animate={{ x: 0 }}
           exit={{ x: '100%' }}
-          transition={{ type: 'spring', damping: 26, stiffness: 240 }}
+          transition={{ type: 'spring', damping: 28, stiffness: 260 }}
           style={{
             position: 'relative',
             zIndex: 10,
             width: '100%',
-            maxWidth: '540px',
+            maxWidth: '560px',
             height: '100vh',
-            background: 'rgba(15, 23, 42, 0.95)',
-            backdropFilter: 'blur(20px)',
+            background: 'rgba(15, 23, 42, 0.96)',
+            backdropFilter: 'blur(24px)',
             borderLeft: `2px solid ${statusColor}`,
-            boxShadow: '-20px 0 60px rgba(0, 0, 0, 0.7)',
+            boxShadow: '-25px 0 70px rgba(0, 0, 0, 0.8)',
             color: '#f8fafc',
             display: 'flex',
             flexDirection: 'column',
@@ -131,20 +173,40 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
             pointerEvents: 'auto',
           }}
         >
-          {/* Drawer Header */}
+          {/* Top Breadcrumb Bar */}
           <div
             style={{
-              padding: '24px 28px',
+              padding: '12px 24px 8px 24px',
+              background: '#0b1329',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontSize: '0.78rem',
+              color: '#94a3b8',
+            }}
+          >
+            <span>Township Layout</span>
+            <ChevronRight size={12} />
+            <span>{plot.block}</span>
+            <ChevronRight size={12} />
+            <span style={{ color: '#38bdf8', fontWeight: 700 }}>Unit {plot.plotNo}</span>
+          </div>
+
+          {/* Hero Property Inspector Header */}
+          <div
+            style={{
+              padding: '20px 24px',
               borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-              background: 'linear-gradient(135deg, rgba(15,23,42,0.9) 0%, rgba(30,41,59,0.8) 100%)',
+              background: 'linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(30,41,59,0.9) 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
             }}
           >
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <h2 style={{ fontSize: '1.7rem', fontWeight: 800, margin: 0, color: '#ffffff' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                <h2 style={{ fontSize: '1.8rem', fontWeight: 800, margin: 0, color: '#ffffff', letterSpacing: '-0.02em' }}>
                   Plot {plot.plotNo}
                 </h2>
                 <span
@@ -168,8 +230,8 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
                   </span>
                 )}
               </div>
-              <p style={{ color: '#94a3b8', fontSize: '0.85rem', margin: '4px 0 0 0' }}>
-                {plot.block} • {plot.category} Sector • {plot.roadWidth} Main Boulevard
+              <p style={{ color: '#94a3b8', fontSize: '0.84rem', margin: '4px 0 0 0' }}>
+                {plot.block} Sector • {plot.facing} Facing • {plot.roadWidth} Main Boulevard
               </p>
             </div>
 
@@ -215,18 +277,18 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
             </div>
           </div>
 
-          {/* Navigation Tabs */}
+          {/* Navigation Tabs Bar */}
           <div
             style={{
               display: 'flex',
               borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-              background: '#0b171e',
+              background: '#0a1322',
               padding: '0 16px',
               gap: '4px',
               overflowX: 'auto',
             }}
           >
-            {(['overview', 'gallery', 'amenities', 'history', 'documents', 'admin'] as const).map((tab) => {
+            {(['overview', 'finance', 'gallery', 'amenities', 'history', 'documents', 'admin'] as const).map((tab) => {
               if (tab === 'admin' && authUser?.role !== 'SUPER_ADMIN' && authUser?.role !== 'ADMIN') return null;
               return (
                 <button
@@ -238,52 +300,54 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
                     border: 'none',
                     borderBottom: activeTab === tab ? `2px solid ${statusColor}` : '2px solid transparent',
                     color: activeTab === tab ? '#ffffff' : '#94a3b8',
-                    fontSize: '0.85rem',
+                    fontSize: '0.82rem',
                     fontWeight: activeTab === tab ? 700 : 500,
                     cursor: 'pointer',
                     textTransform: 'capitalize',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
+                    whiteSpace: 'nowrap',
                   }}
                 >
                   {tab === 'overview' && <Sparkles size={14} />}
+                  {tab === 'finance' && <Calculator size={14} />}
                   {tab === 'gallery' && <ExternalLink size={14} />}
                   {tab === 'amenities' && <MapPin size={14} />}
                   {tab === 'history' && <Clock size={14} />}
                   {tab === 'documents' && <FileText size={14} />}
                   {tab === 'admin' && <Settings size={14} />}
-                  {tab}
+                  {tab === 'finance' ? 'EMI Calculator' : tab}
                 </button>
               );
             })}
           </div>
 
           {/* Body Content Scroll View */}
-          <div style={{ flex: 1, padding: '24px 28px', overflowY: 'auto' }}>
+          <div style={{ flex: 1, padding: '24px', overflowY: 'auto' }}>
             {/* OVERVIEW TAB */}
             {activeTab === 'overview' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                {/* Price Box Card */}
+                {/* Hero Price Box Card */}
                 <div
                   style={{
-                    background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.14) 0%, rgba(15, 23, 42, 0.7) 100%)',
-                    border: '1px solid rgba(16, 185, 129, 0.35)',
-                    borderRadius: '16px',
-                    padding: '20px',
+                    background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(15, 23, 42, 0.8) 100%)',
+                    border: '1px solid rgba(16, 185, 129, 0.4)',
+                    borderRadius: '20px',
+                    padding: '22px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                   }}
                 >
                   <div>
-                    <span style={{ fontSize: '0.8rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Total Plot Price
+                    <span style={{ fontSize: '0.78rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
+                      Total Plot Investment
                     </span>
-                    <h3 style={{ fontSize: '1.9rem', fontWeight: 800, color: '#10b981', margin: '4px 0 0 0' }}>
+                    <h3 style={{ fontSize: '2.1rem', fontWeight: 800, color: '#10b981', margin: '4px 0 0 0', letterSpacing: '-0.03em' }}>
                       ₹{plot.totalPrice.toLocaleString('en-IN')}
                     </h3>
-                    <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '2px' }}>
+                    <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '4px' }}>
                       Rate: ₹{plot.ratePerSqFt.toLocaleString('en-IN')} / sq.ft • Advance Token: ₹50,000
                     </div>
                   </div>
@@ -294,56 +358,158 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
                       background: 'rgba(56, 189, 248, 0.15)',
                       color: '#38bdf8',
                       border: '1px solid #38bdf8',
-                      padding: '8px 12px',
-                      borderRadius: '10px',
+                      padding: '10px 14px',
+                      borderRadius: '12px',
                       fontSize: '0.8rem',
                       fontWeight: 700,
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '4px',
+                      gap: '6px',
                     }}
                   >
-                    <MapPin size={14} /> GIS Location
+                    <Compass size={16} /> GIS Coordinates
                   </button>
                 </div>
 
-                {/* Plot Properties Grid */}
+                {/* Plot Physical Dimensions Grid */}
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                  <div style={{ background: '#15222b', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <div style={{ background: '#0f172a', padding: '16px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)' }}>
                     <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Plot Dimensions</span>
-                    <strong style={{ display: 'block', fontSize: '1rem', color: '#f8fafc', marginTop: '2px' }}>{plot.dimensions}</strong>
+                    <strong style={{ display: 'block', fontSize: '1.05rem', color: '#f8fafc', marginTop: '4px' }}>{plot.dimensions}</strong>
                   </div>
-                  <div style={{ background: '#15222b', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <div style={{ background: '#0f172a', padding: '16px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)' }}>
                     <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Carpet Area</span>
-                    <strong style={{ display: 'block', fontSize: '1rem', color: '#f8fafc', marginTop: '2px' }}>{plot.totalArea} Sq.Ft</strong>
+                    <strong style={{ display: 'block', fontSize: '1.05rem', color: '#f8fafc', marginTop: '4px' }}>{plot.totalArea} Sq.Ft</strong>
                   </div>
-                  <div style={{ background: '#15222b', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
-                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Plot Facing</span>
-                    <strong style={{ display: 'block', fontSize: '1rem', color: '#38bdf8', marginTop: '2px' }}>{plot.facing} Facing</strong>
+                  <div style={{ background: '#0f172a', padding: '16px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Plot Orientation</span>
+                    <strong style={{ display: 'block', fontSize: '1.05rem', color: '#38bdf8', marginTop: '4px' }}>{plot.facing} Facing</strong>
                   </div>
-                  <div style={{ background: '#15222b', padding: '14px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
-                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Road Width</span>
-                    <strong style={{ display: 'block', fontSize: '1rem', color: '#f59e0b', marginTop: '2px' }}>{plot.roadWidth} Wide Road</strong>
+                  <div style={{ background: '#0f172a', padding: '16px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Access Corridor</span>
+                    <strong style={{ display: 'block', fontSize: '1.05rem', color: '#f59e0b', marginTop: '4px' }}>{plot.roadWidth} Wide Road</strong>
                   </div>
                 </div>
 
-                {/* Description & Legal Assurance */}
-                <div style={{ background: '#15222b', padding: '16px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                  <h4 style={{ color: '#ffffff', margin: '0 0 8px 0', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <ShieldCheck size={16} color="#10b981" /> Ownership & RERA Compliance
+                {/* Booking Lifecycle Stage Tracker Bar */}
+                <div style={{ background: '#0f172a', padding: '18px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <h4 style={{ color: '#ffffff', margin: '0 0 14px 0', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <TrendingUp size={16} color="#0284c7" /> Booking & Ownership Stage
+                  </h4>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative' }}>
+                    {['Token (₹50k)', 'UTR Approval', 'Agreement Bond', 'Sub-Registrar'].map((step, idx) => {
+                      const isCompleted =
+                        plot.enhancedStatus === 'sold' ||
+                        (plot.enhancedStatus === 'booked' && idx <= 1) ||
+                        (plot.enhancedStatus === 'reserved' && idx === 0);
+                      return (
+                        <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', zIndex: 2 }}>
+                          <div
+                            style={{
+                              width: '24px',
+                              height: '24px',
+                              borderRadius: '50%',
+                              background: isCompleted ? '#10b981' : '#1e293b',
+                              color: isCompleted ? '#ffffff' : '#64748b',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: '0.75rem',
+                              fontWeight: 700,
+                            }}
+                          >
+                            {isCompleted ? <CheckCircle2 size={14} /> : idx + 1}
+                          </div>
+                          <span style={{ fontSize: '0.7rem', color: isCompleted ? '#ffffff' : '#64748b', fontWeight: 600 }}>{step}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Ownership & Legal Compliance */}
+                <div style={{ background: '#0f172a', padding: '16px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <h4 style={{ color: '#ffffff', margin: '0 0 8px 0', fontSize: '0.92rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <ShieldCheck size={16} color="#10b981" /> RERA & Gram Panchayat Compliance
                   </h4>
                   <p style={{ color: '#94a3b8', fontSize: '0.85rem', lineHeight: '1.6', margin: 0 }}>
-                    {plot.description} Gram Panchayat & RERA compliant clear title plot. Sub-registrar registry guaranteed within 90 days of booking.
+                    {plot.description} Gram Panchayat approved clear title plot with immediate registry assurance.
                   </p>
                 </div>
 
-                {/* Owner Info */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(255,255,255,0.03)', padding: '12px 16px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                  <User size={20} color="#f59e0b" />
+                {/* Owner Info Card */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(255,255,255,0.04)', padding: '14px 18px', borderRadius: '14px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <User size={22} color="#f59e0b" />
                   <div>
                     <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Current Owner / Allottee</span>
-                    <strong style={{ display: 'block', fontSize: '0.88rem', color: '#ffffff' }}>{plot.owner || 'Shubharambh Green City'}</strong>
+                    <strong style={{ display: 'block', fontSize: '0.92rem', color: '#ffffff' }}>{plot.owner || 'Shubharambh Green City'}</strong>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* EMI CALCULATOR TAB */}
+            {activeTab === 'finance' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <h4 style={{ color: '#ffffff', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Calculator size={18} color="#38bdf8" /> Instant Bank EMI Loan Calculator
+                </h4>
+
+                <div style={{ background: 'linear-gradient(135deg, rgba(2, 132, 199, 0.15) 0%, rgba(15, 23, 42, 0.9) 100%)', border: '1px solid rgba(2, 132, 199, 0.4)', borderRadius: '20px', padding: '22px' }}>
+                  <span style={{ fontSize: '0.78rem', color: '#94a3b8', textTransform: 'uppercase' }}>Estimated Monthly Installment</span>
+                  <h3 style={{ fontSize: '2.2rem', fontWeight: 800, color: '#38bdf8', margin: '4px 0 0 0' }}>
+                    ₹{emiCalculated.toLocaleString('en-IN')} <span style={{ fontSize: '1rem', color: '#94a3b8' }}>/ month</span>
+                  </h3>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: '#0f172a', padding: '20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#cbd5e1', marginBottom: '6px' }}>
+                      <span>Down Payment ({downPaymentPercent}%)</span>
+                      <strong style={{ color: '#10b981' }}>₹{Math.round(plot.totalPrice * (downPaymentPercent / 100)).toLocaleString('en-IN')}</strong>
+                    </div>
+                    <input
+                      type="range"
+                      min="10"
+                      max="50"
+                      step="5"
+                      value={downPaymentPercent}
+                      onChange={(e) => setDownPaymentPercent(Number(e.target.value))}
+                      style={{ width: '100%', accentColor: '#10b981' }}
+                    />
+                  </div>
+
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#cbd5e1', marginBottom: '6px' }}>
+                      <span>Bank Interest Rate</span>
+                      <strong style={{ color: '#38bdf8' }}>{interestRate}% p.a.</strong>
+                    </div>
+                    <input
+                      type="range"
+                      min="6.5"
+                      max="12.5"
+                      step="0.25"
+                      value={interestRate}
+                      onChange={(e) => setInterestRate(Number(e.target.value))}
+                      style={{ width: '100%', accentColor: '#38bdf8' }}
+                    />
+                  </div>
+
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#cbd5e1', marginBottom: '6px' }}>
+                      <span>Loan Tenure</span>
+                      <strong style={{ color: '#f59e0b' }}>{loanTenureYears} Years</strong>
+                    </div>
+                    <input
+                      type="range"
+                      min="3"
+                      max="20"
+                      step="1"
+                      value={loanTenureYears}
+                      onChange={(e) => setLoanTenureYears(Number(e.target.value))}
+                      style={{ width: '100%', accentColor: '#f59e0b' }}
+                    />
                   </div>
                 </div>
               </div>
@@ -353,7 +519,7 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
             {activeTab === 'gallery' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <h4 style={{ color: '#ffffff', margin: 0 }}>Site Photo Gallery</h4>
-                <div style={{ width: '100%', height: '240px', borderRadius: '16px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <div style={{ width: '100%', height: '260px', borderRadius: '18px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
                   <img
                     src={galleryImages[activeImageIdx]}
                     alt={`Plot ${plot.plotNo} View`}
@@ -368,7 +534,7 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
                       style={{
                         width: '70px',
                         height: '50px',
-                        borderRadius: '8px',
+                        borderRadius: '10px',
                         overflow: 'hidden',
                         cursor: 'pointer',
                         border: activeImageIdx === idx ? '2px solid #10b981' : '1px solid rgba(255,255,255,0.15)',
@@ -392,7 +558,7 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      background: '#15222b',
+                      background: '#0f172a',
                       padding: '14px 18px',
                       borderRadius: '14px',
                       border: '1px solid rgba(255,255,255,0.06)',
@@ -431,7 +597,7 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
                     <div
                       key={item.id}
                       style={{
-                        background: '#15222b',
+                        background: '#0f172a',
                         padding: '14px 16px',
                         borderRadius: '12px',
                         borderLeft: `3px solid ${statusColor}`,
@@ -460,9 +626,9 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      background: '#15222b',
+                      background: '#0f172a',
                       padding: '14px',
-                      borderRadius: '12px',
+                      borderRadius: '14px',
                       border: '1px solid rgba(255,255,255,0.06)',
                     }}
                   >
@@ -531,11 +697,11 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
             )}
           </div>
 
-          {/* Drawer Action Footer Buttons */}
+          {/* Sticky Drawer Action Footer */}
           <div
             style={{
-              padding: '20px 28px',
-              background: '#0b171e',
+              padding: '20px 24px',
+              background: '#0a1322',
               borderTop: '1px solid rgba(255, 255, 255, 0.1)',
               display: 'flex',
               flexDirection: 'column',
@@ -565,12 +731,12 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = ({
                 <Sparkles size={18} /> Book Plot Now (₹50,000 Advance)
               </button>
             ) : (
-              <div style={{ textAlign: 'center', padding: '10px', color: '#94a3b8', fontSize: '0.85rem' }}>
+              <div style={{ textAlign: 'center', padding: '12px', color: '#94a3b8', fontSize: '0.85rem', background: '#0f172a', borderRadius: '12px' }}>
                 🔒 This plot is currently {plot.enhancedStatus.toUpperCase()}
               </div>
             )}
 
-            {/* Communication & Site Visit Buttons */}
+            {/* Quick Actions Grid */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px' }}>
               <button
                 onClick={handleWhatsApp}

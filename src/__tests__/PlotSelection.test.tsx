@@ -107,8 +107,8 @@ describe('Plot Selection & PlotPolygon Interaction', () => {
       </AuthProvider>
     );
 
-    expect(screen.getByText(/Plot A-101/i)).toBeInTheDocument();
-    expect(screen.getByText(/Block A/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Plot A-101/i)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(/Block A/i)[0]).toBeInTheDocument();
     expect(screen.getByText(/30' x 50'/i)).toBeInTheDocument();
   });
 });
