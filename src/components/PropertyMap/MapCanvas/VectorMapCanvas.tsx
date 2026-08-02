@@ -5,7 +5,8 @@ import type { GisRenderMode } from '../../../features/gis-engine/types/gis';
 import { GIS_RENDER_MODE } from '../../../features/gis-engine/constants/gisConstants';
 import { SvgCanvas, type ViewportBounds } from '../../../features/gis-engine/renderer/SvgCanvas';
 import { MapLegend } from '../Legend/MapLegend';
-import { ZoomIn, ZoomOut, RotateCcw, Maximize, Minimize, Tag, Keyboard, X, Layers, Code } from 'lucide-react';
+import { ZoomIn, ZoomOut, RotateCcw, Maximize, Minimize, Tag, Keyboard, X, Layers, Code, Compass } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface VectorMapCanvasProps {
   plots: EnhancedPlot[];
@@ -36,7 +37,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
   const [renderMode, setRenderMode] = useState<GisRenderMode>(GIS_RENDER_MODE);
   const [viewportBounds, setViewportBounds] = useState<ViewportBounds | null>(null);
 
-  // Exact plot centering based on container bounds & target scale
+  // Exact plot centering based on container bounds & target scale (Fly-To Animation)
   const handleZoomToPlot = useCallback((plot: EnhancedPlot) => {
     if (transformRef.current) {
       const { setTransform } = transformRef.current;
@@ -53,7 +54,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
       const posX = cWidth / 2 - plotCenterX * scaleX * targetScale;
       const posY = cHeight / 2 - plotCenterY * scaleY * targetScale;
 
-      setTransform(posX, posY, targetScale, 400, 'easeOut');
+      setTransform(posX, posY, targetScale, 450, 'easeInOutCubic');
     }
   }, []);
 
@@ -156,6 +157,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
   }, [onSelectPlot, showKeyboardHelp]);
 
   const isZoomedIn = zoomScale >= 1.2;
+  const zoomPercentage = Math.round(zoomScale * 100);
 
   return (
     <div
@@ -178,9 +180,9 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
               minHeight: '680px',
               maxHeight: '880px',
               background: '#0b0f19',
-              borderRadius: '20px',
+              borderRadius: '24px',
               overflow: 'hidden',
-              border: '2px solid rgba(245, 158, 11, 0.4)',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
               boxShadow: '0 25px 60px rgba(0,0,0,0.6)',
               userSelect: 'none',
             }
@@ -189,67 +191,91 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
       {/* Floating Inventory Legend */}
       <MapLegend counts={statusCounts} />
 
-      {/* Touch & Keyboard Helper Badge */}
+      {/* Floating Interactive Compass Widget */}
+      <motion.div
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => transformRef.current?.resetTransform()}
+        className="gis-compass-widget"
+        style={{ position: 'absolute', top: '20px', left: '20px', zIndex: 20 }}
+        title="Reset North Orientation (0)"
+      >
+        <Compass size={22} />
+      </motion.div>
+
+      {/* Touch & Engine Status Helper Badge */}
       <div
         style={{
           position: 'absolute',
-          top: '16px',
+          top: '20px',
           left: '50%',
           transform: 'translateX(-50%)',
           zIndex: 20,
           background: 'rgba(15, 23, 42, 0.85)',
-          backdropFilter: 'blur(10px)',
-          padding: '6px 14px',
+          backdropFilter: 'blur(16px)',
+          padding: '6px 16px',
           borderRadius: '9999px',
           border: '1px solid rgba(255, 255, 255, 0.15)',
-          color: '#cbd5e1',
-          fontSize: '0.78rem',
+          color: '#f8fafc',
+          fontSize: '0.8rem',
           fontWeight: 600,
           pointerEvents: 'none',
           boxShadow: '0 8px 20px rgba(0,0,0,0.4)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
         }}
       >
-        💡 Enterprise GIS Engine • Mode: <span style={{ color: renderMode === 'production' ? '#10b981' : '#38bdf8', fontWeight: 700 }}>{renderMode.toUpperCase()}</span> • Pinch / Wheel to zoom (up to 10x) • Spatial Culling: ACTIVE
+        <span>💡 Enterprise GIS Vector Engine</span>
+        <span style={{ color: '#0284c7' }}>•</span>
+        <span style={{ color: '#38bdf8', fontWeight: 700 }}>{zoomPercentage}% Zoom</span>
+        <span style={{ color: '#0284c7' }}>•</span>
+        <span style={{ color: '#10b981', fontWeight: 700 }}>Spatial Culling: ACTIVE</span>
       </div>
 
       {/* Keyboard Shortcuts Help Modal */}
-      {showKeyboardHelp && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '70px',
-            right: '20px',
-            zIndex: 30,
-            background: 'rgba(15, 23, 42, 0.95)',
-            backdropFilter: 'blur(16px)',
-            padding: '16px 20px',
-            borderRadius: '16px',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            color: '#ffffff',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
-            maxWidth: '320px',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: '#f59e0b' }}>Keyboard Shortcuts</h4>
-            <button
-              onClick={() => setShowKeyboardHelp(false)}
-              style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
-            >
-              <X size={16} />
-            </button>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '8px 14px', fontSize: '0.8rem', color: '#cbd5e1' }}>
-            <kbd style={kbdStyle}>+</kbd> <span>Zoom In</span>
-            <kbd style={kbdStyle}>-</kbd> <span>Zoom Out</span>
-            <kbd style={kbdStyle}>0</kbd> <span>Recenter Map</span>
-            <kbd style={kbdStyle}>F</kbd> <span>Toggle Fullscreen</span>
-            <kbd style={kbdStyle}>L</kbd> <span>Toggle Plot Labels</span>
-            <kbd style={kbdStyle}>↑ ↓ ← →</kbd> <span>Pan Viewport</span>
-            <kbd style={kbdStyle}>Esc</kbd> <span>Deselect Plot</span>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {showKeyboardHelp && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            style={{
+              position: 'absolute',
+              top: '70px',
+              right: '20px',
+              zIndex: 30,
+              background: 'rgba(15, 23, 42, 0.95)',
+              backdropFilter: 'blur(20px)',
+              padding: '18px 22px',
+              borderRadius: '20px',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              color: '#ffffff',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
+              maxWidth: '320px',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700, color: '#38bdf8' }}>Keyboard Navigation</h4>
+              <button
+                onClick={() => setShowKeyboardHelp(false)}
+                style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '8px 14px', fontSize: '0.8rem', color: '#cbd5e1' }}>
+              <kbd style={kbdStyle}>+</kbd> <span>Zoom In</span>
+              <kbd style={kbdStyle}>-</kbd> <span>Zoom Out</span>
+              <kbd style={kbdStyle}>0</kbd> <span>Recenter Map</span>
+              <kbd style={kbdStyle}>F</kbd> <span>Toggle Fullscreen</span>
+              <kbd style={kbdStyle}>L</kbd> <span>Toggle Plot Labels</span>
+              <kbd style={kbdStyle}>↑ ↓ ← →</kbd> <span>Pan Viewport</span>
+              <kbd style={kbdStyle}>Esc</kbd> <span>Deselect Plot</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Zoom Pan Pinch Canvas Wrapper (Up to 10x scale) */}
       <TransformWrapper
@@ -275,16 +301,17 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                background: 'rgba(15, 23, 42, 0.9)',
-                backdropFilter: 'blur(12px)',
+                background: 'rgba(15, 23, 42, 0.85)',
+                backdropFilter: 'blur(16px)',
                 padding: '8px 12px',
-                borderRadius: '14px',
+                borderRadius: '16px',
                 border: '1px solid rgba(255, 255, 255, 0.15)',
+                boxShadow: '0 10px 25px rgba(0,0,0,0.4)',
               }}
             >
               <button
                 onClick={() => zoomIn(0.5)}
-                style={controlBtnStyle}
+                className="gis-glass-btn"
                 title="Zoom In (+)"
               >
                 <ZoomIn size={16} />
@@ -292,7 +319,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
 
               <button
                 onClick={() => zoomOut(0.5)}
-                style={controlBtnStyle}
+                className="gis-glass-btn"
                 title="Zoom Out (-)"
               >
                 <ZoomOut size={16} />
@@ -300,7 +327,8 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
 
               <button
                 onClick={() => resetTransform()}
-                style={{ ...controlBtnStyle, background: 'rgba(16, 185, 129, 0.2)', border: '1px solid #10b981', color: '#10b981' }}
+                className="gis-glass-btn"
+                style={{ background: 'rgba(16, 185, 129, 0.2)', borderColor: '#10b981', color: '#10b981' }}
                 title="Recenter Map (0)"
               >
                 <RotateCcw size={14} /> Recenter
@@ -308,12 +336,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
 
               <button
                 onClick={() => setShowLabelsOverride((prev) => !prev)}
-                style={{
-                  ...controlBtnStyle,
-                  background: showLabelsOverride ? 'rgba(56, 189, 248, 0.3)' : 'rgba(255,255,255,0.08)',
-                  borderColor: showLabelsOverride ? '#38bdf8' : 'transparent',
-                  color: showLabelsOverride ? '#38bdf8' : '#ffffff',
-                }}
+                className={`gis-glass-btn ${showLabelsOverride ? 'active' : ''}`}
                 title="Toggle Plot Labels (L)"
               >
                 <Tag size={15} /> Labels
@@ -321,12 +344,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
 
               <button
                 onClick={() => setShowBlueprintImage((prev) => !prev)}
-                style={{
-                  ...controlBtnStyle,
-                  background: showBlueprintImage ? 'rgba(245, 158, 11, 0.3)' : 'rgba(255,255,255,0.08)',
-                  borderColor: showBlueprintImage ? '#f59e0b' : 'transparent',
-                  color: showBlueprintImage ? '#f59e0b' : '#ffffff',
-                }}
+                className={`gis-glass-btn ${showBlueprintImage ? 'active' : ''}`}
                 title="Toggle Architectural Master Layout Plan"
               >
                 <Layers size={15} /> Blueprint Map
@@ -335,12 +353,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
               {/* GIS Render Mode Toggle (Production vs Developer) */}
               <button
                 onClick={() => setRenderMode((prev) => (prev === 'production' ? 'developer' : 'production'))}
-                style={{
-                  ...controlBtnStyle,
-                  background: renderMode === 'developer' ? 'rgba(124, 58, 237, 0.3)' : 'rgba(255,255,255,0.08)',
-                  borderColor: renderMode === 'developer' ? '#7c3aed' : 'transparent',
-                  color: renderMode === 'developer' ? '#a78bfa' : '#ffffff',
-                }}
+                className={`gis-glass-btn ${renderMode === 'developer' ? 'active' : ''}`}
                 title="Toggle GIS Architecture Mode (Production / Developer)"
               >
                 <Code size={15} /> {renderMode === 'production' ? 'Dev Mode' : 'Prod Mode'}
@@ -348,7 +361,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
 
               <button
                 onClick={() => setIsFullscreen((prev) => !prev)}
-                style={controlBtnStyle}
+                className="gis-glass-btn"
                 title="Toggle Fullscreen (F)"
               >
                 {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
@@ -356,7 +369,7 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
 
               <button
                 onClick={() => setShowKeyboardHelp((prev) => !prev)}
-                style={controlBtnStyle}
+                className="gis-glass-btn"
                 title="Keyboard Shortcuts"
               >
                 <Keyboard size={16} />
@@ -392,21 +405,6 @@ export const VectorMapCanvas: React.FC<VectorMapCanvasProps> = memo(({
 
 VectorMapCanvas.displayName = 'VectorMapCanvas';
 
-const controlBtnStyle: React.CSSProperties = {
-  background: 'rgba(255, 255, 255, 0.08)',
-  border: '1px solid rgba(255, 255, 255, 0.15)',
-  borderRadius: '10px',
-  padding: '8px 12px',
-  color: '#ffffff',
-  fontSize: '0.8rem',
-  fontWeight: 600,
-  cursor: 'pointer',
-  display: 'flex',
-  alignItems: 'center',
-  gap: '6px',
-  transition: 'all 0.15s ease',
-};
-
 const kbdStyle: React.CSSProperties = {
   background: 'rgba(255, 255, 255, 0.12)',
   border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -414,6 +412,6 @@ const kbdStyle: React.CSSProperties = {
   padding: '2px 6px',
   fontWeight: 700,
   fontSize: '0.75rem',
-  color: '#f59e0b',
+  color: '#38bdf8',
   textAlign: 'center',
 };

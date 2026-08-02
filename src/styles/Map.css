@@ -1,4 +1,5 @@
-/* Interactive Map & Inventory System CSS */
+/* Interactive Map & Inventory System CSS — Google Maps & Apple Maps Grade UX */
+
 .map-page-container {
   display: flex;
   flex-direction: column;
@@ -6,11 +7,12 @@
 }
 
 .map-toolbar {
-  background: var(--bg-card);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
   padding: 16px 24px;
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -26,124 +28,81 @@
 }
 
 .filter-chip {
-  padding: 6px 14px;
+  padding: 8px 16px;
   border-radius: 9999px;
   font-size: 0.85rem;
   font-weight: 600;
-  background: var(--bg-card-subtle);
-  color: var(--text-muted);
-  border: 1px solid var(--border-color);
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
   cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .filter-chip:hover {
   background: #e2e8f0;
-  color: var(--text-main);
+  color: #0f172a;
 }
 
 .filter-chip.active {
-  background: var(--primary-forest);
+  background: #0284c7;
   color: #ffffff;
-  border-color: var(--primary-forest);
+  border-color: #0284c7;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
 }
 
 .search-box {
   position: relative;
-  min-width: 240px;
+  min-width: 280px;
 }
 
 .search-box input {
   width: 100%;
-  padding: 8px 12px 8px 36px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-  font-size: 0.875rem;
+  padding: 10px 14px 10px 40px;
+  border-radius: 9999px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.88rem;
   outline: none;
+  background: #ffffff;
+  transition: all 0.2s ease;
 }
 
 .search-box input:focus {
-  border-color: var(--primary-forest);
-  box-shadow: 0 0 0 3px rgba(15, 56, 44, 0.1);
+  border-color: #0284c7;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
 }
 
 .search-icon {
   position: absolute;
-  left: 10px;
+  left: 14px;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--text-muted);
+  color: #64748b;
 }
 
 /* Map Canvas Container */
 .map-canvas-wrapper {
-  background: #0d1e17;
-  border-radius: var(--radius-xl);
-  padding: 24px;
+  background: #0b0f19;
+  border-radius: 24px;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-xl);
-  border: 2px solid var(--accent-gold);
-  min-height: 720px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.map-header-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: #ffffff;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.map-header-bar h3 {
-  color: var(--accent-gold-light);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.map-controls {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.map-ctrl-btn {
-  background: rgba(255, 255, 255, 0.15);
-  color: #ffffff;
-  padding: 6px 12px;
-  border-radius: var(--radius-sm);
-  font-size: 0.85rem;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-}
-
-.map-ctrl-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
-
-/* SVG Interactive Layout Map */
+/* SVG Interactive Layout Map Surface */
 .svg-map-viewport {
   width: 100%;
   height: 680px;
-  background: radial-gradient(circle at center, #153e31 0%, #0a1f18 100%);
-  border-radius: var(--radius-lg);
-  overflow: auto;
+  background: radial-gradient(circle at center, #111827 0%, #030712 100%);
+  border-radius: 20px;
+  overflow: hidden;
   position: relative;
 }
 
-.map-svg-element {
-  width: 100%;
-  height: auto;
-  min-width: 1250px;
-}
-
-/* Plot SVG Styling */
+/* Plot SVG Animation & Glow Effects */
 .svg-plot-rect {
-  transition: all 0.2s ease;
+  transition: fill 0.25s ease, stroke 0.25s ease, filter 0.25s ease;
   cursor: pointer;
   stroke-width: 1.5;
 }
@@ -155,7 +114,7 @@
 
 .svg-plot-rect.status-available:hover {
   fill: #34d399;
-  filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.8));
+  filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.9));
   stroke-width: 2.5;
 }
 
@@ -166,7 +125,7 @@
 
 .svg-plot-rect.status-booked:hover {
   fill: #fbbf24;
-  filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.8));
+  filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.9));
   stroke-width: 2.5;
 }
 
@@ -177,8 +136,24 @@
 
 .svg-plot-rect.status-sold:hover {
   fill: #f87171;
-  filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.8));
+  filter: drop-shadow(0 0 12px rgba(239, 68, 68, 0.9));
   stroke-width: 2.5;
+}
+
+/* Selected Plot Gold Pulsing Ring Animation */
+.svg-plot-selected-ring {
+  fill: none;
+  stroke: #fbbf24;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  animation: pulseGoldHalo 1.5s infinite ease-in-out;
+  pointer-events: none;
+}
+
+@keyframes pulseGoldHalo {
+  0%, 100% { stroke-opacity: 1; stroke-width: 4; }
+  50% { stroke-opacity: 0.4; stroke-width: 7; }
 }
 
 .svg-plot-text {
@@ -188,8 +163,8 @@
   text-anchor: middle;
   dominant-baseline: central;
   pointer-events: none;
-  font-family: 'Outfit', sans-serif;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  font-family: 'Inter', sans-serif;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 
 .svg-plot-dim {
@@ -201,17 +176,17 @@
 
 /* Block Section Labels */
 .block-banner {
-  fill: rgba(212, 175, 55, 0.15);
-  stroke: var(--accent-gold);
+  fill: rgba(2, 132, 199, 0.12);
+  stroke: #0284c7;
   stroke-dasharray: 4;
 }
 
 .block-title-text {
   font-size: 18px;
   font-weight: 800;
-  fill: var(--accent-gold);
+  fill: #38bdf8;
   letter-spacing: 0.1em;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 .road-text {
@@ -221,109 +196,89 @@
   text-transform: uppercase;
 }
 
-/* Legend Container */
-.map-legend {
+/* Glassmorphic Floating Toolbar Buttons */
+.gis-glass-btn {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 8px 14px;
+  color: #f8fafc;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.gis-glass-btn:hover {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.gis-glass-btn.active {
+  background: rgba(2, 132, 199, 0.3);
+  border-color: #38bdf8;
+  color: #38bdf8;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.4);
+}
+
+/* Floating Compass Dial */
+.gis-compass-widget {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 24px;
-  padding: 12px 20px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: var(--radius-md);
-  margin-top: 16px;
-  flex-wrap: wrap;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #ffffff;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.legend-color-box {
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
-}
-
-.legend-color-box.available { background: var(--status-available); box-shadow: 0 0 6px rgba(16, 185, 129, 0.5); }
-.legend-color-box.booked { background: var(--status-booked); box-shadow: 0 0 6px rgba(245, 158, 11, 0.5); }
-.legend-color-box.sold { background: var(--status-sold); box-shadow: 0 0 6px rgba(239, 68, 68, 0.5); }
-
-/* Mobile & Touch Grid View Cards (Fixed Spacing & Clean Padding) */
-.mobile-plot-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 16px;
-  padding: 16px 0;
-}
-
-.mobile-plot-card {
-  background: rgba(17, 24, 39, 0.95);
-  border-radius: 12px;
-  padding: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 10px;
+  color: #38bdf8;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  position: relative;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+}
+
+.gis-compass-widget:hover {
+  transform: scale(1.1);
+  border-color: #38bdf8;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.5);
+}
+
+/* Floating Search Autocomplete Dropdown */
+.gis-search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 8px;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
   overflow: hidden;
-  min-height: 110px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  z-index: 99;
 }
 
-.mobile-plot-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-}
-
-.mobile-plot-card.available {
-  border-color: #10b981;
-  background: linear-gradient(180deg, rgba(16, 185, 129, 0.15) 0%, rgba(11, 15, 25, 0.95) 100%);
-}
-
-.mobile-plot-card.booked {
-  border-color: #f59e0b;
-  background: linear-gradient(180deg, rgba(245, 158, 11, 0.15) 0%, rgba(11, 15, 25, 0.95) 100%);
-}
-
-.mobile-plot-card.sold {
-  border-color: #ef4444;
-  background: linear-gradient(180deg, rgba(239, 68, 68, 0.15) 0%, rgba(11, 15, 25, 0.95) 100%);
-}
-
-.mobile-plot-card-header {
+.gis-search-item {
+  padding: 10px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 6px;
+  color: #f8fafc;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
 }
 
-.mobile-plot-num {
-  font-weight: 800;
-  font-size: 1.15rem;
-  color: #ffffff;
-  letter-spacing: 0.5px;
-}
-
-.mobile-plot-dim {
-  font-size: 0.8rem;
-  color: #9ca3af;
-  font-weight: 500;
-}
-
-.mobile-plot-price {
-  font-weight: 700;
-  font-size: 0.95rem;
-  color: #6ee7b7;
+.gis-search-item:hover {
+  background: rgba(56, 189, 248, 0.15);
 }
 
 /* Mobile Media Queries */
@@ -352,33 +307,9 @@
   .map-canvas-wrapper {
     padding: 12px;
     min-height: 520px;
-    border-radius: var(--radius-lg);
-  }
-
-  .map-header-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .map-controls {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .map-ctrl-btn {
-    padding: 8px 14px;
-    font-size: 0.85rem;
-    flex: 1;
-    justify-content: center;
   }
 
   .svg-map-viewport {
     height: 520px;
-  }
-
-  .mobile-plot-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 12px;
   }
 }
