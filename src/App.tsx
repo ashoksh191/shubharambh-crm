@@ -1,13 +1,14 @@
-import React, { useState, useMemo, useEffect, lazy, Suspense, memo } from 'react';
+import React, { useState, useMemo, useEffect, lazy, Suspense, memo, useCallback } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProtectedRoute } from './components/Auth/ProtectedRoute';
 import { RoleGuard } from './components/Auth/RoleGuard';
 import { Sidebar } from './components/Navigation/Sidebar';
 import { InteractiveMap } from './components/Map/InteractiveMap';
+import { CommandPalette } from './components/UI/CommandPalette';
+import { ToastContainer, type ToastMessage } from './components/UI/ToastContainer';
 import {
   PhoneCall,
-  MapPin,
   Sparkles,
   Loader2,
   CheckCircle2,
@@ -19,9 +20,11 @@ import {
   ArrowUpRight,
   ShieldCheck,
   Zap,
+  Search,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Plot } from './types';
+import type { EnhancedPlot } from './types/propertyMap';
 import './styles/App.css';
 
 // Lazy Loaded Heavy Modules & Views
@@ -108,11 +111,39 @@ const MainLayout: React.FC = () => {
   const { user: authUser } = useAuth();
   const [activeTab, setActiveTab] = useState<'map' | 'mlm' | 'finance' | 'usps' | 'profile' | 'audit' | 'approvals'>('map');
 
+  // Command Palette & Toast System States
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [toasts, setToasts] = useState<ToastMessage[]>([]);
+
   // Modal States
   const [selectedBookingPlot, setSelectedBookingPlot] = useState<Plot | null>(null);
   const [activeReceiptBookingId, setActiveReceiptBookingId] = useState<string | null>(null);
   const [activeBondBookingId, setActiveBondBookingId] = useState<string | null>(null);
   const [activeQRBookingId, setActiveQRBookingId] = useState<string | null>(null);
+
+  // Global Ctrl + K Keyboard Shortcut Listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'k' || e.key === 'K')) {
+        e.preventDefault();
+        setIsCommandPaletteOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const addToast = useCallback((type: ToastMessage['type'], title: string, message: string) => {
+    const id = Math.random().toString(36).substring(2, 9);
+    setToasts((prev) => [...prev, { id, type, title, message }]);
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 4500);
+  }, []);
+
+  const dismissToast = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
 
   // Memoized Inventory Metrics
   const { availableCount, bookedCount, soldCount, occupancyRate } = useMemo(() => {
@@ -171,15 +202,19 @@ const MainLayout: React.FC = () => {
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.97 }}
               className="primary-action-btn"
-              onClick={() => setActiveTab('map')}
+              onClick={() => setIsCommandPaletteOpen(true)}
             >
-              <MapPin size={16} /> Explore Map Grid →
+              <Search size={16} /> Quick Search (Ctrl+K)
             </motion.button>
+
             <motion.button
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.97 }}
               className="secondary-call-btn"
-              onClick={() => alert('Support Line: +91 98765 43210 (24x7 Helpline)')}
+              onClick={() => {
+                addToast('info', 'Helpline Active', 'Connecting to 24x7 Customer Support Hotline...');
+                alert('Support Line: +91 98765 43210 (24x7 Helpline)');
+              }}
             >
               <PhoneCall size={16} /> Call Support
             </motion.button>
@@ -409,6 +444,23 @@ const MainLayout: React.FC = () => {
           </AnimatePresence>
         </main>
 
+        {/* Global Command Palette (Ctrl+K) */}
+        <CommandPalette
+          isOpen={isCommandPaletteOpen}
+          onClose={() => setIsCommandPaletteOpen(false)}
+          onNavigateTab={(tab) => {
+            setActiveTab(tab);
+            addToast('success', 'Navigation', `Switched view to ${tab.toUpperCase()}`);
+          }}
+          onSelectPlot={(plot: EnhancedPlot) => {
+            setSelectedBookingPlot(plot);
+            addToast('info', 'Plot Selected', `Inspecting Plot ${plot.plotNo} (${plot.block})`);
+          }}
+        />
+
+        {/* Global Toast System */}
+        <ToastContainer toasts={toasts} onDismiss={dismissToast} />
+
         {/* Lazy Loaded Modals */}
         <Suspense fallback={null}>
           {selectedBookingPlot && (
@@ -418,6 +470,7 @@ const MainLayout: React.FC = () => {
               onSuccess={(bId) => {
                 setSelectedBookingPlot(null);
                 setActiveReceiptBookingId(bId);
+                addToast('success', 'Booking Confirmed', `Booking ${bId} created successfully! Token verified.`);
               }}
             />
           )}
