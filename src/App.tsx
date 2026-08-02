@@ -1,11 +1,25 @@
-import React, { useState, useMemo, lazy, Suspense } from 'react';
+import React, { useState, useMemo, useEffect, lazy, Suspense, memo } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ProtectedRoute } from './components/Auth/ProtectedRoute';
 import { RoleGuard } from './components/Auth/RoleGuard';
 import { Sidebar } from './components/Navigation/Sidebar';
 import { InteractiveMap } from './components/Map/InteractiveMap';
-import { PhoneCall, MapPin, Sparkles, Loader2, CheckCircle2, Clock, Ban, Layers } from 'lucide-react';
+import {
+  PhoneCall,
+  MapPin,
+  Sparkles,
+  Loader2,
+  CheckCircle2,
+  Clock,
+  Ban,
+  Layers,
+  TrendingUp,
+  Activity,
+  ArrowUpRight,
+  ShieldCheck,
+  Zap,
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Plot } from './types';
 import './styles/App.css';
@@ -42,12 +56,52 @@ const QRVerificationModal = lazy(() =>
   import('./components/Documents/QRVerificationModal').then((m) => ({ default: m.QRVerificationModal }))
 );
 
-const ComponentFallback = () => (
-  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '300px', color: '#0284c7', gap: '10px' }}>
-    <Loader2 className="animate-spin" size={24} />
-    <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>Loading Enterprise Module...</span>
+const ComponentFallback = memo(() => (
+  <div className="component-fallback-container">
+    <Loader2 className="animate-spin" size={26} color="#0284c7" />
+    <span>Loading Enterprise Module...</span>
   </div>
-);
+));
+ComponentFallback.displayName = 'ComponentFallback';
+
+// Live Animated Counter Helper Component
+const AnimatedCount: React.FC<{ value: number; suffix?: string }> = memo(({ value, suffix = '' }) => {
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useEffect(() => {
+    let start = 0;
+    const end = value;
+    if (start === end) {
+      setDisplayValue(end);
+      return;
+    }
+    const duration = 600;
+    const stepTime = 16;
+    const steps = Math.ceil(duration / stepTime);
+    const increment = (end - start) / steps;
+    let current = start;
+
+    const timer = setInterval(() => {
+      current += increment;
+      if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+        setDisplayValue(end);
+        clearInterval(timer);
+      } else {
+        setDisplayValue(Math.floor(current));
+      }
+    }, stepTime);
+
+    return () => clearInterval(timer);
+  }, [value]);
+
+  return (
+    <span>
+      {displayValue.toLocaleString('en-IN')}
+      {suffix}
+    </span>
+  );
+});
+AnimatedCount.displayName = 'AnimatedCount';
 
 const MainLayout: React.FC = () => {
   const { plots } = useApp();
@@ -61,7 +115,7 @@ const MainLayout: React.FC = () => {
   const [activeQRBookingId, setActiveQRBookingId] = useState<string | null>(null);
 
   // Memoized Inventory Metrics
-  const { availableCount, bookedCount, soldCount } = useMemo(() => {
+  const { availableCount, bookedCount, soldCount, occupancyRate } = useMemo(() => {
     let available = 0;
     let booked = 0;
     let sold = 0;
@@ -71,28 +125,40 @@ const MainLayout: React.FC = () => {
       else if (status === 'booked') booked++;
       else if (status === 'sold') sold++;
     }
-    return { availableCount: available, bookedCount: booked, soldCount: sold };
+    const total = plots.length || 1;
+    const rate = Math.round(((booked + sold) / total) * 100);
+    return { availableCount: available, bookedCount: booked, soldCount: sold, occupancyRate: rate };
   }, [plots]);
 
   const userName = authUser?.fullName || authUser?.username || 'Ashok Kumar';
+
+  // Mock Recent Activity Feed for Enterprise Timeline
+  const recentActivities = useMemo(() => {
+    return [
+      { id: '1', title: 'Plot 104 Booked', desc: 'Advance token ₹50,000 received via Bank UTR', time: '10 mins ago', type: 'booking', icon: CheckCircle2, color: '#10b981' },
+      { id: '2', title: 'UTR Ref #849204 Verified', desc: 'Accountant approved customer installment payment', time: '42 mins ago', type: 'finance', icon: TrendingUp, color: '#0284c7' },
+      { id: '3', title: 'New Associate Registration', desc: 'Level-2 Associate assigned to Sales Manager Desk', time: '2 hours ago', type: 'user', icon: ShieldCheck, color: '#f59e0b' },
+    ];
+  }, []);
 
   return (
     <div className="sidebar-app-layout">
       {/* Left Navigation Sidebar */}
       <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {/* Right Main Content Area */}
+      {/* Right Main Viewport */}
       <div className="main-viewport-container">
-        {/* Top Header Banner */}
+        {/* Top Enterprise Hero Header Banner */}
         <motion.header
           initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
           className="dashboard-welcome-banner"
         >
           <div className="welcome-text-block">
             <div className="greeting-pill">
-              <Sparkles size={14} /> Live Enterprise CRM Command Center
+              <span className="live-status-dot"></span>
+              <Sparkles size={14} /> Shubharambh Command Center v1.0
             </div>
             <h2>Welcome back, {userName} 👋</h2>
             <p>
@@ -102,7 +168,7 @@ const MainLayout: React.FC = () => {
 
           <div className="welcome-action-buttons">
             <motion.button
-              whileHover={{ scale: 1.03 }}
+              whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.97 }}
               className="primary-action-btn"
               onClick={() => setActiveTab('map')}
@@ -110,7 +176,7 @@ const MainLayout: React.FC = () => {
               <MapPin size={16} /> Explore Map Grid →
             </motion.button>
             <motion.button
-              whileHover={{ scale: 1.03 }}
+              whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.97 }}
               className="secondary-call-btn"
               onClick={() => alert('Support Line: +91 98765 43210 (24x7 Helpline)')}
@@ -120,11 +186,11 @@ const MainLayout: React.FC = () => {
           </div>
         </motion.header>
 
-        {/* Dashboard Summary Metric Cards with Framer Motion Stagger */}
+        {/* Dashboard Summary Metric Cards Grid */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
+          transition={{ duration: 0.4, delay: 0.08 }}
           className="dashboard-summary-cards"
         >
           <motion.div
@@ -132,11 +198,19 @@ const MainLayout: React.FC = () => {
             className="metric-card available"
           >
             <div className="metric-header-row">
-              <div className="metric-label">Available Plots</div>
-              <CheckCircle2 size={18} color="#10b981" />
+              <span className="metric-label">Available Plots</span>
+              <div className="metric-icon-badge green">
+                <CheckCircle2 size={18} />
+              </div>
             </div>
-            <div className="metric-value">{availableCount}</div>
-            <div className="metric-subtext">Ready for instant booking</div>
+            <div className="metric-value">
+              <AnimatedCount value={availableCount} />
+            </div>
+            <div className="metric-footer-row">
+              <span className="trend-pill positive">
+                <ArrowUpRight size={12} /> Ready for Booking
+              </span>
+            </div>
           </motion.div>
 
           <motion.div
@@ -144,11 +218,19 @@ const MainLayout: React.FC = () => {
             className="metric-card booked"
           >
             <div className="metric-header-row">
-              <div className="metric-label">Booked Plots</div>
-              <Clock size={18} color="#f59e0b" />
+              <span className="metric-label">Booked Plots</span>
+              <div className="metric-icon-badge amber">
+                <Clock size={18} />
+              </div>
             </div>
-            <div className="metric-value">{bookedCount}</div>
-            <div className="metric-subtext">Tokens / UTR verification</div>
+            <div className="metric-value">
+              <AnimatedCount value={bookedCount} />
+            </div>
+            <div className="metric-footer-row">
+              <span className="trend-pill warning">
+                <Clock size={12} /> Tokens / UTR Verification
+              </span>
+            </div>
           </motion.div>
 
           <motion.div
@@ -156,11 +238,19 @@ const MainLayout: React.FC = () => {
             className="metric-card sold"
           >
             <div className="metric-header-row">
-              <div className="metric-label">Sold Out</div>
-              <Ban size={18} color="#ef4444" />
+              <span className="metric-label">Sold Out</span>
+              <div className="metric-icon-badge red">
+                <Ban size={18} />
+              </div>
             </div>
-            <div className="metric-value">{soldCount}</div>
-            <div className="metric-subtext">Registry & Bond executed</div>
+            <div className="metric-value">
+              <AnimatedCount value={soldCount} />
+            </div>
+            <div className="metric-footer-row">
+              <span className="trend-pill danger">
+                <ShieldCheck size={12} /> Registry Executed
+              </span>
+            </div>
           </motion.div>
 
           <motion.div
@@ -168,23 +258,95 @@ const MainLayout: React.FC = () => {
             className="metric-card total"
           >
             <div className="metric-header-row">
-              <div className="metric-label">Total Inventory</div>
-              <Layers size={18} color="#0284c7" />
+              <span className="metric-label">Total Inventory</span>
+              <div className="metric-icon-badge blue">
+                <Layers size={18} />
+              </div>
             </div>
-            <div className="metric-value">{plots.length}</div>
-            <div className="metric-subtext">60-Bigha Lucknow layout</div>
+            <div className="metric-value">
+              <AnimatedCount value={plots.length} />
+            </div>
+            <div className="metric-footer-row">
+              <span className="trend-pill info">
+                <Activity size={12} /> {occupancyRate}% Township Booked
+              </span>
+            </div>
           </motion.div>
         </motion.div>
+
+        {/* Enterprise Widgets Bar (Sales Velocity Progress & Live Activity Feed) */}
+        {activeTab === 'map' && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.15 }}
+            className="enterprise-widgets-row"
+          >
+            {/* Sales Velocity Overview Widget */}
+            <div className="widget-card glass">
+              <div className="widget-header">
+                <div className="widget-title">
+                  <TrendingUp size={18} color="#0284c7" />
+                  <span>Township Inventory Sales Velocity</span>
+                </div>
+                <span className="widget-badge">{occupancyRate}% Complete</span>
+              </div>
+              <div className="progress-bar-track">
+                <motion.div
+                  className="progress-bar-fill"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${occupancyRate}%` }}
+                  transition={{ duration: 0.8, ease: 'easeOut' }}
+                />
+              </div>
+              <div className="widget-legend-row">
+                <span className="legend-item"><span className="dot green"></span> Available ({availableCount})</span>
+                <span className="legend-item"><span className="dot amber"></span> Booked ({bookedCount})</span>
+                <span className="legend-item"><span className="dot red"></span> Sold ({soldCount})</span>
+              </div>
+            </div>
+
+            {/* Live Activity Feed Widget */}
+            <div className="widget-card glass">
+              <div className="widget-header">
+                <div className="widget-title">
+                  <Zap size={18} color="#f59e0b" />
+                  <span>Live Audit & Transaction Activity</span>
+                </div>
+                <span className="widget-badge pulse">Realtime Sync</span>
+              </div>
+              <div className="activity-timeline-list">
+                {recentActivities.map((act) => {
+                  const IconComp = act.icon;
+                  return (
+                    <div key={act.id} className="activity-timeline-item">
+                      <div className="activity-icon-bubble" style={{ background: `${act.color}15`, color: act.color }}>
+                        <IconComp size={14} />
+                      </div>
+                      <div className="activity-details">
+                        <div className="activity-title-row">
+                          <strong>{act.title}</strong>
+                          <span className="activity-time">{act.time}</span>
+                        </div>
+                        <span className="activity-desc">{act.desc}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Dynamic Module Content View */}
         <main className="main-content-body">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
-              initial={{ opacity: 0, x: 10 }}
+              initial={{ opacity: 0, x: 12 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              transition={{ duration: 0.25 }}
+              exit={{ opacity: 0, x: -12 }}
+              transition={{ duration: 0.22, ease: 'easeInOut' }}
             >
               <Suspense fallback={<ComponentFallback />}>
                 {activeTab === 'map' && (
@@ -201,7 +363,7 @@ const MainLayout: React.FC = () => {
                   <RoleGuard
                     requiredPermissions="payments:approve"
                     fallback={
-                      <div style={{ padding: '3rem', textAlign: 'center', color: '#fca5a5' }}>
+                      <div className="access-denied-card">
                         <h3>⛔ Access Denied</h3>
                         <p>You need the <strong>FINANCE</strong> or <strong>SUPER_ADMIN</strong> role to view payment approvals & financial dashboards.</p>
                       </div>
@@ -219,7 +381,7 @@ const MainLayout: React.FC = () => {
                   <RoleGuard
                     requiredPermissions="users:manage_roles"
                     fallback={
-                      <div style={{ padding: '3rem', textAlign: 'center', color: '#fca5a5' }}>
+                      <div className="access-denied-card">
                         <h3>⛔ Access Denied</h3>
                         <p>Only <strong>ADMIN</strong> and <strong>SUPER_ADMIN</strong> roles can review pending user registration requests.</p>
                       </div>
@@ -233,7 +395,7 @@ const MainLayout: React.FC = () => {
                   <RoleGuard
                     requiredPermissions="audit_logs:read"
                     fallback={
-                      <div style={{ padding: '3rem', textAlign: 'center', color: '#fca5a5' }}>
+                      <div className="access-denied-card">
                         <h3>⛔ Access Denied</h3>
                         <p>Only <strong>ADMIN</strong> and <strong>SUPER_ADMIN</strong> roles can inspect enterprise security audit trails.</p>
                       </div>
