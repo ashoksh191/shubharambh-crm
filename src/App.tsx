@@ -121,6 +121,99 @@ const AnimatedCount: React.FC<{ value: number; prefix?: string; suffix?: string 
 });
 AnimatedCount.displayName = 'AnimatedCount';
 
+// MEMOIZED ENTERPRISE ANALYTICS KPI CARD COMPONENT
+interface KpiData {
+  id: string;
+  title: string;
+  value: number;
+  prefix: string;
+  suffix: string;
+  trend: string;
+  isUp: boolean;
+  icon: React.FC<{ size?: number }>;
+  color: string;
+  gradient: string;
+  desc: string;
+  sparkline: string;
+}
+
+const KpiCardItem = memo<{ kpi: KpiData; index: number }>(({ kpi, index }) => {
+  const IconComp = kpi.icon;
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMousePos({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
+      whileHover={{ y: -6, scale: 1.02 }}
+      onMouseMove={handleMouseMove}
+      className="enterprise-kpi-card-28px"
+      style={{
+        background: `radial-gradient(circle at ${mousePos.x}px ${mousePos.y}px, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.75) 80%)`,
+        borderColor: `${kpi.color}35`,
+      }}
+    >
+      {/* Top Header: Title & Color-Coded Animated Badge */}
+      <div className="kpi-card-top-row">
+        <span className="kpi-card-label-title">{kpi.title}</span>
+        <motion.div
+          whileHover={{ rotate: 12, scale: 1.1 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+          className="kpi-icon-badge-box"
+          style={{ background: `${kpi.color}15`, color: kpi.color, border: `1px solid ${kpi.color}30` }}
+        >
+          <IconComp size={20} />
+        </motion.div>
+      </div>
+
+      {/* Center Row: Extra Large Animated Count Value */}
+      <div className="kpi-card-center-row">
+        <div className="kpi-hero-number-value" style={{ color: '#0F172A' }}>
+          <AnimatedCount value={kpi.value} prefix={kpi.prefix} suffix={kpi.suffix} />
+        </div>
+        <span className="kpi-sub-caption-text">{kpi.desc}</span>
+      </div>
+
+      {/* Bottom Row: Trend Pill & Animated SVG Sparkline */}
+      <div className="kpi-card-bottom-row">
+        <div className={`kpi-change-indicator-pill ${kpi.isUp ? 'up' : 'down'}`}>
+          {kpi.isUp ? <ArrowUpRight size={13} /> : <TrendingDown size={13} />}
+          <span>{kpi.trend}</span>
+        </div>
+
+        <svg className="kpi-animated-sparkline-svg" viewBox="0 0 100 28">
+          <defs>
+            <linearGradient id={`sparklineGrad-${kpi.id}`} x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor={kpi.color} stopOpacity="0.4" />
+              <stop offset="100%" stopColor={kpi.color} stopOpacity="1" />
+            </linearGradient>
+          </defs>
+          <motion.path
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 1.2, ease: 'easeOut', delay: index * 0.1 }}
+            d={kpi.sparkline}
+            fill="none"
+            stroke={`url(#sparklineGrad-${kpi.id})`}
+            strokeWidth="2.5"
+            strokeLinecap="round"
+          />
+        </svg>
+      </div>
+    </motion.div>
+  );
+});
+KpiCardItem.displayName = 'KpiCardItem';
+
 const MainLayout: React.FC = () => {
   const { plots } = useApp();
   const { user: authUser } = useAuth();
@@ -186,15 +279,15 @@ const MainLayout: React.FC = () => {
 
   const userName = authUser?.fullName || authUser?.username || 'Vikramaditya Singh';
 
-  // 6 Premium KPI Cards Data
-  const kpiCards = useMemo(() => {
+  // 6 Premium Enterprise KPI Cards Data
+  const kpiCards: KpiData[] = useMemo(() => {
     return [
-      { id: '1', title: 'Available Inventory', value: availableCount, prefix: '', suffix: ' Plots', trend: '+4.2%', isUp: true, icon: CheckCircle2, color: '#10B981', desc: 'Ready for instant booking', sparkline: 'M0,15 Q15,5 30,12 T60,8 T90,2' },
-      { id: '2', title: "Booked Today", value: 3, prefix: '', suffix: ' Plots', trend: '+12.5%', isUp: true, icon: Clock, color: '#F59E0B', desc: 'Advance token confirmed', sparkline: 'M0,18 Q15,12 30,8 T60,5 T90,1' },
-      { id: '3', title: "Today's Revenue", value: 150000, prefix: '₹', suffix: '', trend: '+18.4%', isUp: true, icon: DollarSign, color: '#0EA5E9', desc: 'Verified UTR inflow', sparkline: 'M0,20 Q15,15 30,10 T60,4 T90,0' },
-      { id: '4', title: 'Monthly Revenue', value: 6400000, prefix: '₹', suffix: '', trend: '+28.4%', isUp: true, icon: TrendingUp, color: '#A855F7', desc: 'Current Month Target: ₹75L', sparkline: 'M0,16 Q15,10 30,12 T60,6 T90,2' },
-      { id: '5', title: 'Pending Approvals', value: 2, prefix: '', suffix: ' Requests', trend: '-50%', isUp: false, icon: UserCheck, color: '#EF4444', desc: 'Registration & KYC Audit', sparkline: 'M0,2 Q15,8 30,12 T60,16 T90,20' },
-      { id: '6', title: 'Collection Rate', value: 94.8, prefix: '', suffix: '%', trend: '+3.1%', isUp: true, icon: ShieldCheck, color: '#38BDF8', desc: 'Installment UTR Efficiency', sparkline: 'M0,15 Q15,8 30,5 T60,3 T90,1' },
+      { id: 'available', title: 'Available Inventory', value: availableCount, prefix: '', suffix: ' Plots', trend: '+4.2%', isUp: true, icon: CheckCircle2, color: '#10B981', gradient: 'linear-gradient(135deg, #10B981, #059669)', desc: 'Ready for instant booking', sparkline: 'M0,20 Q25,8 50,16 T100,4' },
+      { id: 'booked', title: 'Booked Today', value: 3, prefix: '', suffix: ' Plots', trend: '+12.5%', isUp: true, icon: Clock, color: '#F59E0B', gradient: 'linear-gradient(135deg, #F59E0B, #D97706)', desc: 'Advance token confirmed', sparkline: 'M0,22 Q25,14 50,8 T100,2' },
+      { id: 'today-rev', title: "Today's Revenue", value: 150000, prefix: '₹', suffix: '', trend: '+18.4%', isUp: true, icon: DollarSign, color: '#0EA5E9', gradient: 'linear-gradient(135deg, #0EA5E9, #2563EB)', desc: 'Verified UTR inflow', sparkline: 'M0,24 Q25,18 50,10 T100,2' },
+      { id: 'monthly-rev', title: 'Monthly Revenue', value: 6400000, prefix: '₹', suffix: '', trend: '+28.4%', isUp: true, icon: TrendingUp, color: '#A855F7', gradient: 'linear-gradient(135deg, #A855F7, #7C3AED)', desc: 'Target: ₹75.0 Lakhs', sparkline: 'M0,20 Q25,12 50,14 T100,4' },
+      { id: 'approvals', title: 'Pending Approvals', value: 2, prefix: '', suffix: ' Requests', trend: '-2.4%', isUp: false, icon: UserCheck, color: '#EF4444', gradient: 'linear-gradient(135deg, #EF4444, #DC2626)', desc: 'Registration & KYC Audit', sparkline: 'M0,4 Q25,10 50,16 T100,24' },
+      { id: 'collection', title: 'Collection Rate', value: 94.8, prefix: '', suffix: '%', trend: '+3.1%', isUp: true, icon: ShieldCheck, color: '#38BDF8', gradient: 'linear-gradient(135deg, #38BDF8, #0284C7)', desc: 'Installment UTR Efficiency', sparkline: 'M0,18 Q25,10 50,6 T100,2' },
     ];
   }, [availableCount]);
 
@@ -377,46 +470,12 @@ const MainLayout: React.FC = () => {
           </div>
         </motion.header>
 
-        {/* FIRST ROW: 6 PREMIUM KPI CARDS */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.08 }}
-          className="kpi-six-cards-grid"
-        >
-          {kpiCards.map((kpi) => {
-            const IconComp = kpi.icon;
-            return (
-              <motion.div
-                key={kpi.id}
-                whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                className="kpi-floating-card"
-                style={{ borderColor: `${kpi.color}30` }}
-              >
-                <div className="kpi-card-header">
-                  <span className="kpi-card-title">{kpi.title}</span>
-                  <div className="kpi-card-icon" style={{ background: `${kpi.color}15`, color: kpi.color }}>
-                    <IconComp size={18} />
-                  </div>
-                </div>
-
-                <div className="kpi-card-value">
-                  <AnimatedCount value={kpi.value} prefix={kpi.prefix} suffix={kpi.suffix} />
-                </div>
-
-                <div className="kpi-card-footer">
-                  <span className={`kpi-trend-pill ${kpi.isUp ? 'up' : 'down'}`}>
-                    {kpi.isUp ? <ArrowUpRight size={13} /> : <TrendingDown size={13} />}
-                    {kpi.trend}
-                  </span>
-                  <svg className="kpi-sparkline" viewBox="0 0 100 24">
-                    <path d={kpi.sparkline} fill="none" stroke={kpi.color} strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                </div>
-              </motion.div>
-            );
-          })}
-        </motion.div>
+        {/* FIRST ROW: REDESIGNED ENTERPRISE ANALYTICS KPI CARDS (28px Glassmorphism) */}
+        <div className="kpi-cards-grid-28px">
+          {kpiCards.map((kpi, idx) => (
+            <KpiCardItem key={kpi.id} kpi={kpi} index={idx} />
+          ))}
+        </div>
 
         {/* SECOND ROW & RIGHT PANEL GRID (ANALYTICS AREA CHART + LIVE RECENT ACTIVITY) */}
         {activeTab === 'map' && (
