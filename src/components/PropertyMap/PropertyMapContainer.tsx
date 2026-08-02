@@ -6,6 +6,7 @@ import { PlotTooltip } from './Tooltip/PlotTooltip';
 import { MapFilters } from './Filters/MapFilters';
 import { MapSearch } from './Search/MapSearch';
 import { Download, Compass } from 'lucide-react';
+import { motion } from 'framer-motion';
 import '../../styles/Map.css';
 
 const BookingFormModal = lazy(() =>
@@ -57,7 +58,13 @@ export const PropertyMapContainer: React.FC<PropertyMapContainerProps> = ({
   } = usePropertyMap();
 
   return (
-    <div className="property-map-wrapper" style={{ padding: '24px 32px', maxWidth: '1440px', margin: '0 auto' }}>
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
+      className="property-map-wrapper"
+      style={{ padding: '24px 32px', maxWidth: '1440px', margin: '0 auto' }}
+    >
       {/* Top Header Bar */}
       <div
         style={{
@@ -70,11 +77,11 @@ export const PropertyMapContainer: React.FC<PropertyMapContainerProps> = ({
         }}
       >
         <div>
-          <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '10px', margin: 0 }}>
-            <Compass size={28} color="#f59e0b" />
+          <h2 style={{ fontSize: '1.8rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '10px', margin: 0 }}>
+            <Compass size={28} color="#0284c7" />
             Official Master Architectural Layout Blueprint
           </h2>
-          <p style={{ color: '#94a3b8', fontSize: '0.92rem', margin: '4px 0 0 0' }}>
+          <p style={{ color: '#64748b', fontSize: '0.92rem', margin: '4px 0 0 0' }}>
             GIS Vector SVG Interactive Engine • Google Maps & Apple Maps Digital Standard
           </p>
         </div>
@@ -90,14 +97,16 @@ export const PropertyMapContainer: React.FC<PropertyMapContainerProps> = ({
             }}
           />
 
-          <a
+          <motion.a
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             href="./assets/layout_plan_master.pdf"
             download="Shubharambh_Layout_Blueprint.pdf"
             style={{
-              background: 'rgba(16, 185, 129, 0.15)',
-              color: '#10b981',
-              border: '1px solid #10b981',
-              padding: '10px 16px',
+              background: '#0284c7',
+              color: '#ffffff',
+              border: 'none',
+              padding: '10px 18px',
               borderRadius: '9999px',
               fontSize: '0.85rem',
               fontWeight: 700,
@@ -105,10 +114,11 @@ export const PropertyMapContainer: React.FC<PropertyMapContainerProps> = ({
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
+              boxShadow: '0 4px 12px rgba(2, 132, 199, 0.25)',
             }}
           >
             <Download size={16} /> Blueprint PDF
-          </a>
+          </motion.a>
         </div>
       </div>
 
@@ -169,6 +179,6 @@ export const PropertyMapContainer: React.FC<PropertyMapContainerProps> = ({
           />
         )}
       </Suspense>
-    </div>
+    </motion.div>
   );
 };

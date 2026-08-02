@@ -36,7 +36,7 @@
   height: 40px;
   border-radius: 10px;
   overflow: hidden;
-  border: 1px solid rgba(245, 158, 11, 0.4);
+  border: 1px solid rgba(2, 132, 199, 0.4);
   background: #0f172a;
 }
 
@@ -50,7 +50,7 @@
   font-size: 1.1rem;
   font-weight: 800;
   margin: 0;
-  background: linear-gradient(135deg, #059669 0%, #d4af37 100%);
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   line-height: 1.1;
@@ -97,6 +97,7 @@
   background: #e0f2fe;
   color: #0284c7;
   font-weight: 700;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.15);
 }
 
 /* 3-Dots (...) More Features Dropdown */
@@ -141,12 +142,6 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  animation: slideDown 0.2s ease;
-}
-
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-6px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 .more-feature-subitem {
@@ -170,7 +165,7 @@
   color: #0284c7;
 }
 
-/* User Profile Footer Card (Matching SehatMitra UI) */
+/* User Profile Footer Card */
 .sidebar-user-footer {
   padding: 16px;
   border-top: 1px solid #e2e8f0;
@@ -273,7 +268,7 @@
   min-width: 0;
 }
 
-/* Welcome Hero Banner (Matching Screenshot Header Card) */
+/* Welcome Hero Banner */
 .dashboard-welcome-banner {
   margin: 24px 24px 0 24px;
   padding: 32px;
@@ -363,7 +358,7 @@
   background: #fef2f2;
 }
 
-/* Metric KPI Cards Grid (Matching Screenshot Cards) */
+/* Metric KPI Cards Grid */
 .dashboard-summary-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -386,6 +381,12 @@
 .metric-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.metric-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .metric-card .metric-label {
@@ -417,28 +418,57 @@
   padding: 0 24px 24px 24px;
 }
 
-/* Modal System */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(6px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 16px;
+/* App Footer */
+.app-footer {
+  padding: 20px;
+  text-align: center;
+  border-top: 1px solid #e2e8f0;
+  color: #64748b;
+  font-size: 0.82rem;
+  background: #ffffff;
 }
 
-.modal-card {
+.app-footer span {
+  color: #0284c7;
+  font-weight: 700;
+}
+
+/* Mobile Bottom Navigation */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
   background: #ffffff;
-  border-radius: 20px;
-  max-width: 650px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
-  border: 1px solid #e2e8f0;
+  border-top: 1px solid #e2e8f0;
+  padding: 8px 16px;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.mobile-bottom-nav-inner {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.mobile-nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mobile-nav-btn.active {
+  color: #0284c7;
+  font-weight: 700;
 }
 
 /* Mobile Responsiveness */
@@ -473,5 +503,9 @@
 
   .dashboard-summary-cards {
     padding: 16px;
+  }
+
+  .mobile-bottom-nav {
+    display: block;
   }
 }

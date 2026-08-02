@@ -5,7 +5,8 @@ import { ProtectedRoute } from './components/Auth/ProtectedRoute';
 import { RoleGuard } from './components/Auth/RoleGuard';
 import { Sidebar } from './components/Navigation/Sidebar';
 import { InteractiveMap } from './components/Map/InteractiveMap';
-import { PhoneCall, MapPin, Sparkles, Loader2 } from 'lucide-react';
+import { PhoneCall, MapPin, Sparkles, Loader2, CheckCircle2, Clock, Ban, Layers } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { Plot } from './types';
 import './styles/App.css';
 
@@ -42,9 +43,9 @@ const QRVerificationModal = lazy(() =>
 );
 
 const ComponentFallback = () => (
-  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '300px', color: '#10b981', gap: '10px' }}>
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '300px', color: '#0284c7', gap: '10px' }}>
     <Loader2 className="animate-spin" size={24} />
-    <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>Loading Module...</span>
+    <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>Loading Enterprise Module...</span>
   </div>
 );
 
@@ -83,116 +84,167 @@ const MainLayout: React.FC = () => {
       {/* Right Main Content Area */}
       <div className="main-viewport-container">
         {/* Top Header Banner */}
-        <header className="dashboard-welcome-banner">
+        <motion.header
+          initial={{ opacity: 0, y: -16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          className="dashboard-welcome-banner"
+        >
           <div className="welcome-text-block">
             <div className="greeting-pill">
-              <Sparkles size={14} /> Good Evening
+              <Sparkles size={14} /> Live Enterprise CRM Command Center
             </div>
-            <h2>{userName}</h2>
+            <h2>Welcome back, {userName} 👋</h2>
             <p>
-              Welcome to Shubharambh Green City CRM. Review real-time 60-Bigha plot inventory, associate hierarchy, and payment status.
+              Real-time 60-Bigha township layout inventory, associate tree hierarchy, and server-authoritative OCC booking engine.
             </p>
           </div>
 
           <div className="welcome-action-buttons">
-            <button className="primary-action-btn" onClick={() => setActiveTab('map')}>
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="primary-action-btn"
+              onClick={() => setActiveTab('map')}
+            >
               <MapPin size={16} /> Explore Map Grid →
-            </button>
-            <button
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
               className="secondary-call-btn"
               onClick={() => alert('Support Line: +91 98765 43210 (24x7 Helpline)')}
             >
               <PhoneCall size={16} /> Call Support
-            </button>
+            </motion.button>
           </div>
-        </header>
+        </motion.header>
 
-        {/* Dashboard Summary Metric Cards */}
-        <div className="dashboard-summary-cards">
-          <div className="metric-card available">
-            <div className="metric-label">Available Plots</div>
+        {/* Dashboard Summary Metric Cards with Framer Motion Stagger */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="dashboard-summary-cards"
+        >
+          <motion.div
+            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+            className="metric-card available"
+          >
+            <div className="metric-header-row">
+              <div className="metric-label">Available Plots</div>
+              <CheckCircle2 size={18} color="#10b981" />
+            </div>
             <div className="metric-value">{availableCount}</div>
             <div className="metric-subtext">Ready for instant booking</div>
-          </div>
+          </motion.div>
 
-          <div className="metric-card booked">
-            <div className="metric-label">Booked Plots</div>
+          <motion.div
+            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+            className="metric-card booked"
+          >
+            <div className="metric-header-row">
+              <div className="metric-label">Booked Plots</div>
+              <Clock size={18} color="#f59e0b" />
+            </div>
             <div className="metric-value">{bookedCount}</div>
             <div className="metric-subtext">Tokens / UTR verification</div>
-          </div>
+          </motion.div>
 
-          <div className="metric-card sold">
-            <div className="metric-label">Sold Out</div>
+          <motion.div
+            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+            className="metric-card sold"
+          >
+            <div className="metric-header-row">
+              <div className="metric-label">Sold Out</div>
+              <Ban size={18} color="#ef4444" />
+            </div>
             <div className="metric-value">{soldCount}</div>
             <div className="metric-subtext">Registry & Bond executed</div>
-          </div>
+          </motion.div>
 
-          <div className="metric-card total">
-            <div className="metric-label">Total Inventory</div>
+          <motion.div
+            whileHover={{ y: -4, transition: { duration: 0.2 } }}
+            className="metric-card total"
+          >
+            <div className="metric-header-row">
+              <div className="metric-label">Total Inventory</div>
+              <Layers size={18} color="#0284c7" />
+            </div>
             <div className="metric-value">{plots.length}</div>
             <div className="metric-subtext">60-Bigha Lucknow layout</div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {/* Dynamic Module Content View */}
         <main className="main-content-body">
-          <Suspense fallback={<ComponentFallback />}>
-            {activeTab === 'map' && (
-              <InteractiveMap
-                onOpenBooking={(plot) => setSelectedBookingPlot(plot)}
-                onOpenReceipt={(bId) => setActiveReceiptBookingId(bId)}
-                onOpenBond={(bId) => setActiveBondBookingId(bId)}
-              />
-            )}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
+              transition={{ duration: 0.25 }}
+            >
+              <Suspense fallback={<ComponentFallback />}>
+                {activeTab === 'map' && (
+                  <InteractiveMap
+                    onOpenBooking={(plot) => setSelectedBookingPlot(plot)}
+                    onOpenReceipt={(bId) => setActiveReceiptBookingId(bId)}
+                    onOpenBond={(bId) => setActiveBondBookingId(bId)}
+                  />
+                )}
 
-            {activeTab === 'mlm' && <AssociateDashboard />}
+                {activeTab === 'mlm' && <AssociateDashboard />}
 
-            {activeTab === 'finance' && (
-              <RoleGuard
-                requiredPermissions="payments:approve"
-                fallback={
-                  <div style={{ padding: '3rem', textAlign: 'center', color: '#fca5a5' }}>
-                    <h3>⛔ Access Denied</h3>
-                    <p>You need the <strong>FINANCE</strong> or <strong>SUPER_ADMIN</strong> role to view payment approvals & financial dashboards.</p>
-                  </div>
-                }
-              >
-                <FinancialDashboard />
-              </RoleGuard>
-            )}
+                {activeTab === 'finance' && (
+                  <RoleGuard
+                    requiredPermissions="payments:approve"
+                    fallback={
+                      <div style={{ padding: '3rem', textAlign: 'center', color: '#fca5a5' }}>
+                        <h3>⛔ Access Denied</h3>
+                        <p>You need the <strong>FINANCE</strong> or <strong>SUPER_ADMIN</strong> role to view payment approvals & financial dashboards.</p>
+                      </div>
+                    }
+                  >
+                    <FinancialDashboard />
+                  </RoleGuard>
+                )}
 
-            {activeTab === 'usps' && <USPShowcase />}
+                {activeTab === 'usps' && <USPShowcase />}
 
-            {activeTab === 'profile' && <UserProfileDashboard />}
+                {activeTab === 'profile' && <UserProfileDashboard />}
 
-            {activeTab === 'approvals' && (
-              <RoleGuard
-                requiredPermissions="users:manage_roles"
-                fallback={
-                  <div style={{ padding: '3rem', textAlign: 'center', color: '#fca5a5' }}>
-                    <h3>⛔ Access Denied</h3>
-                    <p>Only <strong>ADMIN</strong> and <strong>SUPER_ADMIN</strong> roles can review pending user registration requests.</p>
-                  </div>
-                }
-              >
-                <PendingApprovals />
-              </RoleGuard>
-            )}
+                {activeTab === 'approvals' && (
+                  <RoleGuard
+                    requiredPermissions="users:manage_roles"
+                    fallback={
+                      <div style={{ padding: '3rem', textAlign: 'center', color: '#fca5a5' }}>
+                        <h3>⛔ Access Denied</h3>
+                        <p>Only <strong>ADMIN</strong> and <strong>SUPER_ADMIN</strong> roles can review pending user registration requests.</p>
+                      </div>
+                    }
+                  >
+                    <PendingApprovals />
+                  </RoleGuard>
+                )}
 
-            {activeTab === 'audit' && (
-              <RoleGuard
-                requiredPermissions="audit_logs:read"
-                fallback={
-                  <div style={{ padding: '3rem', textAlign: 'center', color: '#fca5a5' }}>
-                    <h3>⛔ Access Denied</h3>
-                    <p>Only <strong>ADMIN</strong> and <strong>SUPER_ADMIN</strong> roles can inspect enterprise security audit trails.</p>
-                  </div>
-                }
-              >
-                <AuditLogViewer />
-              </RoleGuard>
-            )}
-          </Suspense>
+                {activeTab === 'audit' && (
+                  <RoleGuard
+                    requiredPermissions="audit_logs:read"
+                    fallback={
+                      <div style={{ padding: '3rem', textAlign: 'center', color: '#fca5a5' }}>
+                        <h3>⛔ Access Denied</h3>
+                        <p>Only <strong>ADMIN</strong> and <strong>SUPER_ADMIN</strong> roles can inspect enterprise security audit trails.</p>
+                      </div>
+                    }
+                  >
+                    <AuditLogViewer />
+                  </RoleGuard>
+                )}
+              </Suspense>
+            </motion.div>
+          </AnimatePresence>
         </main>
 
         {/* Lazy Loaded Modals */}

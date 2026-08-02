@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { motion } from 'framer-motion';
 import {
   Map,
   Users,
@@ -60,71 +61,87 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpe
 
       {/* Main Navigation Links */}
       <nav className="sidebar-nav">
-        <button
+        <motion.button
+          whileHover={{ x: 3 }}
+          whileTap={{ scale: 0.98 }}
           className={`sidebar-nav-item ${activeTab === 'map' ? 'active' : ''}`}
           onClick={() => setActiveTab('map')}
         >
           <Map size={18} />
           <span>Dashboard & Layout Map</span>
-        </button>
+        </motion.button>
 
-        <button
+        <motion.button
+          whileHover={{ x: 3 }}
+          whileTap={{ scale: 0.98 }}
           className={`sidebar-nav-item ${activeTab === 'mlm' ? 'active' : ''}`}
           onClick={() => setActiveTab('mlm')}
         >
           <Users size={18} />
           <span>MLM Associate Hierarchy</span>
-        </button>
+        </motion.button>
 
         <RoleGuard requiredPermissions="payments:approve">
-          <button
+          <motion.button
+            whileHover={{ x: 3 }}
+            whileTap={{ scale: 0.98 }}
             className={`sidebar-nav-item ${activeTab === 'finance' ? 'active' : ''}`}
             onClick={() => setActiveTab('finance')}
           >
             <DollarSign size={18} />
             <span>Accounting & Payments</span>
-          </button>
+          </motion.button>
         </RoleGuard>
 
-        <button
+        <motion.button
+          whileHover={{ x: 3 }}
+          whileTap={{ scale: 0.98 }}
           className={`sidebar-nav-item ${activeTab === 'usps' ? 'active' : ''}`}
           onClick={() => setActiveTab('usps')}
         >
           <Sparkles size={18} />
           <span>Project USPs & Gate</span>
-        </button>
+        </motion.button>
 
-        <button
+        <motion.button
+          whileHover={{ x: 3 }}
+          whileTap={{ scale: 0.98 }}
           className={`sidebar-nav-item ${activeTab === 'profile' ? 'active' : ''}`}
           onClick={() => setActiveTab('profile')}
         >
           <User size={18} />
           <span>Security Profile</span>
-        </button>
+        </motion.button>
 
         <RoleGuard requiredPermissions="users:manage_roles">
-          <button
+          <motion.button
+            whileHover={{ x: 3 }}
+            whileTap={{ scale: 0.98 }}
             className={`sidebar-nav-item ${activeTab === 'approvals' ? 'active' : ''}`}
             onClick={() => setActiveTab('approvals')}
           >
             <CheckSquare size={18} />
             <span>Pending Approvals</span>
-          </button>
+          </motion.button>
         </RoleGuard>
 
         <RoleGuard requiredPermissions="audit_logs:read">
-          <button
+          <motion.button
+            whileHover={{ x: 3 }}
+            whileTap={{ scale: 0.98 }}
             className={`sidebar-nav-item ${activeTab === 'audit' ? 'active' : ''}`}
             onClick={() => setActiveTab('audit')}
           >
             <FileText size={18} />
             <span>Security Audit Logs</span>
-          </button>
+          </motion.button>
         </RoleGuard>
 
         {/* 3 Dots (...) Expandable More Features Menu */}
         <div className="sidebar-more-section" ref={moreMenuRef}>
-          <button
+          <motion.button
+            whileHover={{ x: 3 }}
+            whileTap={{ scale: 0.98 }}
             className={`sidebar-nav-item more-toggle ${showMoreFeatures ? 'open' : ''}`}
             onClick={() => setShowMoreFeatures((prev) => !prev)}
             title="Tap for more CRM features"
@@ -132,10 +149,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpe
             <MoreHorizontal size={20} className="three-dots-icon" />
             <span>More Features</span>
             <ChevronDown size={14} className={`chevron-icon ${showMoreFeatures ? 'rotated' : ''}`} />
-          </button>
+          </motion.button>
 
           {showMoreFeatures && (
-            <div className="more-features-dropdown">
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              className="more-features-dropdown"
+            >
               <button
                 className="more-feature-subitem"
                 onClick={() => {
@@ -182,12 +204,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpe
                 <PhoneCall size={15} />
                 <span>Help & Support</span>
               </button>
-            </div>
+            </motion.div>
           )}
         </div>
       </nav>
 
-      {/* User Profile Card Footer (Matching SehatMitra / Screenshot UI) */}
+      {/* User Profile Card Footer */}
       <div className="sidebar-user-footer">
         {authUser && (
           <>
@@ -222,10 +244,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, onOpe
           </>
         )}
 
-        <button className="sidebar-signout-btn" onClick={logout} title="Sign Out">
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="sidebar-signout-btn"
+          onClick={logout}
+          title="Sign Out"
+        >
           <LogOut size={16} />
           <span>Sign Out</span>
-        </button>
+        </motion.button>
       </div>
     </aside>
   );
