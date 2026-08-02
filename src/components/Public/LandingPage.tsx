@@ -10,7 +10,6 @@ import {
   Compass,
   Building,
   ChevronDown,
-  Star,
   Award,
   Trees,
   Car,
@@ -20,7 +19,10 @@ import {
   Home,
   Tag,
   Calendar,
+  Sparkles,
+  Check,
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 import '../../styles/LandingPage.css';
 
 interface LandingPageProps {
@@ -91,186 +93,250 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
 
   return (
     <div className="lovable-landing-container">
-      {/* FULL HORIZONTAL ENTERPRISE NAVBAR (72px Sticky Glassmorphism) */}
-      <header className="sehat-navbar">
-        <div className="sehat-navbar-inner">
-          {/* LEFT: LOGO + BRAND NAME (WHITE) + SUBTITLE */}
-          <div className="sehat-brand" onClick={() => scrollToSection('top', 'home')}>
-            <div className="sehat-logo-icon">
-              <img src="./assets/logo_and_entrance.jpg" alt="Shubharambh Logo" />
+      {/* MERCURY-INSPIRED FLOATING GLASS NAVBAR (72px Height, 1320px Container) */}
+      <div className="mercury-floating-navbar-wrapper">
+        <motion.header
+          initial={{ y: -30, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className="sehat-navbar"
+        >
+          <div className="sehat-navbar-inner">
+            {/* LEFT: LOGO + BRAND NAME (WHITE) + SUBTITLE */}
+            <div className="sehat-brand" onClick={() => scrollToSection('top', 'home')}>
+              <div className="sehat-logo-icon">
+                <img src="./assets/logo_and_entrance.jpg" alt="Shubharambh Logo" />
+              </div>
+              <div className="sehat-brand-text-wrapper">
+                <span className="sehat-brand-title">SHUBHARAMBH</span>
+                <span className="sehat-brand-subtitle">Green City Township</span>
+              </div>
             </div>
-            <div className="sehat-brand-text-wrapper">
-              <span className="sehat-brand-title">SHUBHARAMBH</span>
-              <span className="sehat-brand-subtitle">Green City Township</span>
-            </div>
-          </div>
 
-          {/* CENTER: FULL HORIZONTAL ENTERPRISE NAVIGATION */}
-          <nav>
-            <ul className="enterprise-center-nav-list">
-              <li>
-                <button
-                  className={`enterprise-nav-item-btn ${activeNavSection === 'home' ? 'active' : ''}`}
-                  onClick={() => scrollToSection('top', 'home')}
-                >
-                  <Home size={16} /> Home
+            {/* CENTER: FULL HORIZONTAL ENTERPRISE NAVIGATION */}
+            <nav>
+              <ul className="enterprise-center-nav-list">
+                <li>
+                  <button
+                    className={`enterprise-nav-item-btn ${activeNavSection === 'home' ? 'active' : ''}`}
+                    onClick={() => scrollToSection('top', 'home')}
+                  >
+                    <Home size={16} /> Home
+                  </button>
+                </li>
+
+                <li>
+                  <button
+                    className={`enterprise-nav-item-btn ${activeNavSection === 'project' ? 'active' : ''}`}
+                    onClick={() => scrollToSection('features', 'project')}
+                  >
+                    <Building size={16} /> Project
+                  </button>
+                </li>
+
+                <li>
+                  <button
+                    className={`enterprise-nav-item-btn ${activeNavSection === 'map' ? 'active' : ''}`}
+                    onClick={() => {
+                      setActiveNavSection('map');
+                      onNavigateToMap();
+                    }}
+                  >
+                    <MapPin size={16} /> Layout Map
+                  </button>
+                </li>
+
+                <li>
+                  <button
+                    className={`enterprise-nav-item-btn ${activeNavSection === 'pricing' ? 'active' : ''}`}
+                    onClick={() => scrollToSection('how-it-works', 'pricing')}
+                  >
+                    <Tag size={16} /> Pricing
+                  </button>
+                </li>
+
+                <li>
+                  <button
+                    className={`enterprise-nav-item-btn ${activeNavSection === 'gallery' ? 'active' : ''}`}
+                    onClick={() => scrollToSection('government', 'gallery')}
+                  >
+                    <Trees size={16} /> Gallery
+                  </button>
+                </li>
+
+                <li>
+                  <button
+                    className={`enterprise-nav-item-btn ${activeNavSection === 'contact' ? 'active' : ''}`}
+                    onClick={() => scrollToSection('book-visit', 'contact')}
+                  >
+                    <PhoneCall size={16} /> Contact
+                  </button>
+                </li>
+              </ul>
+            </nav>
+
+            {/* RIGHT: GHOST LOGIN + PRIMARY GRADIENT GET STARTED BUTTON */}
+            <div className="sehat-nav-actions">
+              {authUser ? (
+                <button className="sehat-signin-btn" onClick={logout} title="Sign Out">
+                  <LogIn size={16} /> Sign out ({authUser.role})
                 </button>
-              </li>
-
-              <li>
+              ) : (
                 <button
-                  className={`enterprise-nav-item-btn ${activeNavSection === 'project' ? 'active' : ''}`}
-                  onClick={() => scrollToSection('features', 'project')}
-                >
-                  <Building size={16} /> Project
-                </button>
-              </li>
-
-              <li>
-                <button
-                  className={`enterprise-nav-item-btn ${activeNavSection === 'map' ? 'active' : ''}`}
+                  className="sehat-signin-btn"
                   onClick={() => {
-                    setActiveNavSection('map');
-                    onNavigateToMap();
+                    if (onOpenLogin) onOpenLogin();
+                    else window.location.href = '#login';
                   }}
                 >
-                  <MapPin size={16} /> Layout Map
+                  <LogIn size={16} /> Login
                 </button>
-              </li>
+              )}
 
-              <li>
-                <button
-                  className={`enterprise-nav-item-btn ${activeNavSection === 'pricing' ? 'active' : ''}`}
-                  onClick={() => scrollToSection('how-it-works', 'pricing')}
-                >
-                  <Tag size={16} /> Pricing
-                </button>
-              </li>
-
-              <li>
-                <button
-                  className={`enterprise-nav-item-btn ${activeNavSection === 'gallery' ? 'active' : ''}`}
-                  onClick={() => scrollToSection('government', 'gallery')}
-                >
-                  <Trees size={16} /> Gallery
-                </button>
-              </li>
-
-              <li>
-                <button
-                  className={`enterprise-nav-item-btn ${activeNavSection === 'contact' ? 'active' : ''}`}
-                  onClick={() => scrollToSection('book-visit', 'contact')}
-                >
-                  <PhoneCall size={16} /> Contact
-                </button>
-              </li>
-            </ul>
-          </nav>
-
-          {/* RIGHT: GHOST LOGIN + PRIMARY GRADIENT GET STARTED BUTTON */}
-          <div className="sehat-nav-actions">
-            {authUser ? (
-              <button className="sehat-signin-btn" onClick={logout} title="Sign Out">
-                <LogIn size={16} /> Sign out ({authUser.role})
+              <button className="sehat-get-started-btn" onClick={onNavigateToMap}>
+                Get Started
               </button>
-            ) : (
-              <button
-                className="sehat-signin-btn"
-                onClick={() => {
-                  if (onOpenLogin) onOpenLogin();
-                  else window.location.href = '#login';
-                }}
-              >
-                <LogIn size={16} /> Login
-              </button>
-            )}
-
-            <button className="sehat-get-started-btn" onClick={onNavigateToMap}>
-              Get Started
-            </button>
+            </div>
           </div>
-        </div>
-      </header>
+        </motion.header>
+      </div>
 
       {/* Top Floating Announcement Banner */}
       <div className="announcement-banner">
         <span>🎉 <strong>SPECIAL LAUNCH OFFER:</strong> Get 40 Ft Main Boulevard Plots at ₹1,200/sq.ft • Free Site Visit Available Today!</span>
       </div>
 
-      {/* HERO TWO-COLUMN GRID SECTION */}
-      <section className="hero-section" id="home">
-        {/* HERO LEFT COLUMN */}
-        <div className="hero-left">
-          <div className="trust-pill-badge">
-            <span className="pulse-dot"></span>
-            Govt RERA & Gram Panchayat Approved Township
-          </div>
+      {/* MERCURY-INSPIRED HERO 2-COLUMN SAAS GRID SECTION */}
+      <div className="mercury-hero-wrapper" id="home">
+        {/* Soft Radial Ambient Glow Circles */}
+        <div className="hero-ambient-glow-circle-1"></div>
+        <div className="hero-ambient-glow-circle-2"></div>
 
-          <h1 className="hero-headline">
-            Apne Sapnon Ka Ghar Banayein <br />
-            <span className="hero-gradient-text">Shubharambh Green City Me</span>
-          </h1>
-
-          <p className="hero-subheading">
-            Lucknow-Varanasi Highway connect 60-Bigha master planned gated township with 50 Ft Entrance Gate,
-            40 Ft Main Boulevard Road, Mandir, Commercial Zone, Central Parks, aur 100% Instant Daakhil-Kharij Registry.
-          </p>
-
-          <div className="hero-cta-buttons">
-            <button className="btn-primary-gradient" onClick={onNavigateToMap}>
-              <Compass size={18} /> Explore Interactive 2D Layout Map ({availableCount} Available)
-            </button>
-            <a
-              href="./assets/layout_plan_master.pdf"
-              download="Shubharambh_Green_City_Layout.pdf"
-              className="btn-secondary-outline"
-            >
-              <Download size={18} /> Download Blueprint PDF
-            </a>
-          </div>
-
-          {/* HERO TRUST METRICS */}
-          <div className="hero-trust-metrics">
-            <div className="trust-metric-item">
-              <span className="count">{availableCount}+</span>
-              <span className="label">Plots Available</span>
+        <section className="hero-section">
+          {/* HERO LEFT COLUMN */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            className="hero-left"
+          >
+            <div className="mercury-pill-badge">
+              <Sparkles size={14} color="#38bdf8" />
+              60-BIGHA MASTER PLANNED TOWNSHIP
             </div>
-            <div className="divider-line" />
-            <div className="trust-metric-item">
-              <span className="count">40 Ft</span>
-              <span className="label">Main Boulevard Road</span>
-            </div>
-            <div className="divider-line" />
-            <div className="trust-metric-item">
-              <span className="count">90 Days</span>
-              <span className="label">Fast-Track Registry</span>
-            </div>
-          </div>
-        </div>
 
-        {/* HERO RIGHT COLUMN: INTERACTIVE PREVIEW CARD */}
-        <div className="hero-right">
-          <div className="hero-preview-card">
-            <div className="hero-card-badge">
-              <Star size={12} fill="#f59e0b" color="#f59e0b" /> Grand Entrance Gate Render
+            <h1 className="hero-headline">
+              The New Standard for <br />
+              <span className="hero-gradient-text">Real Estate Investment</span>
+            </h1>
+
+            <p className="hero-subheading">
+              Lucknow-Varanasi Highway connected township with 40 Ft Main Boulevard Road, Gated Security, Underground Drainage, and 100% Instant Sub-Registrar Registry guarantee.
+            </p>
+
+            <div className="hero-cta-buttons">
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="btn-primary-gradient"
+                onClick={onNavigateToMap}
+              >
+                <Compass size={18} /> Explore Interactive 2D Layout Map
+              </motion.button>
+              <motion.a
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                href="./assets/layout_plan_master.pdf"
+                download="Shubharambh_Green_City_Layout.pdf"
+                className="btn-secondary-outline"
+              >
+                <Download size={18} /> Download Blueprint PDF
+              </motion.a>
             </div>
-            <img
-              src="./assets/logo_and_entrance.jpg"
-              alt="Shubharambh Green City Grand Entrance Gate"
-              className="hero-card-img"
-            />
-            <div className="hero-card-footer">
-              <div className="hero-card-title">
-                <h4>स्वागतं आपका हार्दिक अभिनंदन</h4>
-                <p><MapPin size={14} color="#f59e0b" /> Village Hasnapur, Amethi, Lucknow Road</p>
+
+            {/* 4 TOWNSHIP STATS IN 2X2 GLASS CARDS */}
+            <div className="mercury-stats-grid">
+              <div className="mercury-stat-card">
+                <span className="stat-num">{availableCount}+</span>
+                <span className="stat-desc">Plots Available</span>
               </div>
-              <button className="hero-card-btn" onClick={onNavigateToMap}>
-                View 980 Plots →
-              </button>
+
+              <div className="mercury-stat-card">
+                <span className="stat-num">40 Ft</span>
+                <span className="stat-desc">Main Boulevard Road</span>
+              </div>
+
+              <div className="mercury-stat-card">
+                <span className="stat-num">90 Days</span>
+                <span className="stat-desc">Fast-Track Registry</span>
+              </div>
+
+              <div className="mercury-stat-card">
+                <span className="stat-num">100%</span>
+                <span className="stat-desc">Clear Title Guarantee</span>
+              </div>
             </div>
-          </div>
-        </div>
-      </section>
+          </motion.div>
+
+          {/* HERO RIGHT COLUMN: PRESERVED IMAGE IN FLOATING GLASS CARD WITH 4 BADGES */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+            className="hero-right"
+          >
+            {/* 4 FLOATING ANIMATED BADGES */}
+            <motion.div
+              animate={{ y: [0, -8, 0] }}
+              transition={{ repeat: Infinity, duration: 3.5, ease: 'easeInOut' }}
+              className="floating-badge badge-1"
+            >
+              <Check size={14} /> 980 Plots
+            </motion.div>
+
+            <motion.div
+              animate={{ y: [0, 8, 0] }}
+              transition={{ repeat: Infinity, duration: 4.2, ease: 'easeInOut' }}
+              className="floating-badge badge-2"
+            >
+              <Check size={14} /> Live Availability
+            </motion.div>
+
+            <motion.div
+              animate={{ y: [0, -6, 0] }}
+              transition={{ repeat: Infinity, duration: 3.8, ease: 'easeInOut' }}
+              className="floating-badge badge-3"
+            >
+              <Check size={14} /> RERA Approved
+            </motion.div>
+
+            <motion.div
+              animate={{ y: [0, 7, 0] }}
+              transition={{ repeat: Infinity, duration: 4.5, ease: 'easeInOut' }}
+              className="floating-badge badge-4"
+            >
+              <Check size={14} /> 40 Ft Road
+            </motion.div>
+
+            <div className="mercury-image-card-wrapper">
+              <img
+                src="./assets/logo_and_entrance.jpg"
+                alt="Shubharambh Green City Grand Entrance Gate"
+                className="hero-preview-img"
+              />
+              <div className="hero-card-bottom-bar">
+                <div className="hero-card-title-text">
+                  <h4>स्वागतं आपका हार्दिक अभिनंदन</h4>
+                  <p><MapPin size={14} color="#38bdf8" /> Village Hasnapur, Amethi, Lucknow Road</p>
+                </div>
+                <button className="sehat-get-started-btn" onClick={onNavigateToMap} style={{ padding: '8px 16px', fontSize: '0.82rem' }}>
+                  View 980 Plots →
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        </section>
+      </div>
 
       {/* FEATURE CARDS GRID (6 FEATURES) */}
       <section className="features-section" id="features">
