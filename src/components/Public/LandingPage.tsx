@@ -683,38 +683,66 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
 
       {/* CUSTOMER TESTIMONIALS */}
       <section className="testimonials-section" id="stories">
-        <div className="section-header">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="section-header"
+        >
           <span className="section-badge">CUSTOMER STORIES</span>
           <h2>Suno Unki Zubani Jinhone Shubharambh Ko Chuna</h2>
-        </div>
+        </motion.div>
 
         <div className="testimonials-grid">
-          <div className="testimonial-card">
-            <div className="stars">⭐⭐⭐⭐⭐</div>
-            <p>“Amethi-Lucknow road par itna shandar aur well-planned township peheli baar dekha. 40Ft road aur Grand Entrance Gate bohot hi premium lagta hai.”</p>
-            <div className="user-info">
-              <strong>Suresh Chandra Sharma</strong>
-              <span>Government Employee, Amethi</span>
-            </div>
-          </div>
-
-          <div className="testimonial-card">
-            <div className="stars">⭐⭐⭐⭐⭐</div>
-            <p>“Interactive 2D Map se ghar baithe Plot A-102 choose kiya. Site visit cab facility bohot acchi thi aur 15 din me token ke baad saari paperwork ready mili.”</p>
-            <div className="user-info">
-              <strong>Rameshwar Prasad Patel</strong>
-              <span>Business Owner, Lucknow</span>
-            </div>
-          </div>
-
-          <div className="testimonial-card">
-            <div className="stars">⭐⭐⭐⭐⭐</div>
-            <p>“Investment ke lihaz se ye Jagah sabse best hai. Road connectivity aur bank loan help dono bohot fast the.”</p>
-            <div className="user-info">
-              <strong>Sunita Verma</strong>
-              <span>Teacher, Sultanpur</span>
-            </div>
-          </div>
+          {[
+            {
+              stars: '⭐⭐⭐⭐⭐',
+              text: '“Amethi-Lucknow road par itna shandar aur well-planned township peheli baar dekha. 40Ft road aur Grand Entrance Gate bohot hi premium lagta hai.”',
+              name: 'Suresh Chandra Sharma',
+              role: 'Government Employee, Amethi',
+              initials: 'SS',
+              color: '#0ea5e9',
+            },
+            {
+              stars: '⭐⭐⭐⭐⭐',
+              text: '“Interactive 2D Map se ghar baithe Plot A-102 choose kiya. Site visit cab facility bohot acchi thi aur 15 din me token ke baad saari paperwork ready mili.”',
+              name: 'Rameshwar Prasad Patel',
+              role: 'Business Owner, Lucknow',
+              initials: 'RP',
+              color: '#34d399',
+            },
+            {
+              stars: '⭐⭐⭐⭐⭐',
+              text: '“Investment ke lihaz se ye Jagah sabse best hai. Road connectivity aur bank loan help dono bohot fast the.”',
+              name: 'Sunita Verma',
+              role: 'Teacher, Sultanpur',
+              initials: 'SV',
+              color: '#fbbf24',
+            },
+          ].map((item, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.45, delay: idx * 0.1 }}
+              whileHover={{ y: -6, transition: { duration: 0.2 } }}
+              className="testimonial-card"
+            >
+              <div className="stars">{item.stars}</div>
+              <p>{item.text}</p>
+              <div className="user-info">
+                <div className="user-avatar" style={{ background: `${item.color}20`, color: item.color, borderColor: `${item.color}40` }}>
+                  {item.initials}
+                </div>
+                <div className="user-details">
+                  <strong>{item.name}</strong>
+                  <span>{item.role}</span>
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </section>
 

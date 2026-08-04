@@ -1794,53 +1794,96 @@
 
 /* Testimonials */
 .testimonials-section {
-  padding: 80px 40px;
-  max-width: 1300px;
+  padding: 88px 32px;
+  max-width: 1320px;
   margin: 0 auto;
 }
 
 .testimonials-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 28px;
 }
 
 .testimonial-card {
-  background: var(--bg-card);
-  border-radius: 20px;
-  padding: 28px;
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
+  background: rgba(17, 17, 33, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 24px;
+  padding: 32px 28px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.06);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 16px;
+  gap: 20px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.testimonial-card:hover {
+  border-color: rgba(52, 211, 153, 0.35);
+  box-shadow: 0 16px 40px rgba(52, 211, 153, 0.12), 0 24px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .testimonial-card .stars {
-  font-size: 1rem;
+  font-size: 1.05rem;
+  letter-spacing: 2px;
 }
 
 .testimonial-card p {
-  color: var(--text-main);
-  font-size: 0.95rem;
-  line-height: 1.6;
+  color: #cbd5e1;
+  font-size: 0.96rem;
+  line-height: 1.65;
   font-style: italic;
 }
 
 .user-info {
   display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.user-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.user-details {
+  display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
-.user-info strong {
-  font-size: 0.95rem;
-  color: var(--primary-forest);
+.user-details strong {
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: #ededf3;
 }
 
-.user-info span {
+.user-details span {
   font-size: 0.8rem;
-  color: var(--text-muted);
+  color: #94a3b8;
+}
+
+@media (max-width: 992px) {
+  .testimonials-section {
+    padding: 60px 20px;
+  }
+
+  .testimonials-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
 }
 
 /* FAQ Accordion */
