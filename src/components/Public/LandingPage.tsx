@@ -671,6 +671,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
                         }}
                       >
                         {isTop && (
+                          <div className="card-bg-image-wrapper">
+                            <img
+                              src="./assets/logo_and_entrance.jpg"
+                              alt="Shubharambh Township Boulevard"
+                              className="card-bg-img"
+                              decoding="async"
+                            />
+                            <div className="card-bg-overlay" />
+                          </div>
+                        )}
+                        {isTop && (
                           <motion.div
                             key={`accent-${item.id}`}
                             className="card-accent-bar"
