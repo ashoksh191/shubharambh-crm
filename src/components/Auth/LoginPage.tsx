@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { ForgotPasswordModal } from './ForgotPasswordModal';
 import { RegisterModal } from './RegisterModal';
@@ -6,7 +7,7 @@ import { PasskeyLogin } from './PasskeyLogin';
 import { CaptchaWidget } from './CaptchaWidget';
 import { generateDeviceFingerprint } from '../../utils/fingerprint';
 import { dispatchRealSmsOtp } from '../../utils/fast2smsClient';
-import { Mail, Lock, ArrowLeft, LogIn, Sparkles, UserCheck } from 'lucide-react';
+import { Mail, Lock, ArrowLeft, LogIn, Sparkles, UserCheck, Eye, EyeOff, ShieldCheck, Building2, Compass } from 'lucide-react';
 import '../../styles/LoginPage.css';
 
 const FAST2SMS_API_KEY = 'B57vxDy96JW4dtrlmUasIzQoenHj21Fk8XgRwqTNfYOiEZPpCSKETS7m53od4VMDfwZvsyqN90kYuej1';
@@ -124,57 +125,100 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onBackToHome }) => {
   };
 
   return (
-    <div className="sehat-login-page-container">
-      {/* Top Header Logo Bar */}
-      <header className="sehat-login-header">
-        <div className="sehat-brand-logo">
-          <div className="sehat-logo-icon">
-            <img src="./assets/logo_and_entrance.jpg" alt="Shubharambh Logo" />
-          </div>
-          <span className="sehat-brand-name">
-            Shubharambh <span className="highlight-ai">Green City</span>
-          </span>
-        </div>
-      </header>
+    <div className="sgc-login-container">
+      {/* Background ambient glow circles matching Landing Page */}
+      <div className="hero-ambient-glow-circle-1" />
+      <div className="hero-ambient-glow-circle-2" />
 
-      {/* Main Split-Screen Container (SehatMitra Template) */}
-      <div className="sehat-login-body">
-        {/* Left Feature Showcase Banner */}
-        <div className="sehat-left-showcase">
-          <div className="showcase-image-card">
-            <img
-              src="./assets/logo_and_entrance.jpg"
-              alt="Shubharambh Entrance Gate"
-              className="showcase-img"
-            />
+      {/* Main Split-Screen Container */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.96, y: 16 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        className={`sgc-login-split-grid ${shake ? 'shake-animation' : ''}`}
+      >
+        {/* LEFT COLUMN: Luxury Township Showcase */}
+        <div className="sgc-login-left-showcase">
+          <img
+            src="./assets/logo_and_entrance.jpg"
+            alt="Shubharambh Green City Entrance Gate"
+            className="login-bg-showcase-img"
+          />
+          <div className="login-bg-overlay" />
+
+          {/* Top Brand Tag */}
+          <div className="mercury-pill-badge" style={{ alignSelf: 'flex-start' }}>
+            <Sparkles size={13} color="#34d399" />
+            SHUBHARAMBH GREEN CITY TOWNSHIP
           </div>
-          <div className="showcase-text-group">
-            <h2>
-              Apna Ghar, Apni Zameen <br />
-              <span className="showcase-cyan-text">speaks your language</span>
-            </h2>
-            <p>60-Bigha VVIP Gated Township in Village Hasnapur, Amethi. 100% Daakhil-Kharij Registry Guarantee.</p>
+
+          {/* Main Visual Headline & Subtext */}
+          <div className="login-left-content">
+            <h1 className="login-left-headline">
+              Manage Your Real Estate <br />
+              <span className="hero-gradient-text">Portfolio with Precision</span>
+            </h1>
+            <p className="login-left-subtext">
+              60-Bigha VVIP Gated Township in Amethi, U.P. Direct portal access to plot inventory, instant Sub-Registrar registry tracking, and financial CRM analytics.
+            </p>
+
+            {/* Feature Chips */}
+            <div className="login-trust-chips">
+              <div className="trust-chip">
+                <ShieldCheck size={14} color="#34d399" />
+                <span>100% Verified Titles</span>
+              </div>
+              <div className="trust-chip">
+                <Building2 size={14} color="#34d399" />
+                <span>RERA Approved</span>
+              </div>
+              <div className="trust-chip">
+                <Compass size={14} color="#34d399" />
+                <span>980 Plots CRM</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Right Form Login Card */}
-        <div className="sehat-right-form-wrapper">
+        {/* RIGHT COLUMN: Centered Glassmorphism Login Card */}
+        <div className="sgc-login-right-wrapper">
           {onBackToHome && (
-            <button className="sehat-back-home-btn" onClick={onBackToHome}>
-              <ArrowLeft size={16} /> Back to home
-            </button>
+            <motion.button
+              whileHover={{ x: -4 }}
+              className="sgc-login-back-btn"
+              onClick={onBackToHome}
+            >
+              <ArrowLeft size={15} /> Back to main site
+            </motion.button>
           )}
 
-          <div className={`sehat-form-card ${shake ? 'shake-animation' : ''}`}>
-            <h1 className="form-card-title">Welcome back</h1>
-            <p className="form-card-subtitle">Log in to continue your journey with Shubharambh Green City CRM.</p>
+          <div className="login-form-card-inner">
+            {/* Header Brand Ring & Titles */}
+            <div className="login-brand-header">
+              <div className="sgc-logo-ring">
+                <img
+                  src="./assets/logo_and_entrance.jpg"
+                  alt="Shubharambh Green City Logo"
+                  className="sgc-logo-img"
+                />
+                <div className="sgc-logo-glow" />
+              </div>
+              <h2>Welcome Back</h2>
+              <p>Login to access your CRM dashboard.</p>
+            </div>
 
-            {/* Fast Sign In Button (Pill style like Google login) */}
-            <button type="button" className="sehat-google-btn" onClick={handleFastDirectLogin}>
-              <Sparkles size={18} color="#38bdf8" /> Fast Direct Sign In (Instant Access)
-            </button>
+            {/* Fast Direct Access Sign In */}
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="button"
+              className="login-fast-direct-btn"
+              onClick={handleFastDirectLogin}
+            >
+              <Sparkles size={16} color="#38bdf8" /> Fast Direct Sign In (Demo Access)
+            </motion.button>
 
-            <div className="sehat-divider">
+            <div className="login-divider">
               <span>or log in with credentials</span>
             </div>
 
@@ -186,15 +230,16 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onBackToHome }) => {
             )}
 
             {step === 'CREDENTIALS' ? (
-              <form onSubmit={handleCredentialsSubmit} className="sehat-login-form">
-                <div className="sehat-input-group">
-                  <label htmlFor="identifier">Email / Username</label>
-                  <div className="sehat-input-relative">
-                    <Mail size={18} className="sehat-field-icon" />
+              <form onSubmit={handleCredentialsSubmit} className="sgc-login-form">
+                {/* Identifier Input */}
+                <div className="sgc-input-group">
+                  <label htmlFor="identifier">Username or Email</label>
+                  <div className="sgc-input-relative">
+                    <Mail size={17} className="sgc-field-icon" />
                     <input
                       id="identifier"
                       type="text"
-                      className="sehat-input"
+                      className="sgc-input"
                       placeholder="you@example.com or username"
                       value={identifier}
                       onChange={(e) => setIdentifier(e.target.value)}
@@ -203,14 +248,15 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onBackToHome }) => {
                   </div>
                 </div>
 
-                <div className="sehat-input-group">
+                {/* Password Input */}
+                <div className="sgc-input-group">
                   <label htmlFor="password">Password</label>
-                  <div className="sehat-input-relative">
-                    <Lock size={18} className="sehat-field-icon" />
+                  <div className="sgc-input-relative">
+                    <Lock size={17} className="sgc-field-icon" />
                     <input
                       id="password"
                       type={showPassword ? 'text' : 'password'}
-                      className="sehat-input"
+                      className="sgc-input"
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -218,88 +264,82 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onBackToHome }) => {
                     />
                     <button
                       type="button"
-                      className="sehat-password-toggle"
+                      className="sgc-password-toggle"
                       onClick={() => setShowPassword(!showPassword)}
+                      title={showPassword ? "Hide Password" : "Show Password"}
                     >
-                      {showPassword ? '👁️' : '🙈'}
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '6px' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: '#94a3b8', cursor: 'pointer' }}>
-                      <input
-                        type="checkbox"
-                        checked={rememberMe}
-                        onChange={(e) => setRememberMe(e.target.checked)}
-                        style={{ accentColor: '#38bdf8' }}
-                      />
-                      <span>Remember Me</span>
-                    </label>
+                </div>
 
-                    <button
-                      type="button"
-                      className="sehat-forgot-btn"
-                      onClick={() => setShowForgotModal(true)}
-                    >
-                      Forgot password?
-                    </button>
-                  </div>
+                {/* Remember Me & Forgot Password Row */}
+                <div className="login-form-options">
+                  <label className="remember-me-label">
+                    <input
+                      type="checkbox"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                    />
+                    <span>Remember Me</span>
+                  </label>
+
+                  <button
+                    type="button"
+                    className="forgot-pass-btn"
+                    onClick={() => setShowForgotModal(true)}
+                  >
+                    Forgot password?
+                  </button>
                 </div>
 
                 {failedCount >= 3 && (
                   <CaptchaWidget onVerify={(token) => setCaptchaToken(token)} />
                 )}
 
-                <button type="submit" className="sehat-submit-pill-btn" disabled={isLoading}>
-                  <LogIn size={18} /> {isLoading ? 'Verifying...' : 'Login'}
-                </button>
+                {/* Submit Button */}
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="submit"
+                  className="btn-primary-gradient login-submit-btn"
+                  disabled={isLoading}
+                >
+                  <LogIn size={17} /> {isLoading ? 'Verifying...' : 'Login to Dashboard'}
+                </motion.button>
 
-                {/* Passkeys & Custom Account */}
-                <div style={{ marginTop: '1.2rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                {/* Passkeys & Registration */}
+                <div className="login-extra-methods">
                   <PasskeyLogin onSuccess={handlePasskeySuccess} onError={(msg) => setErrorMessage(msg)} />
 
                   <button
                     type="button"
                     onClick={() => setShowRegisterModal(true)}
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      borderRadius: '12px',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      background: 'rgba(255, 255, 255, 0.04)',
-                      color: '#94a3b8',
-                      fontWeight: 600,
-                      fontSize: '0.85rem',
-                      cursor: 'pointer',
-                      marginTop: '8px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '6px',
-                    }}
+                    className="register-account-btn"
                   >
-                    <UserCheck size={16} /> Register New Mobile Account
+                    <UserCheck size={15} /> Register New Mobile Account
                   </button>
                 </div>
               </form>
             ) : (
               /* Step 2: 2FA Form */
-              <form onSubmit={handleOtpVerify} className="sehat-login-form">
+              <form onSubmit={handleOtpVerify} className="sgc-login-form">
                 <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
-                  <h3 style={{ margin: 0, color: '#ffffff', fontSize: '1.1rem' }}>2-Factor Verification</h3>
+                  <h3 style={{ margin: 0, color: '#ffffff', fontSize: '1.1rem', fontWeight: 800 }}>2-Factor Verification</h3>
                   <p style={{ fontSize: '0.82rem', color: '#94a3b8', margin: '0.2rem 0' }}>
                     Type the 6-digit OTP code below.
                   </p>
                 </div>
 
                 {otpNotice && (
-                  <div style={{ background: 'rgba(56, 189, 248, 0.15)', border: '1px solid rgba(56, 189, 248, 0.4)', color: '#38bdf8', padding: '0.85rem', borderRadius: '12px', fontSize: '0.85rem', textAlign: 'center' }}>
-                    <div style={{ fontWeight: 700, fontSize: '1.3rem', letterSpacing: '3px', margin: '0.3rem 0', color: '#ffffff' }}>
+                  <div style={{ background: 'rgba(56, 189, 248, 0.15)', border: '1px solid rgba(56, 189, 248, 0.4)', color: '#38bdf8', padding: '0.85rem', borderRadius: '14px', fontSize: '0.85rem', textAlign: 'center' }}>
+                    <div style={{ fontWeight: 800, fontSize: '1.3rem', letterSpacing: '3px', margin: '0.3rem 0', color: '#ffffff' }}>
                       OTP CODE: {generatedOtp}
                     </div>
                   </div>
                 )}
 
-                <div className="sehat-input-group">
+                <div className="sgc-input-group">
                   <label htmlFor="mfaChannel">2FA Channel</label>
                   <select
                     value={mfaChannel}
@@ -308,7 +348,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onBackToHome }) => {
                       setMfaChannel(ch);
                       sendNewOtp(ch);
                     }}
-                    style={{ padding: '8px', borderRadius: '8px', background: '#0f172a', color: '#fff', border: '1px solid rgba(255,255,255,0.2)' }}
+                    className="sgc-input"
+                    style={{ paddingLeft: '14px' }}
                   >
                     <option value="SMS">📱 Mobile SMS OTP</option>
                     <option value="EMAIL">📧 Email OTP</option>
@@ -316,14 +357,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onBackToHome }) => {
                   </select>
                 </div>
 
-                <div className="sehat-input-group">
+                <div className="sgc-input-group">
                   <label htmlFor="twoFactorCode">6-Digit OTP Code</label>
-                  <div className="sehat-input-relative">
-                    <Lock size={18} className="sehat-field-icon" />
+                  <div className="sgc-input-relative">
+                    <Lock size={17} className="sgc-field-icon" />
                     <input
                       id="twoFactorCode"
                       type="text"
-                      className="sehat-input"
+                      className="sgc-input"
                       placeholder="123456"
                       value={twoFactorCode}
                       onChange={(e) => setTwoFactorCode(e.target.value)}
@@ -333,22 +374,33 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onBackToHome }) => {
                   </div>
                 </div>
 
-                <button type="submit" className="sehat-submit-pill-btn" disabled={isLoading}>
-                  <LogIn size={18} /> {isLoading ? 'Verifying OTP...' : 'Verify & Complete Login'}
-                </button>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  type="submit"
+                  className="btn-primary-gradient login-submit-btn"
+                  disabled={isLoading}
+                >
+                  <LogIn size={17} /> {isLoading ? 'Verifying OTP...' : 'Verify & Complete Login'}
+                </motion.button>
 
                 <button
                   type="button"
                   onClick={() => setStep('CREDENTIALS')}
-                  style={{ background: 'none', border: 'none', color: '#94a3af', fontSize: '0.8rem', cursor: 'pointer', marginTop: '0.4rem', textAlign: 'center' }}
+                  style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '0.8rem', cursor: 'pointer', marginTop: '0.4rem', textAlign: 'center' }}
                 >
                   ← Back to Password
                 </button>
               </form>
             )}
+
+            {/* Footer Branding */}
+            <div className="login-footer-branding">
+              Powered by Shubharambh Green City CRM
+            </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {showForgotModal && (
         <ForgotPasswordModal onClose={() => setShowForgotModal(false)} />
