@@ -632,7 +632,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
                   {visibleIndices.map((featureIdx, stackOffset) => {
                     const item = featureDeck[featureIdx];
                     const isTop = stackOffset === 0;
-                    const scales = [1, 0.92, 0.84];
+                    const scales = [1, 0.90, 0.80];
                     const yOffsets = [0, 18, 36];
                     const zIndices = [30, 20, 10];
                     const rotations = [0, -2, -4];
@@ -650,11 +650,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
                           opacity: opacities[stackOffset],
                           zIndex: zIndices[stackOffset],
                         }}
+                        whileHover={isTop ? { scale: 1.02, y: -4 } : undefined}
                         transition={{
                           type: 'spring',
-                          stiffness: 260,
-                          damping: 24,
-                          mass: 0.8,
+                          stiffness: 280,
+                          damping: 22,
+                          mass: 0.75,
                         }}
                         className={`stacked-feature-card ${isTop ? 'active-card' : 'background-card'}`}
                         onClick={() => {
@@ -664,7 +665,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
                           cursor: isTop ? 'default' : 'pointer',
                         }}
                       >
-                        <div className="card-accent-bar" style={{ background: item.color }} />
+                        {isTop && (
+                          <motion.div
+                            key={`accent-${item.id}`}
+                            className="card-accent-bar"
+                            initial={{ scaleX: 0 }}
+                            animate={{ scaleX: 1 }}
+                            transition={{ duration: 0.45, ease: 'easeOut' }}
+                            style={{ originX: 0, background: item.color }}
+                          />
+                        )}
+                        {!isTop && (
+                          <div className="card-accent-bar" style={{ background: item.color, opacity: 0.5 }} />
+                        )}
                         <div
                           className="feature-icon-box"
                           style={{
