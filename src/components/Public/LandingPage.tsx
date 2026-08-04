@@ -632,11 +632,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
                   {visibleIndices.map((featureIdx, stackOffset) => {
                     const item = featureDeck[featureIdx];
                     const isTop = stackOffset === 0;
-                    const scales = [1, 0.94, 0.88];
-                    const yOffsets = [0, 20, 40];
+                    const scales = [1, 0.92, 0.84];
+                    const yOffsets = [0, 18, 36];
                     const zIndices = [30, 20, 10];
-                    const rotations = [0, 2, -2];
-                    const opacities = [1, 0.75, 0.5];
+                    const rotations = [0, -2, -4];
+                    const opacities = [1, 0.85, 0.65];
 
                     return (
                       <motion.div
@@ -652,10 +652,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
                         }}
                         transition={{
                           type: 'spring',
-                          stiffness: 320,
-                          damping: 28,
+                          stiffness: 260,
+                          damping: 24,
+                          mass: 0.8,
                         }}
-                        className={`stacked-feature-card ${isTop ? 'active-card' : ''}`}
+                        className={`stacked-feature-card ${isTop ? 'active-card' : 'background-card'}`}
                         onClick={() => {
                           if (!isTop) handleNext();
                         }}
@@ -669,12 +670,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
                           style={{
                             background: `${item.color}15`,
                             borderColor: `${item.color}30`,
+                            opacity: isTop ? 1 : 0.4,
                           }}
                         >
                           {item.icon}
                         </div>
-                        <h3>{item.title}</h3>
-                        <p>{item.desc}</p>
+                        <motion.div
+                          className="card-text-content"
+                          animate={{ opacity: isTop ? 1 : 0 }}
+                          transition={{ duration: 0.2 }}
+                          style={{ pointerEvents: isTop ? 'auto' : 'none' }}
+                        >
+                          <h3>{item.title}</h3>
+                          <p>{item.desc}</p>
+                        </motion.div>
                       </motion.div>
                     );
                   })}

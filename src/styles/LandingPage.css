@@ -1405,8 +1405,8 @@
 .card-stack-container {
   position: relative;
   width: 100%;
-  max-width: 540px;
-  height: 300px;
+  max-width: 440px;
+  height: 290px;
 }
 
 .stacked-feature-card {
@@ -1414,46 +1414,64 @@
   top: 0;
   left: 0;
   right: 0;
-  background: rgba(17, 17, 33, 0.85);
   backdrop-filter: blur(24px) saturate(160%);
   -webkit-backdrop-filter: blur(24px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 28px;
-  padding: 36px 32px;
-  box-shadow:
-    0 20px 50px rgba(0, 0, 0, 0.4),
-    0 8px 20px rgba(0, 0, 0, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border-radius: 26px;
+  padding: 32px 28px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   transform-origin: center bottom;
   user-select: none;
   overflow: hidden;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
 }
 
-.stacked-feature-card.active-card:hover {
-  border-color: rgba(52, 211, 153, 0.4);
+.stacked-feature-card.active-card {
+  background: rgba(22, 22, 44, 0.96);
+  border: 1px solid rgba(52, 211, 153, 0.35);
   box-shadow:
-    0 24px 60px rgba(52, 211, 153, 0.15),
-    0 12px 28px rgba(0, 0, 0, 0.45),
+    0 28px 64px rgba(0, 0, 0, 0.65),
+    0 12px 28px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
+.stacked-feature-card.background-card {
+  background: rgba(13, 13, 26, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.stacked-feature-card.active-card:hover {
+  border-color: rgba(52, 211, 153, 0.5);
+  box-shadow:
+    0 32px 72px rgba(52, 211, 153, 0.18),
+    0 16px 36px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
 .feature-icon-box {
-  width: 52px;
-  height: 52px;
+  width: 50px;
+  height: 50px;
   border-radius: 16px;
   border: 1px solid;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: opacity 0.25s ease;
+}
+
+.card-text-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .stacked-feature-card h3 {
-  font-size: 1.4rem;
+  font-size: 1.35rem;
   font-weight: 800;
   color: #ededf3;
   letter-spacing: -0.015em;
@@ -1462,16 +1480,16 @@
 
 .stacked-feature-card p {
   color: #94a3b8;
-  font-size: 0.98rem;
-  line-height: 1.65;
+  font-size: 0.95rem;
+  line-height: 1.6;
   margin: 0;
 }
 
 .card-accent-bar {
   position: absolute;
   top: 0;
-  left: 32px;
-  right: 32px;
+  left: 28px;
+  right: 28px;
   height: 3px;
   border-radius: 0 0 4px 4px;
   opacity: 0.85;
