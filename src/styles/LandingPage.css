@@ -1212,6 +1212,9 @@
 
 /* Announcement Banner */
 .announcement-banner {
+  max-width: 1320px;
+  margin: 14px auto 0 auto;
+  border-radius: 12px;
   background: linear-gradient(90deg, #059669 0%, #10b981 50%, #047857 100%);
   color: #ffffff;
   padding: 10px 16px;
@@ -1220,6 +1223,16 @@
   font-weight: 600;
   letter-spacing: 0.2px;
   box-shadow: 0 2px 10px rgba(16, 185, 129, 0.2);
+  position: relative;
+  z-index: 10;
+}
+
+@media (max-width: 992px) {
+  .announcement-banner {
+    margin: 12px 20px 0 20px;
+    font-size: 0.82rem;
+    padding: 8px 14px;
+  }
 }
 
 
