@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -21,8 +21,10 @@ import {
   Calendar,
   Sparkles,
   Check,
+  Menu,
+  X,
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import '../../styles/LandingPage.css';
 
 interface LandingPageProps {
@@ -35,6 +37,23 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
   const { user: authUser, logout } = useAuth();
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [activeNavSection, setActiveNavSection] = useState<string>('home');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close mobile menu on resize to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 992) setIsMobileMenuOpen(false);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const [siteVisitForm, setSiteVisitForm] = useState({
     name: '',
@@ -91,186 +110,322 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
     },
   ];
 
+  // Nav link definitions for DRY rendering
+  const navLinks = [
+    { key: 'home',    label: 'Home',       icon: <Home size={15} />,     scrollId: 'top' },
+    { key: 'project', label: 'Project',    icon: <Building size={15} />, scrollId: 'features' },
+    { key: 'map',     label: 'Layout Map', icon: <MapPin size={15} />,   scrollId: 'map-action' },
+    { key: 'pricing', label: 'Pricing',    icon: <Tag size={15} />,      scrollId: 'how-it-works' },
+    { key: 'gallery', label: 'Gallery',    icon: <Trees size={15} />,    scrollId: 'government' },
+    { key: 'contact', label: 'Contact',    icon: <PhoneCall size={15} />,scrollId: 'book-visit' },
+  ];
+
+  const handleNavClick = (key: string, scrollId: string) => {
+    setIsMobileMenuOpen(false);
+    if (key === 'map') {
+      setActiveNavSection('map');
+      onNavigateToMap();
+      return;
+    }
+    scrollToSection(scrollId, key);
+  };
+
   return (
     <div className="lovable-landing-container">
-      {/* MERCURY-INSPIRED FLOATING GLASS NAVBAR (72px Height, 1320px Container) */}
-      <div className="mercury-floating-navbar-wrapper">
+
+      {/* ═══════════════════════════════════════════════════════════════
+          PREMIUM ENTERPRISE FLOATING GLASS NAVBAR
+          Mercury-inspired: cinematic dark, 72px height, backdrop blur,
+          subtle glass border, animated active indicator
+      ═══════════════════════════════════════════════════════════════ */}
+      <div className={`sgc-navbar-wrapper${isScrolled ? ' scrolled' : ''}`}>
         <motion.header
-          initial={{ y: -30, opacity: 0 }}
+          initial={{ y: -40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="sehat-navbar"
+          transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+          className="sgc-navbar"
         >
-          <div className="sehat-navbar-inner">
-            {/* LEFT: LOGO + BRAND NAME (WHITE) + SUBTITLE */}
-            <div className="sehat-brand" onClick={() => scrollToSection('top', 'home')}>
-              <div className="sehat-logo-icon">
-                <img src="./assets/logo_and_entrance.jpg" alt="Shubharambh Logo" />
+          <div className="sgc-navbar-inner">
+
+            {/* ── BRAND LOGO + TEXT ── */}
+            <motion.div
+              className="sgc-brand"
+              onClick={() => scrollToSection('top', 'home')}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+            >
+              <div className="sgc-logo-ring">
+                <img
+                  src="./assets/logo_and_entrance.jpg"
+                  alt="Shubharambh Green City Logo"
+                  className="sgc-logo-img"
+                />
+                <div className="sgc-logo-glow" />
               </div>
-              <div className="sehat-brand-text-wrapper">
-                <span className="sehat-brand-title">SHUBHARAMBH</span>
-                <span className="sehat-brand-subtitle">Green City Township</span>
+              <div className="sgc-brand-text">
+                <span className="sgc-brand-name">SHUBHARAMBH</span>
+                <span className="sgc-brand-tag">Green City Township</span>
               </div>
-            </div>
+            </motion.div>
 
-            {/* CENTER: FULL HORIZONTAL ENTERPRISE NAVIGATION */}
-            <nav>
-              <ul className="enterprise-center-nav-list">
-                <li>
-                  <button
-                    className={`enterprise-nav-item-btn ${activeNavSection === 'home' ? 'active' : ''}`}
-                    onClick={() => scrollToSection('top', 'home')}
-                  >
-                    <Home size={16} /> Home
-                  </button>
-                </li>
-
-                <li>
-                  <button
-                    className={`enterprise-nav-item-btn ${activeNavSection === 'project' ? 'active' : ''}`}
-                    onClick={() => scrollToSection('features', 'project')}
-                  >
-                    <Building size={16} /> Project
-                  </button>
-                </li>
-
-                <li>
-                  <button
-                    className={`enterprise-nav-item-btn ${activeNavSection === 'map' ? 'active' : ''}`}
-                    onClick={() => {
-                      setActiveNavSection('map');
-                      onNavigateToMap();
-                    }}
-                  >
-                    <MapPin size={16} /> Layout Map
-                  </button>
-                </li>
-
-                <li>
-                  <button
-                    className={`enterprise-nav-item-btn ${activeNavSection === 'pricing' ? 'active' : ''}`}
-                    onClick={() => scrollToSection('how-it-works', 'pricing')}
-                  >
-                    <Tag size={16} /> Pricing
-                  </button>
-                </li>
-
-                <li>
-                  <button
-                    className={`enterprise-nav-item-btn ${activeNavSection === 'gallery' ? 'active' : ''}`}
-                    onClick={() => scrollToSection('government', 'gallery')}
-                  >
-                    <Trees size={16} /> Gallery
-                  </button>
-                </li>
-
-                <li>
-                  <button
-                    className={`enterprise-nav-item-btn ${activeNavSection === 'contact' ? 'active' : ''}`}
-                    onClick={() => scrollToSection('book-visit', 'contact')}
-                  >
-                    <PhoneCall size={16} /> Contact
-                  </button>
-                </li>
+            {/* ── DESKTOP CENTRE NAV ── */}
+            <nav className="sgc-desktop-nav" aria-label="Main navigation">
+              <ul className="sgc-nav-list">
+                {navLinks.map((link) => {
+                  const isActive = activeNavSection === link.key;
+                  return (
+                    <li key={link.key} className="sgc-nav-item">
+                      <motion.button
+                        className={`sgc-nav-btn${isActive ? ' active' : ''}`}
+                        onClick={() => handleNavClick(link.key, link.scrollId)}
+                        whileHover={{ y: -1 }}
+                        whileTap={{ scale: 0.96 }}
+                        transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+                      >
+                        <span className="sgc-nav-icon">{link.icon}</span>
+                        <span className="sgc-nav-label">{link.label}</span>
+                        {isActive && (
+                          <motion.span
+                            className="sgc-nav-active-dot"
+                            layoutId="sgc-nav-active-dot"
+                            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                          />
+                        )}
+                      </motion.button>
+                    </li>
+                  );
+                })}
               </ul>
             </nav>
 
-            {/* RIGHT: GHOST LOGIN + PRIMARY GRADIENT GET STARTED BUTTON */}
-            <div className="sehat-nav-actions">
+            {/* ── RIGHT ACTIONS ── */}
+            <div className="sgc-nav-actions">
+              {/* Login / Sign-out ghost button */}
               {authUser ? (
-                <button className="sehat-signin-btn" onClick={logout} title="Sign Out">
-                  <LogIn size={16} /> Sign out ({authUser.role})
-                </button>
-              ) : (
-                <button
-                  className="sehat-signin-btn"
-                  onClick={() => {
-                    if (onOpenLogin) onOpenLogin();
-                    else window.location.href = '#login';
-                  }}
+                <motion.button
+                  className="sgc-ghost-btn"
+                  onClick={logout}
+                  title="Sign Out"
+                  whileHover={{ backgroundColor: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.3)' }}
+                  whileTap={{ scale: 0.97 }}
+                  transition={{ duration: 0.15 }}
                 >
-                  <LogIn size={16} /> Login
-                </button>
+                  <LogIn size={15} />
+                  <span>Sign out</span>
+                  <span className="sgc-role-chip">{authUser.role}</span>
+                </motion.button>
+              ) : (
+                <motion.button
+                  className="sgc-ghost-btn"
+                  onClick={() => { if (onOpenLogin) onOpenLogin(); else window.location.href = '#login'; }}
+                  whileHover={{ backgroundColor: 'rgba(255,255,255,0.08)', borderColor: 'rgba(255,255,255,0.3)' }}
+                  whileTap={{ scale: 0.97 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  <LogIn size={15} />
+                  <span>Login</span>
+                </motion.button>
               )}
 
-              <button className="sehat-get-started-btn" onClick={onNavigateToMap}>
-                Get Started
-              </button>
+              {/* Primary CTA */}
+              <motion.button
+                className="sgc-cta-btn"
+                onClick={onNavigateToMap}
+                whileHover={{ scale: 1.04, boxShadow: '0 8px 28px rgba(14,165,233,0.55)' }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+              >
+                <Compass size={15} />
+                <span>View Plots</span>
+              </motion.button>
+
+              {/* Mobile hamburger */}
+              <motion.button
+                className="sgc-hamburger"
+                onClick={() => setIsMobileMenuOpen((v) => !v)}
+                aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+                aria-expanded={isMobileMenuOpen}
+                whileTap={{ scale: 0.92 }}
+              >
+                <AnimatePresence mode="wait" initial={false}>
+                  {isMobileMenuOpen ? (
+                    <motion.span
+                      key="close"
+                      initial={{ rotate: -90, opacity: 0 }}
+                      animate={{ rotate: 0, opacity: 1 }}
+                      exit={{ rotate: 90, opacity: 0 }}
+                      transition={{ duration: 0.18 }}
+                    >
+                      <X size={22} />
+                    </motion.span>
+                  ) : (
+                    <motion.span
+                      key="open"
+                      initial={{ rotate: 90, opacity: 0 }}
+                      animate={{ rotate: 0, opacity: 1 }}
+                      exit={{ rotate: -90, opacity: 0 }}
+                      transition={{ duration: 0.18 }}
+                    >
+                      <Menu size={22} />
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </motion.button>
             </div>
           </div>
         </motion.header>
+
+        {/* ── MOBILE DRAWER MENU ── */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              className="sgc-mobile-drawer"
+              initial={{ opacity: 0, y: -12, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -12, scale: 0.97 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <nav aria-label="Mobile navigation">
+                <ul className="sgc-mobile-nav-list">
+                  {navLinks.map((link, i) => (
+                    <motion.li
+                      key={link.key}
+                      initial={{ opacity: 0, x: -12 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.04, duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                    >
+                      <button
+                        className={`sgc-mobile-nav-btn${activeNavSection === link.key ? ' active' : ''}`}
+                        onClick={() => handleNavClick(link.key, link.scrollId)}
+                      >
+                        <span className="sgc-mobile-nav-icon">{link.icon}</span>
+                        <span>{link.label}</span>
+                        {activeNavSection === link.key && (
+                          <span className="sgc-mobile-active-bar" />
+                        )}
+                      </button>
+                    </motion.li>
+                  ))}
+                </ul>
+              </nav>
+
+              {/* Mobile drawer footer actions */}
+              <div className="sgc-mobile-drawer-actions">
+                {authUser ? (
+                  <button className="sgc-mobile-ghost-btn" onClick={() => { setIsMobileMenuOpen(false); logout(); }}>
+                    <LogIn size={16} /> Sign out ({authUser.role})
+                  </button>
+                ) : (
+                  <button className="sgc-mobile-ghost-btn" onClick={() => { setIsMobileMenuOpen(false); if (onOpenLogin) onOpenLogin(); }}>
+                    <LogIn size={16} /> Login to Dashboard
+                  </button>
+                )}
+                <button className="sgc-mobile-cta-btn" onClick={() => { setIsMobileMenuOpen(false); onNavigateToMap(); }}>
+                  <Compass size={16} /> Explore 980 Plots
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
-      {/* Top Floating Announcement Banner */}
+      {/* ── MOBILE DRAWER BACKDROP ── */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            className="sgc-mobile-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Announcement Banner */}
       <div className="announcement-banner">
         <span>🎉 <strong>SPECIAL LAUNCH OFFER:</strong> Get 40 Ft Main Boulevard Plots at ₹1,200/sq.ft • Free Site Visit Available Today!</span>
       </div>
 
-      {/* MERCURY-INSPIRED HERO 2-COLUMN SAAS GRID SECTION */}
+      {/* ═══════════════════════════════════════════════════════
+          HERO — Premium 2-Column Layout
+          Project-specific branding · Shubharambh Green City
+          ═══════════════════════════════════════════════════════ */}
       <div className="mercury-hero-wrapper" id="home">
-        {/* Soft Radial Ambient Glow Circles */}
-        <div className="hero-ambient-glow-circle-1"></div>
-        <div className="hero-ambient-glow-circle-2"></div>
+        {/* Ambient radial background glows */}
+        <div className="hero-ambient-glow-circle-1" />
+        <div className="hero-ambient-glow-circle-2" />
+        <div className="hero-ambient-glow-circle-3" />
 
         <section className="hero-section">
-          {/* HERO LEFT COLUMN */}
+
+          {/* ── LEFT COLUMN: Typography + CTAs + Stats ── */}
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
             className="hero-left"
           >
+            {/* Pill badge */}
             <div className="mercury-pill-badge">
-              <Sparkles size={14} color="#38bdf8" />
-              60-BIGHA MASTER PLANNED TOWNSHIP
+              <Sparkles size={13} color="#34d399" />
+              60-BIGHA MASTER PLANNED TOWNSHIP · AMETHI, U.P.
             </div>
 
+            {/* Three-line headline lockup */}
             <h1 className="hero-headline">
-              The New Standard for <br />
-              <span className="hero-gradient-text">Real Estate Investment</span>
+              <span className="hero-brand-line">Shubharambh Green City</span>
+              <span className="hero-tagline-primary">Apna Ghar,{' '}
+                <span className="hero-gradient-text">Apni Zameen</span>
+              </span>
+              <span className="hero-tagline-secondary">Better Future Starts Here</span>
             </h1>
 
+            {/* Subheading */}
             <p className="hero-subheading">
-              Lucknow-Varanasi Highway connected township with 40 Ft Main Boulevard Road, Gated Security, Underground Drainage, and 100% Instant Sub-Registrar Registry guarantee.
+              Lucknow–Varanasi Highway connected township with 40 Ft Main Boulevard Road, Gated Security, Underground Drainage, and 100% Instant Sub-Registrar Registry guarantee.
             </p>
 
+            {/* CTA buttons */}
             <div className="hero-cta-buttons">
               <motion.button
-                whileHover={{ scale: 1.03 }}
+                whileHover={{ scale: 1.03, boxShadow: '0 14px 32px rgba(14,165,233,0.55)' }}
                 whileTap={{ scale: 0.97 }}
                 className="btn-primary-gradient"
                 onClick={onNavigateToMap}
               >
-                <Compass size={18} /> Explore Interactive 2D Layout Map
+                <Compass size={17} />
+                <span>Explore Layout Map</span>
               </motion.button>
+
               <motion.a
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ scale: 1.02, borderColor: 'rgba(52,211,153,0.5)', color: '#34d399' }}
                 whileTap={{ scale: 0.98 }}
                 href="./assets/layout_plan_master.pdf"
                 download="Shubharambh_Green_City_Layout.pdf"
                 className="btn-secondary-outline"
               >
-                <Download size={18} /> Download Blueprint PDF
+                <Download size={17} />
+                <span>Download Brochure</span>
               </motion.a>
             </div>
 
-            {/* 4 TOWNSHIP STATS IN 2X2 GLASS CARDS */}
+            {/* 4 township stats in 2×2 glass grid */}
             <div className="mercury-stats-grid">
               <div className="mercury-stat-card">
                 <span className="stat-num">{availableCount}+</span>
                 <span className="stat-desc">Plots Available</span>
               </div>
-
               <div className="mercury-stat-card">
                 <span className="stat-num">40 Ft</span>
                 <span className="stat-desc">Main Boulevard Road</span>
               </div>
-
               <div className="mercury-stat-card">
                 <span className="stat-num">90 Days</span>
                 <span className="stat-desc">Fast-Track Registry</span>
               </div>
-
               <div className="mercury-stat-card">
                 <span className="stat-num">100%</span>
                 <span className="stat-desc">Clear Title Guarantee</span>
@@ -278,20 +433,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
             </div>
           </motion.div>
 
-          {/* HERO RIGHT COLUMN: PRESERVED IMAGE IN FLOATING GLASS CARD WITH 4 BADGES */}
+          {/* ── RIGHT COLUMN: Floating Glass Image Card + Badges ── */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+            initial={{ opacity: 0, scale: 0.94, y: 16 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.72, ease: [0.16, 1, 0.3, 1], delay: 0.12 }}
             className="hero-right"
           >
-            {/* 4 FLOATING ANIMATED BADGES */}
+            {/* Floating animated trust badges */}
             <motion.div
               animate={{ y: [0, -8, 0] }}
               transition={{ repeat: Infinity, duration: 3.5, ease: 'easeInOut' }}
               className="floating-badge badge-1"
             >
-              <Check size={14} /> 980 Plots
+              <Check size={13} /> 980 Plots
             </motion.div>
 
             <motion.div
@@ -299,7 +454,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
               transition={{ repeat: Infinity, duration: 4.2, ease: 'easeInOut' }}
               className="floating-badge badge-2"
             >
-              <Check size={14} /> Live Availability
+              <Check size={13} /> Live Availability
             </motion.div>
 
             <motion.div
@@ -307,7 +462,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
               transition={{ repeat: Infinity, duration: 3.8, ease: 'easeInOut' }}
               className="floating-badge badge-3"
             >
-              <Check size={14} /> RERA Approved
+              <Check size={13} /> RERA Approved
             </motion.div>
 
             <motion.div
@@ -315,9 +470,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
               transition={{ repeat: Infinity, duration: 4.5, ease: 'easeInOut' }}
               className="floating-badge badge-4"
             >
-              <Check size={14} /> 40 Ft Road
+              <Check size={13} /> 40 Ft Road
             </motion.div>
 
+            {/* Main image card */}
             <div className="mercury-image-card-wrapper">
               <img
                 src="./assets/logo_and_entrance.jpg"
@@ -326,109 +482,162 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
               />
               <div className="hero-card-bottom-bar">
                 <div className="hero-card-title-text">
-                  <h4>स्वागतं आपका हार्दिक अभिनंदन</h4>
-                  <p><MapPin size={14} color="#38bdf8" /> Village Hasnapur, Amethi, Lucknow Road</p>
+                  <h4>स्वागतं — आपका हार्दिक अभिनंदन</h4>
+                  <p>
+                    <MapPin size={13} color="#34d399" />
+                    Village Hasnapur, Amethi, Lucknow Road
+                  </p>
                 </div>
-                <button className="sehat-get-started-btn" onClick={onNavigateToMap} style={{ padding: '8px 16px', fontSize: '0.82rem' }}>
+                <button
+                  className="sehat-get-started-btn"
+                  onClick={onNavigateToMap}
+                  style={{ padding: '8px 18px', fontSize: '0.82rem' }}
+                >
                   View 980 Plots →
                 </button>
               </div>
             </div>
           </motion.div>
+
         </section>
       </div>
 
       {/* FEATURE CARDS GRID (6 FEATURES) */}
       <section className="features-section" id="features">
-        <div className="section-header">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="section-header"
+        >
           <span className="section-badge">TOWNSHIP HIGHLIGHTS</span>
           <h2>Kyun Khas Hai Shubharambh Green City?</h2>
           <p>Adhunik suvidhaon aur shandar location ke sath premium residential plots</p>
-        </div>
+        </motion.div>
 
         <div className="features-grid">
-          <div className="feature-card">
-            <div className="feature-icon-box">
-              <Car size={24} color="#10b981" />
-            </div>
-            <h3>40 Ft & 30 Ft Wide Roads</h3>
-            <p>Chaudi aur paka RCC roads wide boulevards ke sath har plot tak aasan pahunch sunishchit karti hain.</p>
-          </div>
-
-          <div className="feature-card">
-            <div className="feature-icon-box">
-              <Shield size={24} color="#f59e0b" />
-            </div>
-            <h3>24x7 Gated Security Entry</h3>
-            <p>50 Ft Grand Gate entry, CCTV surveillance cameras, aur security guards safety ke liye 24/7 tayar.</p>
-          </div>
-
-          <div className="feature-card">
-            <div className="feature-icon-box">
-              <Trees size={24} color="#3b82f6" />
-            </div>
-            <h3>Mandir & Central Parks</h3>
-            <p>Shant vatavaran ke liye dedicated Shri Ganesha Mandir zone aur bachon ke liye green parks.</p>
-          </div>
-
-          <div className="feature-card">
-            <div className="feature-icon-box">
-              <Building size={24} color="#ec4899" />
-            </div>
-            <h3>Commercial Shops Zone</h3>
-            <p>Rozmarra ki zarooraton ke liye dedicated 20,440 sq.ft Commercial Market aur Mixed-Use Zone.</p>
-          </div>
-
-          <div className="feature-card">
-            <div className="feature-icon-box">
-              <FileCheck size={24} color="#8b5cf6" />
-            </div>
-            <h3>Instant Registry & Mutation</h3>
-            <p>100% Clear Title Land. Booking ke baad 90 dino ke andar complete Legal Registry aur Daakhil-Kharij.</p>
-          </div>
-
-          <div className="feature-card">
-            <div className="feature-icon-box">
-              <Award size={24} color="#eab308" />
-            </div>
-            <h3>80% Bank Loan Facility</h3>
-            <p>Sabhi pramukh sarkari aur private banks se easy EMI installment aur instant plot loan approval.</p>
-          </div>
+          {[
+            {
+              icon: <Car size={26} color="#38bdf8" />,
+              title: '40 Ft & 30 Ft Wide Roads',
+              desc: 'Chaudi aur paka RCC roads wide boulevards ke sath har plot tak aasan pahunch sunishchit karti hain.',
+              color: '#38bdf8',
+            },
+            {
+              icon: <Shield size={26} color="#34d399" />,
+              title: '24x7 Gated Security Entry',
+              desc: '50 Ft Grand Gate entry, CCTV surveillance cameras, aur security guards safety ke liye 24/7 tayar.',
+              color: '#34d399',
+            },
+            {
+              icon: <Trees size={26} color="#fbbf24" />,
+              title: 'Mandir & Central Parks',
+              desc: 'Shant vatavaran ke liye dedicated Shri Ganesha Mandir zone aur bachon ke liye green parks.',
+              color: '#fbbf24',
+            },
+            {
+              icon: <Building size={26} color="#f472b6" />,
+              title: 'Commercial Shops Zone',
+              desc: 'Rozmarra ki zarooraton ke liye dedicated 20,440 sq.ft Commercial Market aur Mixed-Use Zone.',
+              color: '#f472b6',
+            },
+            {
+              icon: <FileCheck size={26} color="#a78bfa" />,
+              title: 'Instant Registry & Mutation',
+              desc: '100% Clear Title Land. Booking ke baad 90 dino ke andar complete Legal Registry aur Daakhil-Kharij.',
+              color: '#a78bfa',
+            },
+            {
+              icon: <Award size={26} color="#f87171" />,
+              title: '80% Bank Loan Facility',
+              desc: 'Sabhi pramukh sarkari aur private banks se easy EMI installment aur instant plot loan approval.',
+              color: '#f87171',
+            },
+          ].map((item, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.45, delay: idx * 0.08 }}
+              whileHover={{ y: -6, transition: { duration: 0.2 } }}
+              className="feature-card"
+            >
+              <div className="feature-icon-box" style={{ background: `${item.color}15`, borderColor: `${item.color}30` }}>
+                {item.icon}
+              </div>
+              <h3>{item.title}</h3>
+              <p>{item.desc}</p>
+            </motion.div>
+          ))}
         </div>
       </section>
 
       {/* 3-STEP BUYING PROCESS */}
       <section className="steps-section" id="how-it-works">
-        <div className="section-header">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="section-header"
+        >
           <span className="section-badge">EASY BUYING PROCESS</span>
           <h2>Sirf 3 Aasan Kadam Me Apne Plot Ke Malik Banein</h2>
           <p>Koi mushkil documentation nahi, bilkul clear aur transparent process</p>
-        </div>
+        </motion.div>
 
         <div className="steps-grid">
-          <div className="step-card">
-            <div className="step-number">1</div>
-            <h3>Interactive Map Par Plot Chunein</h3>
-            <p>Hamare Interactive 2D Map se Block A, B ya C me apna pasandida plot, dimension aur facing filter karein.</p>
-          </div>
-
-          <div className="step-card">
-            <div className="step-number">2</div>
-            <h3>Free Site Visit Ya Token Amount Book Karein</h3>
-            <p>Free Cab se site visit karein aur sirf 5% Token Amount dekar apna plot instant hold/reserve karein.</p>
-          </div>
-
-          <div className="step-card">
-            <div className="step-number">3</div>
-            <h3>Registry & Possession Hath Me Lein</h3>
-            <p>90 dino me baki payment complete karein aur official Sub-Registrar office me apne naam registry praapt karein.</p>
-          </div>
+          {[
+            {
+              step: '1',
+              title: 'Interactive Map Par Plot Chunein',
+              desc: 'Hamare Interactive 2D Map se Block A, B ya C me apna pasandida plot, dimension aur facing filter karein.',
+              icon: <Compass size={22} color="#0ea5e9" />,
+            },
+            {
+              step: '2',
+              title: 'Free Site Visit Ya Token Amount Book Karein',
+              desc: 'Free Cab se site visit karein aur sirf 5% Token Amount dekar apna plot instant hold/reserve karein.',
+              icon: <Calendar size={22} color="#34d399" />,
+            },
+            {
+              step: '3',
+              title: 'Registry & Possession Hath Me Lein',
+              desc: '90 dino me baki payment complete karein aur official Sub-Registrar office me apne naam registry praapt karein.',
+              icon: <FileCheck size={22} color="#fbbf24" />,
+            },
+          ].map((item, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.45, delay: idx * 0.12 }}
+              whileHover={{ y: -6, transition: { duration: 0.2 } }}
+              className="step-card"
+            >
+              <div className="step-card-header">
+                <div className="step-number">{item.step}</div>
+                <div className="step-icon-glow">{item.icon}</div>
+              </div>
+              <h3>{item.title}</h3>
+              <p>{item.desc}</p>
+            </motion.div>
+          ))}
         </div>
       </section>
 
       {/* GOVERNMENT & LEGAL ASSURANCE CARD */}
       <section className="trust-card-section" id="government">
-        <div className="trust-card-inner">
+        <motion.div
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="trust-card-inner"
+        >
           <div className="trust-card-left">
             <span className="trust-badge">100% LEGAL GUARANTEE</span>
             <h2>Zameen Ki Clean Title Aur Legal Transparency</h2>
@@ -438,33 +647,38 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
             </p>
             <div className="trust-list">
               <div className="trust-list-item">
-                <CheckCircle size={18} color="#10b981" />
+                <CheckCircle size={18} color="#34d399" />
                 <span>Clear Title Ownership Deed & Daakhil Kharij Guarantee</span>
               </div>
               <div className="trust-list-item">
-                <CheckCircle size={18} color="#10b981" />
+                <CheckCircle size={18} color="#34d399" />
                 <span>Zero Hidden Fees • Direct Company Allotment</span>
               </div>
               <div className="trust-list-item">
-                <CheckCircle size={18} color="#10b981" />
+                <CheckCircle size={18} color="#34d399" />
                 <span>50+ Bank Loan Partners Pre-Approved</span>
               </div>
             </div>
           </div>
           <div className="trust-card-right">
-            <div className="blueprint-thumbnail-box" onClick={onNavigateToMap}>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="blueprint-thumbnail-box"
+              onClick={onNavigateToMap}
+            >
               <img
                 src="./assets/logo_and_entrance.jpg"
                 alt="Layout Blueprint Map"
                 className="blueprint-img"
               />
               <div className="blueprint-overlay">
-                <Compass size={24} />
+                <Compass size={24} color="#38bdf8" />
                 <span>View Full 980-Plot Layout Map</span>
               </div>
-            </div>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* CUSTOMER TESTIMONIALS */}
