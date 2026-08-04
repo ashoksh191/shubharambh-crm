@@ -741,6 +741,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
                     );
                   })}
                 </div>
+
+                {/* 3 Premium Glass Statistic Pills aligned below card stack */}
+                <div className="card-deck-stat-pills">
+                  <div className="deck-stat-pill">
+                    <span className="deck-stat-icon-dot" />
+                    <span>811+ Plots</span>
+                  </div>
+                  <div className="deck-stat-pill">
+                    <span className="deck-stat-icon-dot" />
+                    <span>RERA Approved</span>
+                  </div>
+                  <div className="deck-stat-pill">
+                    <span className="deck-stat-icon-dot" />
+                    <span>24×7 Security</span>
+                  </div>
+                </div>
               </div>
             </div>
           );

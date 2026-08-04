@@ -1450,8 +1450,9 @@
 /* Right Column (60%): Stacked Card Deck */
 .features-deck-right {
   position: relative;
-  min-height: 290px;
+  min-height: 340px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
@@ -1459,8 +1460,47 @@
 .card-stack-container {
   position: relative;
   width: 100%;
-  max-width: 388px;
-  height: 290px;
+  max-width: 450px;
+  height: 310px;
+}
+
+/* 3 Premium Glass Statistic Pills aligned below active card */
+.card-deck-stat-pills {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 450px;
+  margin-top: 18px;
+  gap: 10px;
+}
+
+.deck-stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 16px;
+  border-radius: 9999px;
+  background: rgba(17, 17, 33, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow:
+    0 4px 14px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.deck-stat-icon-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: #34d399;
+  box-shadow: 0 0 8px rgba(52, 211, 153, 0.8);
 }
 
 .stacked-feature-card {
@@ -1604,7 +1644,14 @@
   }
 
   .card-stack-container {
-    height: 280px;
+    height: 290px;
+    max-width: 100%;
+  }
+
+  .card-deck-stat-pills {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
   }
 
   .stacked-feature-card {
