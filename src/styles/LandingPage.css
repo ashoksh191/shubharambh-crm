@@ -1888,54 +1888,80 @@
 
 /* FAQ Accordion */
 .faq-section {
-  padding: 80px 40px;
-  max-width: 900px;
+  padding: 88px 32px;
+  max-width: 960px;
   margin: 0 auto;
 }
 
 .faq-accordion {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
 .faq-item {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 14px;
-  padding: 20px 24px;
+  background: rgba(17, 17, 33, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 20px;
+  padding: 24px 28px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
 }
 
 .faq-item:hover {
-  border-color: #10b981;
+  border-color: rgba(14, 165, 233, 0.35);
+  box-shadow: 0 12px 32px rgba(14, 165, 233, 0.1), 0 16px 40px rgba(0, 0, 0, 0.3);
+}
+
+.faq-item.open {
+  background: rgba(23, 23, 42, 0.9);
+  border-color: rgba(52, 211, 153, 0.4);
+  box-shadow: 0 14px 36px rgba(52, 211, 153, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .faq-question {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
   font-weight: 700;
-  font-size: 1.05rem;
-  color: var(--primary-forest);
+  font-size: 1.08rem;
+  color: #ededf3;
+  line-height: 1.4;
+  user-select: none;
+}
+
+.faq-arrow-wrapper {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.faq-item.open .faq-arrow-wrapper {
+  background: rgba(52, 211, 153, 0.15);
+  border-color: rgba(52, 211, 153, 0.35);
+  color: #34d399;
 }
 
 .faq-arrow {
-  transition: transform 0.2s ease;
-}
-
-.faq-item.open .faq-arrow {
-  transform: rotate(180deg);
+  color: #38bdf8;
 }
 
 .faq-answer {
-  margin-top: 12px;
-  color: var(--text-muted);
-  font-size: 0.925rem;
-  line-height: 1.6;
-  border-top: 1px dashed var(--border-color);
-  padding-top: 12px;
+  color: #94a3b8;
+  font-size: 0.96rem;
+  line-height: 1.65;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  padding-top: 14px;
 }
 
 /* Lead Capture Form */

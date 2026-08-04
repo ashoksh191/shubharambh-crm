@@ -748,25 +748,56 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
 
       {/* FAQ ACCORDION */}
       <section className="faq-section" id="faq">
-        <div className="section-header">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="section-header"
+        >
           <span className="section-badge">FAQ</span>
           <h2>Aapke Sawal, Hamare Jawab</h2>
-        </div>
+        </motion.div>
 
         <div className="faq-accordion">
-          {faqs.map((item, idx) => (
-            <div
-              key={idx}
-              className={`faq-item ${openFaqIndex === idx ? 'open' : ''}`}
-              onClick={() => setOpenFaqIndex(openFaqIndex === idx ? null : idx)}
-            >
-              <div className="faq-question">
-                <span>{item.q}</span>
-                <ChevronDown size={18} className="faq-arrow" />
-              </div>
-              {openFaqIndex === idx && <div className="faq-answer">{item.a}</div>}
-            </div>
-          ))}
+          {faqs.map((item, idx) => {
+            const isOpen = openFaqIndex === idx;
+            return (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: idx * 0.06 }}
+                className={`faq-item ${isOpen ? 'open' : ''}`}
+                onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
+              >
+                <div className="faq-question">
+                  <span>{item.q}</span>
+                  <motion.div
+                    animate={{ rotate: isOpen ? 180 : 0 }}
+                    transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                    className="faq-arrow-wrapper"
+                  >
+                    <ChevronDown size={18} className="faq-arrow" />
+                  </motion.div>
+                </div>
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0, marginTop: 0 }}
+                      animate={{ height: 'auto', opacity: 1, marginTop: 14 }}
+                      exit={{ height: 0, opacity: 0, marginTop: 0 }}
+                      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                      style={{ overflow: 'hidden' }}
+                    >
+                      <div className="faq-answer">{item.a}</div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
         </div>
       </section>
 
