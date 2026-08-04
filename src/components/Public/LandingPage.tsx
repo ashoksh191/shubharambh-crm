@@ -615,12 +615,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
 
                 <div className="features-dots">
                   {featureDeck.map((_, i) => (
-                    <button
+                    <motion.button
                       key={i}
                       className={`feature-dot ${i === activeFeatureIdx ? 'active' : ''}`}
                       onClick={() => setActiveFeatureIdx(i)}
                       aria-label={`Go to feature ${i + 1}`}
                       type="button"
+                      animate={{
+                        width: i === activeFeatureIdx ? 24 : 8,
+                        backgroundColor: i === activeFeatureIdx ? '#34d399' : 'rgba(255, 255, 255, 0.18)',
+                      }}
+                      transition={{ duration: 0.3, ease: 'easeInOut' }}
                     />
                   ))}
                 </div>
@@ -632,7 +637,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
                   {visibleIndices.map((featureIdx, stackOffset) => {
                     const item = featureDeck[featureIdx];
                     const isTop = stackOffset === 0;
-                    const scales = [1, 0.90, 0.80];
+                    const scales = [1, 0.88, 0.76];
                     const yOffsets = [0, 18, 36];
                     const zIndices = [30, 20, 10];
                     const rotations = [0, -2, -4];
@@ -678,15 +683,33 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
                         {!isTop && (
                           <div className="card-accent-bar" style={{ background: item.color, opacity: 0.5 }} />
                         )}
-                        <div
-                          className="feature-icon-box"
-                          style={{
-                            background: `${item.color}15`,
-                            borderColor: `${item.color}30`,
-                            opacity: isTop ? 1 : 0.4,
-                          }}
-                        >
-                          {item.icon}
+                        <div className="card-top-row">
+                          <div
+                            className="feature-icon-box"
+                            style={{
+                              background: `${item.color}15`,
+                              borderColor: `${item.color}30`,
+                              opacity: isTop ? 1 : 0.4,
+                            }}
+                          >
+                            {item.icon}
+                          </div>
+                          {isTop && (
+                            <motion.span
+                              key={`badge-${item.id}`}
+                              initial={{ opacity: 0, scale: 0.85, x: 6 }}
+                              animate={{ opacity: 1, scale: 1, x: 0 }}
+                              transition={{ duration: 0.35, ease: 'easeOut' }}
+                              className="card-feature-badge"
+                              style={{
+                                color: item.color,
+                                borderColor: `${item.color}40`,
+                                background: `${item.color}14`,
+                              }}
+                            >
+                              FEATURE #{String(featureIdx + 1).padStart(2, '0')}
+                            </motion.span>
+                          )}
                         </div>
                         <motion.div
                           className="card-text-content"

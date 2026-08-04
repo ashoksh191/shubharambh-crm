@@ -1406,7 +1406,7 @@
 .card-stack-container {
   position: relative;
   width: 100%;
-  max-width: 440px;
+  max-width: 388px;
   height: 290px;
 }
 
@@ -1417,8 +1417,8 @@
   right: 0;
   backdrop-filter: blur(24px) saturate(160%);
   -webkit-backdrop-filter: blur(24px) saturate(160%);
-  border-radius: 26px;
-  padding: 32px 28px;
+  border-radius: 28px;
+  padding: 30px 26px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -1432,30 +1432,47 @@
   background: rgba(22, 22, 44, 0.96);
   border: 1px solid rgba(52, 211, 153, 0.35);
   box-shadow:
-    0 28px 64px rgba(0, 0, 0, 0.65),
-    0 12px 28px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    0 32px 72px rgba(0, 0, 0, 0.7),
+    0 14px 32px rgba(52, 211, 153, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .stacked-feature-card.background-card {
-  background: rgba(13, 13, 26, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(12, 12, 24, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow:
-    0 16px 40px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 10px 25px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .stacked-feature-card.active-card:hover {
   border-color: rgba(52, 211, 153, 0.65);
   box-shadow:
-    0 36px 80px rgba(52, 211, 153, 0.2),
-    0 16px 40px rgba(0, 0, 0, 0.6),
+    0 36px 80px rgba(52, 211, 153, 0.22),
+    0 16px 40px rgba(0, 0, 0, 0.65),
     inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
+.card-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.card-feature-badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  border: 1px solid;
+  text-transform: uppercase;
+}
+
 .feature-icon-box {
-  width: 50px;
-  height: 50px;
+  width: 48px;
+  height: 48px;
   border-radius: 16px;
   border: 1px solid;
   display: flex;
