@@ -1319,7 +1319,7 @@
 
 /* Features Section — Apple Wallet Stacked Deck */
 .features-section {
-  padding: 64px 32px 40px 32px;
+  padding: 44px 32px 16px 32px;
   max-width: 1320px;
   margin: 0 auto;
   position: relative;
@@ -1450,9 +1450,7 @@
 /* Right Column (60%): Stacked Card Deck */
 .features-deck-right {
   position: relative;
-  min-height: 340px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
@@ -1460,47 +1458,32 @@
 .card-stack-container {
   position: relative;
   width: 100%;
-  max-width: 450px;
+  max-width: 440px;
   height: 310px;
 }
 
-/* 3 Premium Glass Statistic Pills aligned below active card */
-.card-deck-stat-pills {
+/* 3 Premium Glass Statistic Pills merged inside bottom of active card */
+.card-inner-stat-pills {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
-  max-width: 450px;
-  margin-top: 18px;
-  gap: 10px;
+  gap: 6px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: auto;
+  position: relative;
+  z-index: 2;
 }
 
-.deck-stat-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 7px 16px;
-  border-radius: 9999px;
-  background: rgba(17, 17, 33, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  box-shadow:
-    0 4px 14px rgba(0, 0, 0, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  font-size: 0.8rem;
+.inner-stat-pill {
+  font-size: 0.74rem;
   font-weight: 700;
-  color: #e2e8f0;
-  letter-spacing: 0.01em;
-  white-space: nowrap;
-}
-
-.deck-stat-icon-dot {
-  width: 6px;
-  height: 6px;
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.08);
+  border: 1px solid rgba(52, 211, 153, 0.22);
+  padding: 3px 9px;
   border-radius: 9999px;
-  background: #34d399;
-  box-shadow: 0 0 8px rgba(52, 211, 153, 0.8);
+  white-space: nowrap;
 }
 
 .stacked-feature-card {
@@ -1661,7 +1644,7 @@
 
 /* 3-Step Section */
 .steps-section {
-  padding: 48px 32px 88px 32px;
+  padding: 32px 32px 72px 32px;
   position: relative;
   max-width: 1320px;
   margin: 0 auto;

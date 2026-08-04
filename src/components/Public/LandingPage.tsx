@@ -737,25 +737,23 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
                           <h3>{item.title}</h3>
                           <p>{item.desc}</p>
                         </motion.div>
+
+                        {/* 3 Premium Glass Statistic Pills merged into bottom of active card */}
+                        {isTop && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.35, delay: 0.1 }}
+                            className="card-inner-stat-pills"
+                          >
+                            <span className="inner-stat-pill">✨ 811+ Plots</span>
+                            <span className="inner-stat-pill">🛡️ RERA Approved</span>
+                            <span className="inner-stat-pill">🔒 24×7 Security</span>
+                          </motion.div>
+                        )}
                       </motion.div>
                     );
                   })}
-                </div>
-
-                {/* 3 Premium Glass Statistic Pills aligned below card stack */}
-                <div className="card-deck-stat-pills">
-                  <div className="deck-stat-pill">
-                    <span className="deck-stat-icon-dot" />
-                    <span>811+ Plots</span>
-                  </div>
-                  <div className="deck-stat-pill">
-                    <span className="deck-stat-icon-dot" />
-                    <span>RERA Approved</span>
-                  </div>
-                  <div className="deck-stat-pill">
-                    <span className="deck-stat-icon-dot" />
-                    <span>24×7 Security</span>
-                  </div>
                 </div>
               </div>
             </div>
