@@ -150,7 +150,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
             {/* ── BRAND LOGO + TEXT ── */}
             <motion.div
               className="sgc-brand"
+              role="button"
+              tabIndex={0}
               onClick={() => scrollToSection('top', 'home')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  scrollToSection('top', 'home');
+                }
+              }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               transition={{ type: 'spring', stiffness: 400, damping: 20 }}
@@ -160,6 +168,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
                   src="./assets/logo_and_entrance.jpg"
                   alt="Shubharambh Green City Logo"
                   className="sgc-logo-img"
+                  width={42}
+                  height={42}
+                  decoding="async"
                 />
                 <div className="sgc-logo-glow" />
               </div>
@@ -665,12 +676,23 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="blueprint-thumbnail-box"
+              role="button"
+              tabIndex={0}
+              aria-label="View Full 980-Plot Layout Map"
               onClick={onNavigateToMap}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onNavigateToMap();
+                }
+              }}
             >
               <img
                 src="./assets/logo_and_entrance.jpg"
                 alt="Layout Blueprint Map"
                 className="blueprint-img"
+                loading="lazy"
+                decoding="async"
               />
               <div className="blueprint-overlay">
                 <Compass size={24} color="#38bdf8" />
@@ -803,18 +825,29 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
 
       {/* SITE VISIT LEAD CAPTURE FORM */}
       <section className="lead-form-section" id="book-visit">
-        <div className="lead-form-container">
+        <motion.div
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="lead-form-container"
+        >
           <div className="lead-form-header">
             <h2>Book Your Free Site Visit Today</h2>
             <p>Lucknow ya Amethi se Nishulk Pick & Drop facility ke sath township visit karein</p>
           </div>
 
           {formSubmitted ? (
-            <div className="form-success-alert">
-              <CheckCircle size={32} color="#10b981" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4 }}
+              className="form-success-alert"
+            >
+              <CheckCircle size={40} color="#34d399" />
               <h3>Aapki Free Site Visit Booking Confirm Ho Gayi Hai!</h3>
               <p>Hamari sales team aapko agli 15 mins me call karke time aur location schedule karegi.</p>
-            </div>
+            </motion.div>
           ) : (
             <form onSubmit={handleFormSubmit} className="site-visit-form">
               <div className="form-row">
@@ -865,12 +898,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
                 </div>
               </div>
 
-              <button type="submit" className="btn-form-submit">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
+                className="btn-form-submit"
+              >
                 <Send size={18} /> Confirm Free Site Visit & Cab Pickup
-              </button>
+              </motion.button>
             </form>
           )}
-        </div>
+        </motion.div>
       </section>
 
       {/* FOOTER */}
@@ -878,10 +916,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
         <div className="footer-grid">
           <div className="footer-col brand-col">
             <div className="footer-logo">
-              <img src="./assets/logo_and_entrance.jpg" alt="Logo" className="footer-logo-img" />
-              <span>Shubharambh Green City</span>
+              <div className="sgc-logo-ring" style={{ width: '38px', height: '38px' }}>
+                <img src="./assets/logo_and_entrance.jpg" alt="Logo" className="sgc-logo-img" />
+              </div>
+              <span className="footer-brand-name">SHUBHARAMBH</span>
             </div>
-            <p>Village Hasnapur, Amethi, Lucknow Road. 60-Bigha Master Planned Gated Township with 100% Registry Guarantee.</p>
+            <p>Village Hasnapur, Amethi, Lucknow Road. 60-Bigha Master Planned Gated Township with 100% Instant Sub-Registrar Registry Guarantee.</p>
           </div>
 
           <div className="footer-col">
@@ -897,18 +937,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
           <div className="footer-col">
             <h4>Plot Categories</h4>
             <ul>
-              <li>Block A: 40Ft Main Boulevard (1500, 1250, 1000 sqft)</li>
-              <li>Block B: Park Facing (1000, 800, 600 sqft)</li>
-              <li>Block C: Garden Facing (1000, 800, 600 sqft)</li>
-              <li>Commercial Shops: 20,440 sq.ft Zone</li>
+              <li>Block A: 40Ft Main Boulevard</li>
+              <li>Block B: Park Facing Plots</li>
+              <li>Block C: Garden Facing Plots</li>
+              <li>Commercial: 20,440 sq.ft Market</li>
             </ul>
           </div>
 
           <div className="footer-col contact-col">
             <h4>Site & Contact Office</h4>
-            <p><MapPin size={16} color="#f59e0b" /> Village Hasnapur, Amethi, Lucknow Highway, UP</p>
-            <p><PhoneCall size={16} color="#10b981" /> +91 98765 43210 / +91 98111 22334</p>
-            <p><Calendar size={16} color="#3b82f6" /> Open All 7 Days: 9:00 AM - 7:00 PM</p>
+            <p><MapPin size={16} color="#34d399" /> Village Hasnapur, Amethi, Lucknow Highway, UP</p>
+            <p><PhoneCall size={16} color="#0ea5e9" /> +91 98765 43210 / +91 98111 22334</p>
+            <p><Calendar size={16} color="#fbbf24" /> Open All 7 Days: 9:00 AM - 7:00 PM</p>
           </div>
         </div>
 
