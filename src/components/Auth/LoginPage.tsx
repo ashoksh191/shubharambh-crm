@@ -7,7 +7,7 @@ import { PasskeyLogin } from './PasskeyLogin';
 import { CaptchaWidget } from './CaptchaWidget';
 import { generateDeviceFingerprint } from '../../utils/fingerprint';
 import { dispatchRealSmsOtp } from '../../utils/fast2smsClient';
-import { Mail, Lock, ArrowLeft, LogIn, Sparkles, UserCheck, Eye, EyeOff, ShieldCheck, Building2, Compass } from 'lucide-react';
+import { Mail, Lock, ArrowLeft, LogIn, Sparkles, UserCheck, Eye, EyeOff } from 'lucide-react';
 import '../../styles/LoginPage.css';
 
 const FAST2SMS_API_KEY = 'B57vxDy96JW4dtrlmUasIzQoenHj21Fk8XgRwqTNfYOiEZPpCSKETS7m53od4VMDfwZvsyqN90kYuej1';
@@ -137,11 +137,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onBackToHome }) => {
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         className={`sgc-login-split-grid ${shake ? 'shake-animation' : ''}`}
       >
-        {/* LEFT COLUMN: Luxury Township Showcase */}
+        {/* LEFT COLUMN: 58% Luxury Apartment Showcase */}
         <div className="sgc-login-left-showcase">
           <img
-            src="./assets/logo_and_entrance.jpg"
-            alt="Shubharambh Green City Entrance Gate"
+            src="./assets/luxury_apartments.jpg"
+            alt="Luxury Real Estate High-Rise Towers"
             className="login-bg-showcase-img"
           />
           <div className="login-bg-overlay" />
@@ -149,32 +149,29 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onBackToHome }) => {
           {/* Top Brand Tag */}
           <div className="mercury-pill-badge" style={{ alignSelf: 'flex-start' }}>
             <Sparkles size={13} color="#34d399" />
-            SHUBHARAMBH GREEN CITY TOWNSHIP
+            SHUBHARAMBH GREEN CITY
           </div>
 
-          {/* Main Visual Headline & Subtext */}
+          {/* Bottom-left Content Lockup */}
           <div className="login-left-content">
+            <div className="login-brand-subtitle-tag">Premium Township CRM</div>
             <h1 className="login-left-headline">
-              Manage Your Real Estate <br />
-              <span className="hero-gradient-text">Portfolio with Precision</span>
+              "Manage Your Real Estate Business"
             </h1>
-            <p className="login-left-subtext">
-              60-Bigha VVIP Gated Township in Amethi, U.P. Direct portal access to plot inventory, instant Sub-Registrar registry tracking, and financial CRM analytics.
-            </p>
 
-            {/* Feature Chips */}
+            {/* 3 Premium Badges */}
             <div className="login-trust-chips">
               <div className="trust-chip">
-                <ShieldCheck size={14} color="#34d399" />
-                <span>100% Verified Titles</span>
-              </div>
-              <div className="trust-chip">
-                <Building2 size={14} color="#34d399" />
+                <span className="badge-check-icon">✓</span>
                 <span>RERA Approved</span>
               </div>
               <div className="trust-chip">
-                <Compass size={14} color="#34d399" />
-                <span>980 Plots CRM</span>
+                <span className="badge-check-icon">✓</span>
+                <span>980+ Plots</span>
+              </div>
+              <div className="trust-chip">
+                <span className="badge-check-icon">✓</span>
+                <span>Secure CRM</span>
               </div>
             </div>
           </div>
