@@ -1428,40 +1428,8 @@
   transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
 }
 
-/* Card Background Image & Dark Layered Overlay */
-.card-bg-image-wrapper {
-  position: absolute;
-  inset: 0;
-  border-radius: 28px;
-  overflow: hidden;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.card-bg-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 35%;
-  transform: scale(1.06);
-  filter: blur(0.3px);
-  display: block;
-  transition: transform 0.4s ease;
-}
-
-.card-bg-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(10, 14, 22, 0.45) 0%,
-    rgba(10, 14, 22, 0.60) 45%,
-    rgba(10, 14, 22, 0.78) 100%
-  );
-}
-
 .stacked-feature-card.active-card {
-  background: rgba(17, 17, 33, 0.92);
+  background: rgba(22, 22, 44, 0.96);
   border: 1px solid rgba(52, 211, 153, 0.38);
   box-shadow:
     0 32px 72px rgba(0, 0, 0, 0.7),
