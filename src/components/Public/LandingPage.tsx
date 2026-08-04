@@ -358,9 +358,26 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
         )}
       </AnimatePresence>
 
-      {/* Announcement Banner */}
-      <div className="announcement-banner">
-        <span>🎉 <strong>SPECIAL LAUNCH OFFER:</strong> Get 40 Ft Main Boulevard Plots at ₹1,200/sq.ft • Free Site Visit Available Today!</span>
+      {/* Announcement Banner — Infinite Ticker */}
+      <div className="announcement-banner-wrapper">
+        <div className="announcement-ticker-track">
+          <div className="announcement-ticker-content">
+            <span>🎉 <strong>SPECIAL LAUNCH OFFER:</strong> Get 40 Ft Main Boulevard Plots at ₹1,200/sq.ft • Free Site Visit Available Today!</span>
+            <span className="ticker-dot">•</span>
+            <span>✨ <strong>INSTANT REGISTRY GUARANTEE:</strong> 100% Sub-Registrar Approved Plot Titles</span>
+            <span className="ticker-dot">•</span>
+            <span>📍 <strong>PRIME LOCATION:</strong> Lucknow–Varanasi Highway Connected Township</span>
+            <span className="ticker-dot">•</span>
+          </div>
+          <div className="announcement-ticker-content" aria-hidden="true">
+            <span>🎉 <strong>SPECIAL LAUNCH OFFER:</strong> Get 40 Ft Main Boulevard Plots at ₹1,200/sq.ft • Free Site Visit Available Today!</span>
+            <span className="ticker-dot">•</span>
+            <span>✨ <strong>INSTANT REGISTRY GUARANTEE:</strong> 100% Sub-Registrar Approved Plot Titles</span>
+            <span className="ticker-dot">•</span>
+            <span>📍 <strong>PRIME LOCATION:</strong> Lucknow–Varanasi Highway Connected Township</span>
+            <span className="ticker-dot">•</span>
+          </div>
+        </div>
       </div>
 
       {/* ═══════════════════════════════════════════════════════

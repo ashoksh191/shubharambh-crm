@@ -1210,31 +1210,67 @@
   box-shadow: 0 6px 20px rgba(56, 189, 248, 0.6);
 }
 
-/* Announcement Banner */
-.announcement-banner {
-  max-width: 1320px;
-  margin: 14px auto 0 auto;
-  border-radius: 12px;
+/* Infinite News Ticker Announcement Banner */
+.announcement-banner-wrapper {
+  width: 100%;
+  margin-top: 22px;
   background: linear-gradient(90deg, #059669 0%, #10b981 50%, #047857 100%);
   color: #ffffff;
-  padding: 10px 16px;
-  text-align: center;
+  padding: 10px 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 10;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.25);
+  user-select: none;
+}
+
+.announcement-ticker-track {
+  display: flex;
+  width: max-content;
+  animation: sgcTickerScroll 35s linear infinite;
+  will-change: transform;
+}
+
+.announcement-banner-wrapper:hover .announcement-ticker-track {
+  animation-play-state: paused;
+}
+
+.announcement-ticker-content {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding-right: 28px;
+  white-space: nowrap;
   font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: 0.2px;
-  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.2);
-  position: relative;
-  z-index: 10;
 }
 
-@media (max-width: 992px) {
-  .announcement-banner {
-    margin: 12px 20px 0 20px;
-    font-size: 0.82rem;
-    padding: 8px 14px;
+.ticker-dot {
+  opacity: 0.6;
+  font-size: 1.1rem;
+}
+
+@keyframes sgcTickerScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
   }
 }
 
+@media (max-width: 992px) {
+  .announcement-banner-wrapper {
+    margin-top: 18px;
+    padding: 8px 0;
+  }
+  .announcement-ticker-content {
+    font-size: 0.82rem;
+    gap: 20px;
+    padding-right: 20px;
+  }
+}
 
 .hero-card-btn:hover {
   background: #fbbf24;
@@ -1248,9 +1284,11 @@
 }
 
 .section-badge {
-  background: rgba(52, 211, 153, 0.1);
+  background: rgba(16, 185, 129, 0.12);
   color: #34d399;
-  border: 1px solid rgba(52, 211, 153, 0.28);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   padding: 6px 14px;
   border-radius: 9999px;
   font-size: 0.78rem;
@@ -1259,7 +1297,9 @@
   text-transform: uppercase;
   display: inline-block;
   margin-bottom: 14px;
-  box-shadow: 0 4px 14px rgba(52, 211, 153, 0.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 4px 16px rgba(52, 211, 153, 0.14);
 }
 
 .section-header h2 {
@@ -1727,9 +1767,11 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(52, 211, 153, 0.1);
+  background: rgba(16, 185, 129, 0.12);
   color: #34d399;
-  border: 1px solid rgba(52, 211, 153, 0.3);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   padding: 6px 16px;
   border-radius: 9999px;
   font-size: 0.78rem;
@@ -1737,7 +1779,9 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   margin-bottom: 18px;
-  box-shadow: 0 4px 14px rgba(52, 211, 153, 0.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 4px 16px rgba(52, 211, 153, 0.14);
 }
 
 .trust-card-left h2 {
