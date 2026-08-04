@@ -154,10 +154,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onBackToHome }) => {
 
           {/* Bottom-left Content Lockup */}
           <div className="login-left-content">
-            <div className="login-brand-subtitle-tag">Premium Township CRM</div>
+            <div className="login-brand-subtitle-tag">Luxury Township CRM</div>
             <h1 className="login-left-headline">
-              "Manage Your Real Estate Business"
+              Manage Every Plot. <br />
+              <span className="hero-gradient-text">Manage Every Lead.</span>
             </h1>
+            <p className="login-left-subtext">
+              Luxury Township CRM for complete property management.
+            </p>
 
             {/* 3 Premium Badges */}
             <div className="login-trust-chips">

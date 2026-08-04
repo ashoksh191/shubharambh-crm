@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════
    PREMIUM LUXURY REAL-ESTATE CRM LOGIN PAGE
-   Optimal Vertical Spacing (Fit on 1366x768 & 1920x1080 with 0 Clipping)
+   Senior Product Designer Grade (Apple + Linear + Stripe + Vercel)
    ═══════════════════════════════════════════════════════════════════ */
 
 .sgc-login-container {
@@ -50,11 +50,11 @@
   max-width: 1220px;
   display: grid;
   grid-template-columns: 1fr 540px;
-  background: rgba(13, 18, 30, 0.72);
-  backdrop-filter: blur(18px) saturate(160%);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  background: rgba(12, 18, 30, 0.65);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 24px;
+  border-radius: 28px;
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45), 0 0 40px rgba(52, 211, 153, 0.06);
   box-sizing: border-box;
 }
@@ -70,17 +70,17 @@
   40%, 60% { transform: translate3d(7px, 0, 0); }
 }
 
-/* ── 1. HERO IMAGE (LEFT PANEL) ── */
+/* ── 1 & 2. HERO IMAGE & LAYERED OVERLAY (LEFT PANEL) ── */
 .sgc-login-left-showcase {
   position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 32px 40px;
+  padding: 36px 40px;
   overflow: hidden;
   box-sizing: border-box;
-  border-top-left-radius: 24px;
-  border-bottom-left-radius: 24px;
+  border-top-left-radius: 28px;
+  border-bottom-left-radius: 28px;
 }
 
 .login-bg-showcase-img {
@@ -90,27 +90,28 @@
   height: 100%;
   object-fit: cover;
   object-position: center;
-  animation: kenBurnsScale 20s ease-in-out infinite alternate;
+  filter: brightness(1.06) contrast(1.08) saturate(1.12);
+  animation: kenBurnsScale 22s ease-in-out infinite alternate;
   z-index: 0;
 }
 
 @keyframes kenBurnsScale {
   0% {
-    transform: scale(1.12);
+    transform: scale(1.14);
   }
   100% {
     transform: scale(1.05);
   }
 }
 
-/* Layered Overlay: Top .35, Middle .55, Bottom .78 */
+/* Layered Overlay: Top .30, Middle .50, Bottom .78 */
 .login-bg-overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgba(8, 12, 20, 0.35) 0%,
-    rgba(8, 12, 20, 0.55) 50%,
+    rgba(8, 12, 20, 0.30) 0%,
+    rgba(8, 12, 20, 0.50) 50%,
     rgba(8, 12, 20, 0.78) 100%
   );
   z-index: 1;
@@ -136,13 +137,13 @@
   box-shadow: 0 4px 14px rgba(16, 185, 129, 0.15);
 }
 
-/* ── 2. LEFT CONTENT ── */
+/* ── 3. HERO CONTENT ── */
 .login-left-content {
   position: relative;
   z-index: 2;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   margin-top: auto;
   margin-bottom: 24px;
 }
@@ -156,7 +157,7 @@
 }
 
 .login-left-headline {
-  font-size: 1.85rem;
+  font-size: 2rem;
   font-weight: 800;
   color: #ffffff;
   letter-spacing: -0.025em;
@@ -165,13 +166,27 @@
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.8);
 }
 
+.login-left-subtext {
+  font-size: 0.88rem;
+  color: #cbd5e1;
+  margin: 0;
+  font-weight: 500;
+}
+
+.hero-gradient-text {
+  background: linear-gradient(110deg, #ffffff 0%, #34d399 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 /* Badges as Glass Pills */
 .login-trust-chips {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 .trust-chip {
@@ -180,7 +195,7 @@
   gap: 6px;
   padding: 6px 14px;
   border-radius: 9999px;
-  background: rgba(13, 18, 30, 0.65);
+  background: rgba(12, 18, 30, 0.65);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(52, 211, 153, 0.3);
@@ -196,7 +211,7 @@
   font-size: 0.85rem;
 }
 
-/* ── 3. RIGHT PANEL ── */
+/* ── 4 & 6. RIGHT PANEL & BACK BUTTON ── */
 .sgc-login-right-wrapper {
   position: relative;
   display: flex;
@@ -204,9 +219,9 @@
   align-items: center;
   justify-content: center;
   padding: 20px 24px;
-  background: rgba(13, 18, 30, 0.72);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background: rgba(12, 18, 30, 0.65);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   box-sizing: border-box;
 }
 
@@ -218,7 +233,7 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #cbd5e1;
   padding: 5px 12px;
-  border-radius: 8px;
+  border-radius: 9999px; /* Glass pill style */
   font-size: 0.76rem;
   font-weight: 600;
   cursor: pointer;
@@ -242,17 +257,17 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: rgba(13, 18, 30, 0.72);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  background: rgba(12, 18, 30, 0.65);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 22px;
+  border-radius: 28px;
   padding: 20px 24px;
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
   box-sizing: border-box;
 }
 
-/* ── 4 & 5. LOGO & WELCOME TEXT ── */
+/* Brand header inside card */
 .login-brand-header {
   text-align: center;
   display: flex;
@@ -263,13 +278,13 @@
 
 .sgc-logo-ring {
   position: relative;
-  width: 60px;
-  height: 60px;
-  border-radius: 16px;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
   overflow: hidden;
   border: 1.5px solid rgba(52, 211, 153, 0.45);
   margin-bottom: 2px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 16px rgba(52, 211, 153, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(52, 211, 153, 0.2);
 }
 
 .sgc-logo-img {
@@ -287,7 +302,7 @@
 
 /* Welcome Back Dominant Heading */
 .login-brand-header h2 {
-  font-size: 1.5rem;
+  font-size: 1.55rem;
   font-weight: 800;
   color: #ffffff;
   margin: 0;
@@ -349,7 +364,7 @@
   padding: 0 8px;
 }
 
-/* ── 6. INPUTS ── */
+/* Form controls */
 .sgc-login-form {
   display: flex;
   flex-direction: column;
@@ -476,7 +491,7 @@
   text-decoration: underline;
 }
 
-/* ── 7. LOGIN BUTTON ── */
+/* ── 5. BUTTONS (PRIMARY, PASSKEY & REGISTER GHOST) ── */
 .btn-primary-gradient.login-submit-btn {
   width: 100%;
   height: 46px;
@@ -490,7 +505,7 @@
   gap: 8px;
   margin-top: 2px;
   background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-  box-shadow: 0 6px 24px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.45);
   border: none;
   cursor: pointer;
   transition: all 0.25s ease;
@@ -501,7 +516,6 @@
   cursor: not-allowed;
 }
 
-/* ── 8 & 9. PASSKEY & REGISTER BUTTONS ── */
 .login-extra-methods {
   display: flex;
   flex-direction: column;
