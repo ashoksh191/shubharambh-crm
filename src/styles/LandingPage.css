@@ -1266,7 +1266,7 @@
 
 /* Features Section — Apple Wallet Stacked Deck */
 .features-section {
-  padding: 88px 32px;
+  padding: 64px 32px 40px 32px;
   max-width: 1320px;
   margin: 0 auto;
   position: relative;
@@ -1397,7 +1397,7 @@
 /* Right Column (60%): Stacked Card Deck */
 .features-deck-right {
   position: relative;
-  min-height: 340px;
+  min-height: 290px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1572,7 +1572,7 @@
   }
 
   .features-section {
-    padding: 60px 20px;
+    padding: 44px 20px 24px 20px;
   }
 
   .features-deck-left h2 {
@@ -1590,7 +1590,7 @@
 
 /* 3-Step Section */
 .steps-section {
-  padding: 88px 32px;
+  padding: 48px 32px 88px 32px;
   position: relative;
   max-width: 1320px;
   margin: 0 auto;
