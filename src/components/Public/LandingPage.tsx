@@ -10,6 +10,8 @@ import {
   Compass,
   Building,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Award,
   Trees,
   Car,
@@ -39,6 +41,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
   const [activeNavSection, setActiveNavSection] = useState<string>('home');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [activeFeatureIdx, setActiveFeatureIdx] = useState<number>(0);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -168,8 +171,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
                   src="./assets/logo_and_entrance.jpg"
                   alt="Shubharambh Green City Logo"
                   className="sgc-logo-img"
-                  width={42}
-                  height={42}
+                  width={38}
+                  height={38}
                   decoding="async"
                 />
                 <div className="sgc-logo-glow" />
@@ -513,76 +516,173 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onNavigateToMap, onOpe
         </section>
       </div>
 
-      {/* FEATURE CARDS GRID (6 FEATURES) */}
+      {/* STACKED FEATURE CARD DECK (6 FEATURES) */}
       <section className="features-section" id="features">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="section-header"
-        >
-          <span className="section-badge">TOWNSHIP HIGHLIGHTS</span>
-          <h2>Kyun Khas Hai Shubharambh Green City?</h2>
-          <p>Adhunik suvidhaon aur shandar location ke sath premium residential plots</p>
-        </motion.div>
-
-        <div className="features-grid">
-          {[
+        {(() => {
+          const featureDeck = [
             {
+              id: 'road',
               icon: <Car size={26} color="#38bdf8" />,
               title: '40 Ft & 30 Ft Wide Roads',
               desc: 'Chaudi aur paka RCC roads wide boulevards ke sath har plot tak aasan pahunch sunishchit karti hain.',
               color: '#38bdf8',
             },
             {
+              id: 'security',
               icon: <Shield size={26} color="#34d399" />,
               title: '24x7 Gated Security Entry',
               desc: '50 Ft Grand Gate entry, CCTV surveillance cameras, aur security guards safety ke liye 24/7 tayar.',
               color: '#34d399',
             },
             {
+              id: 'parks',
               icon: <Trees size={26} color="#fbbf24" />,
               title: 'Mandir & Central Parks',
               desc: 'Shant vatavaran ke liye dedicated Shri Ganesha Mandir zone aur bachon ke liye green parks.',
               color: '#fbbf24',
             },
             {
+              id: 'commercial',
               icon: <Building size={26} color="#f472b6" />,
               title: 'Commercial Shops Zone',
               desc: 'Rozmarra ki zarooraton ke liye dedicated 20,440 sq.ft Commercial Market aur Mixed-Use Zone.',
               color: '#f472b6',
             },
             {
+              id: 'registry',
               icon: <FileCheck size={26} color="#a78bfa" />,
               title: 'Instant Registry & Mutation',
               desc: '100% Clear Title Land. Booking ke baad 90 dino ke andar complete Legal Registry aur Daakhil-Kharij.',
               color: '#a78bfa',
             },
             {
+              id: 'loan',
               icon: <Award size={26} color="#f87171" />,
               title: '80% Bank Loan Facility',
               desc: 'Sabhi pramukh sarkari aur private banks se easy EMI installment aur instant plot loan approval.',
               color: '#f87171',
             },
-          ].map((item, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.45, delay: idx * 0.08 }}
-              whileHover={{ y: -6, transition: { duration: 0.2 } }}
-              className="feature-card"
-            >
-              <div className="feature-icon-box" style={{ background: `${item.color}15`, borderColor: `${item.color}30` }}>
-                {item.icon}
+          ];
+
+          const handleNext = () => {
+            setActiveFeatureIdx((prev) => (prev + 1) % featureDeck.length);
+          };
+
+          const handlePrev = () => {
+            setActiveFeatureIdx((prev) => (prev - 1 + featureDeck.length) % featureDeck.length);
+          };
+
+          const visibleIndices = [
+            activeFeatureIdx,
+            (activeFeatureIdx + 1) % featureDeck.length,
+            (activeFeatureIdx + 2) % featureDeck.length,
+          ];
+
+          return (
+            <div className="features-deck-wrapper">
+              {/* Left Column (40%) */}
+              <div className="features-deck-left">
+                <span className="section-badge">TOWNSHIP HIGHLIGHTS</span>
+                <h2>Kyun Khas Hai Shubharambh Green City?</h2>
+                <p>Adhunik suvidhaon aur shandar location ke sath premium residential plots</p>
+
+                <div className="features-controls">
+                  <div className="features-counter">
+                    <span className="counter-current">{String(activeFeatureIdx + 1).padStart(2, '0')}</span>
+                    <span className="counter-divider">/</span>
+                    <span className="counter-total">{String(featureDeck.length).padStart(2, '0')}</span>
+                  </div>
+
+                  <div className="features-nav-btns">
+                    <button
+                      className="feature-nav-btn"
+                      onClick={handlePrev}
+                      aria-label="Previous Feature"
+                      type="button"
+                    >
+                      <ChevronLeft size={20} />
+                    </button>
+                    <button
+                      className="feature-nav-btn"
+                      onClick={handleNext}
+                      aria-label="Next Feature"
+                      type="button"
+                    >
+                      <ChevronRight size={20} />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="features-dots">
+                  {featureDeck.map((_, i) => (
+                    <button
+                      key={i}
+                      className={`feature-dot ${i === activeFeatureIdx ? 'active' : ''}`}
+                      onClick={() => setActiveFeatureIdx(i)}
+                      aria-label={`Go to feature ${i + 1}`}
+                      type="button"
+                    />
+                  ))}
+                </div>
               </div>
-              <h3>{item.title}</h3>
-              <p>{item.desc}</p>
-            </motion.div>
-          ))}
-        </div>
+
+              {/* Right Column (60% Stacked Cards) */}
+              <div className="features-deck-right">
+                <div className="card-stack-container">
+                  {visibleIndices.map((featureIdx, stackOffset) => {
+                    const item = featureDeck[featureIdx];
+                    const isTop = stackOffset === 0;
+                    const scales = [1, 0.94, 0.88];
+                    const yOffsets = [0, 20, 40];
+                    const zIndices = [30, 20, 10];
+                    const rotations = [0, 2, -2];
+                    const opacities = [1, 0.75, 0.5];
+
+                    return (
+                      <motion.div
+                        key={item.id}
+                        layout
+                        initial={false}
+                        animate={{
+                          scale: scales[stackOffset],
+                          y: yOffsets[stackOffset],
+                          rotate: rotations[stackOffset],
+                          opacity: opacities[stackOffset],
+                          zIndex: zIndices[stackOffset],
+                        }}
+                        transition={{
+                          type: 'spring',
+                          stiffness: 320,
+                          damping: 28,
+                        }}
+                        className={`stacked-feature-card ${isTop ? 'active-card' : ''}`}
+                        onClick={() => {
+                          if (!isTop) handleNext();
+                        }}
+                        style={{
+                          cursor: isTop ? 'default' : 'pointer',
+                        }}
+                      >
+                        <div className="card-accent-bar" style={{ background: item.color }} />
+                        <div
+                          className="feature-icon-box"
+                          style={{
+                            background: `${item.color}15`,
+                            borderColor: `${item.color}30`,
+                          }}
+                        >
+                          {item.icon}
+                        </div>
+                        <h3>{item.title}</h3>
+                        <p>{item.desc}</p>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          );
+        })()}
       </section>
 
       {/* 3-STEP BUYING PROCESS */}
