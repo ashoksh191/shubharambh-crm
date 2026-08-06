@@ -277,12 +277,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
       {/* User Footer Profile & Logout */}
       <div className="sidebar-user-footer-card" style={{ borderTop: '1px solid rgba(212, 175, 55, 0.2)', paddingTop: '12px' }}>
         <div className="sidebar-user-avatar-circle" style={{ background: '#07291F', border: '1px solid #D4AF37', color: '#E8C96A' }}>
-          {(authUser?.name || 'V')[0]}
+          {(authUser?.fullName || authUser?.username || 'V')[0]}
         </div>
 
         {!isCollapsed && (
           <div className="sidebar-user-details">
-            <strong className="sidebar-user-name" style={{ color: '#F8F7F3' }}>{authUser?.name || 'Vikramaditya'}</strong>
+            <strong className="sidebar-user-name" style={{ color: '#F8F7F3' }}>{authUser?.fullName || authUser?.username || 'Vikramaditya'}</strong>
             <span className="sidebar-user-role-label" style={{ color: '#E8C96A' }}>{authUser?.email || 'sales@shubharambh.com'}</span>
           </div>
         )}

@@ -261,8 +261,7 @@ export const PlotInventoryDashboard: React.FC<PlotInventoryDashboardProps> = ({
               {filteredPlots.map((plot) => {
                 const isAvailable = plot.status === 'available';
                 const isBooked = plot.status === 'booked';
-                const isReserved = plot.status === 'reserved';
-                const isSold = plot.status === 'sold';
+                const isReserved = (plot.status as string) === 'reserved';
 
                 return (
                   <tr key={plot.id} style={{ borderBottom: '1px solid rgba(212, 175, 55, 0.1)' }}>
