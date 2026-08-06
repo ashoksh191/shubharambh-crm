@@ -1,0 +1,208 @@
+{
+  "info": {
+    "name": "Shubharambh Green City CRM - Bookings Module Backend API",
+    "description": "Production REST API Collection for Customer, Plot Inventory, Booking Lifecycle, Payments & Executive Dashboard Metrics.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Customers",
+      "item": [
+        {
+          "name": "Create Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Ramesh Kumar Gupta\",\n  \"mobile\": \"9826012345\",\n  \"email\": \"ramesh.gupta@gmail.com\",\n  \"aadhaar\": \"451298341029\",\n  \"pan\": \"ABCDE1234F\",\n  \"city\": \"Indore\",\n  \"state\": \"Madhya Pradesh\"\n}"
+            },
+            "url": { "raw": "{{BASE_URL}}/api/customers", "host": ["{{BASE_URL}}"], "path": ["api", "customers"] }
+          }
+        },
+        {
+          "name": "List Customers",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }],
+            "url": { "raw": "{{BASE_URL}}/api/customers?page=1&limit=10&search=Ramesh", "host": ["{{BASE_URL}}"], "path": ["api", "customers"] }
+          }
+        },
+        {
+          "name": "Get Customer by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }],
+            "url": { "raw": "{{BASE_URL}}/api/customers/CUST-2026-0001", "host": ["{{BASE_URL}}"], "path": ["api", "customers", "CUST-2026-0001"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Plots",
+      "item": [
+        {
+          "name": "Get Available Plots",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }],
+            "url": { "raw": "{{BASE_URL}}/api/plots/available?block=Block A", "host": ["{{BASE_URL}}"], "path": ["api", "plots", "available"] }
+          }
+        },
+        {
+          "name": "Search Plot Inventory",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }],
+            "url": { "raw": "{{BASE_URL}}/api/plots/search?minPrice=1000000&maxPrice=5000000&facing=East", "host": ["{{BASE_URL}}"], "path": ["api", "plots", "search"] }
+          }
+        },
+        {
+          "name": "Reserve Plot (24-Hr Hold)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"CUST-2026-0001\",\n  \"durationHours\": 24\n}"
+            },
+            "url": { "raw": "{{BASE_URL}}/api/plots/A-101/reserve", "host": ["{{BASE_URL}}"], "path": ["api", "plots", "A-101", "reserve"] }
+          }
+        },
+        {
+          "name": "Release Plot Hold",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }],
+            "url": { "raw": "{{BASE_URL}}/api/plots/A-101/release", "host": ["{{BASE_URL}}"], "path": ["api", "plots", "A-101", "release"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bookings",
+      "item": [
+        {
+          "name": "Create Plot Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"CUST-2026-0001\",\n  \"plotId\": \"A-101\",\n  \"bookingAmount\": 100000,\n  \"agreementValue\": 2775000,\n  \"discount\": 25000,\n  \"paymentPlan\": \"Installment\",\n  \"remarks\": \"Token paid via HDFC UTR\"\n}"
+            },
+            "url": { "raw": "{{BASE_URL}}/api/bookings", "host": ["{{BASE_URL}}"], "path": ["api", "bookings"] }
+          }
+        },
+        {
+          "name": "List Bookings (Filters: Status, Block, Date)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }],
+            "url": { "raw": "{{BASE_URL}}/api/bookings?page=1&limit=10&status=BOOKED", "host": ["{{BASE_URL}}"], "path": ["api", "bookings"] }
+          }
+        },
+        {
+          "name": "Get Booking Details with Audit Stream",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }],
+            "url": { "raw": "{{BASE_URL}}/api/bookings/SGC-BK-2026-0101", "host": ["{{BASE_URL}}"], "path": ["api", "bookings", "SGC-BK-2026-0101"] }
+          }
+        },
+        {
+          "name": "Cancel Booking & Free Plot",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Buyer opted for another plot in Block B\"\n}"
+            },
+            "url": { "raw": "{{BASE_URL}}/api/bookings/SGC-BK-2026-0101/cancel", "host": ["{{BASE_URL}}"], "path": ["api", "bookings", "SGC-BK-2026-0101", "cancel"] }
+          }
+        },
+        {
+          "name": "Sub-Registrar Deed Registration",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }],
+            "url": { "raw": "{{BASE_URL}}/api/bookings/SGC-BK-2026-0102/register", "host": ["{{BASE_URL}}"], "path": ["api", "bookings", "SGC-BK-2026-0102", "register"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Add Payment Against Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookingId\": \"SGC-BK-2026-0101\",\n  \"amount\": 400000,\n  \"mode\": \"Bank Transfer\",\n  \"transactionId\": \"UTR991823712\",\n  \"remarks\": \"Second instalment UTR verified\"\n}"
+            },
+            "url": { "raw": "{{BASE_URL}}/api/payments", "host": ["{{BASE_URL}}"], "path": ["api", "payments"] }
+          }
+        },
+        {
+          "name": "Verify / Approve Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"approved\": true,\n  \"remarks\": \"Bank account credit statement matched\"\n}"
+            },
+            "url": { "raw": "{{BASE_URL}}/api/payments/PAY-2026-0001/verify", "host": ["{{BASE_URL}}"], "path": ["api", "payments", "PAY-2026-0001", "verify"] }
+          }
+        },
+        {
+          "name": "Get Payments by Booking ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }],
+            "url": { "raw": "{{BASE_URL}}/api/payments/booking/SGC-BK-2026-0101", "host": ["{{BASE_URL}}"], "path": ["api", "payments", "booking", "SGC-BK-2026-0101"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Executive Dashboard Metrics",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}" }],
+            "url": { "raw": "{{BASE_URL}}/api/dashboard/stats", "host": ["{{BASE_URL}}"], "path": ["api", "dashboard", "stats"] }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "BASE_URL", "value": "http://localhost:5000", "type": "string" },
+    { "key": "ACCESS_TOKEN", "value": "YOUR_JWT_ACCESS_TOKEN_HERE", "type": "string" }
+  ]
+}

@@ -1,146 +1,171 @@
-import { prisma } from '../config/database.js';
-import { redisCache } from '../config/redis.js';
+import Plot, { IPlot, PlotBlockType, PlotFacingType, PlotStatusType } from '../models/Plot.js';
+import Customer from '../models/Customer.js';
+import BookingHistory from '../models/BookingHistory.js';
+import mongoose from 'mongoose';
 
-/**
- * Lists all plots with optional status, block, or query filtering (Redis Cached).
- */
-export const listPlotsService = async (filters?: { status?: string; block?: string; search?: string }) => {
-  const cacheKey = `plots:list:${filters?.status || 'all'}:${filters?.block || 'all'}:${filters?.search || 'none'}`;
+export interface SearchPlotFilter {
+  block?: PlotBlockType;
+  status?: PlotStatusType;
+  facing?: PlotFacingType;
+  minPrice?: number;
+  maxPrice?: number;
+  minArea?: number;
+  maxArea?: number;
+  search?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}
 
-  // Check Redis cache
-  const cachedData = await redisCache.get(cacheKey);
-  if (cachedData) {
-    try {
-      return JSON.parse(cachedData);
-    } catch (_err) {
-      // Ignore JSON parse error and re-fetch from database
-    }
+export const listAvailablePlotsService = async (block?: PlotBlockType) => {
+  const query: any = { isDeleted: false, status: 'AVAILABLE' };
+  if (block) query.block = block;
+
+  return await Plot.find(query).sort({ block: 1, plotNumber: 1 }).lean();
+};
+
+export const searchPlotsService = async (filters: SearchPlotFilter = {}) => {
+  const {
+    block,
+    status,
+    facing,
+    minPrice,
+    maxPrice,
+    minArea,
+    maxArea,
+    search,
+    page = 1,
+    limit = 20,
+    sortBy = 'plotNumber',
+    sortOrder = 'asc',
+  } = filters;
+
+  const query: any = { isDeleted: false };
+
+  if (block) query.block = block;
+  if (status) query.status = status;
+  if (facing) query.facing = facing;
+
+  if (minPrice || maxPrice) {
+    query.price = {};
+    if (minPrice) query.price.$gte = minPrice;
+    if (maxPrice) query.price.$lte = maxPrice;
   }
 
-  const where: any = {};
-
-  if (filters?.status) {
-    where.status = filters.status.toUpperCase();
+  if (minArea || maxArea) {
+    query.areaSqFt = {};
+    if (minArea) query.areaSqFt.$gte = minArea;
+    if (maxArea) query.areaSqFt.$lte = maxArea;
   }
 
-  if (filters?.block) {
-    where.block = {
-      name: { contains: filters.block },
-    };
-  }
-
-  if (filters?.search) {
-    where.OR = [
-      { plotNumber: { contains: filters.search } },
-      { geometryId: { contains: filters.search } },
+  if (search) {
+    query.$or = [
+      { plotNumber: { $regex: search, $options: 'i' } },
+      { block: { $regex: search, $options: 'i' } },
+      { facing: { $regex: search, $options: 'i' } },
     ];
   }
 
-  const plots = await prisma.plot.findMany({
-    where,
-    orderBy: { plotNumber: 'asc' },
-    include: {
-      block: true,
-      customer: {
-        select: { id: true, fullName: true, phone: true },
-      },
-      booking: {
-        select: { id: true, bookingNumber: true, bookingStatus: true, bookingAmount: true },
-      },
+  const skip = (page - 1) * limit;
+  const sortOption: any = { [sortBy]: sortOrder === 'asc' ? 1 : -1 };
+
+  const [items, total] = await Promise.all([
+    Plot.find(query).sort(sortOption).skip(skip).limit(limit).populate('reservedByCustomer').lean(),
+    Plot.countDocuments(query),
+  ]);
+
+  return {
+    items,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
     },
-  });
-
-  const result = plots.map((p) => ({
-    id: p.id,
-    geometryId: p.geometryId,
-    plotNumber: p.plotNumber,
-    block: p.block.name,
-    status: p.status.toLowerCase(),
-    price: p.price,
-    areaSqFt: p.areaSqFt,
-    facing: p.facing,
-    version: p.version,
-    customerName: p.customer?.fullName || null,
-    bookingNumber: p.booking?.bookingNumber || null,
-  }));
-
-  // Store in Redis cache for 300s TTL
-  await redisCache.set(cacheKey, JSON.stringify(result), 300);
-
-  return result;
+  };
 };
 
-/**
- * Gets plot details by ID or Geometry ID.
- */
-export const getPlotByIdService = async (idOrGeometryId: string) => {
-  const cacheKey = `plot:detail:${idOrGeometryId}`;
-  const cached = await redisCache.get(cacheKey);
-  if (cached) {
-    try {
-      return JSON.parse(cached);
-    } catch (_e) {
-      // Ignore
-    }
-  }
-
-  const plot = await prisma.plot.findFirst({
-    where: {
-      OR: [{ id: idOrGeometryId }, { geometryId: idOrGeometryId }],
-    },
-    include: {
-      block: true,
-      layout: true,
-      project: true,
-      customer: true,
-      booking: {
-        include: {
-          payments: true,
-          documents: true,
-        },
-      },
-    },
+export const reservePlotService = async (
+  plotId: string,
+  customerId: string,
+  durationHours = 24,
+  performedByUserId?: string
+) => {
+  const plot = await Plot.findOne({
+    $or: [{ _id: isValidObjectId(plotId) ? plotId : null }, { plotNumber: plotId }],
+    isDeleted: false,
   });
 
   if (!plot) {
-    throw {
-      statusCode: 404,
-      name: 'NOT_FOUND',
-      message: `Plot '${idOrGeometryId}' not found.`,
-    };
+    throw { statusCode: 404, message: 'Plot not found.' };
   }
 
-  await redisCache.set(cacheKey, JSON.stringify(plot), 300);
-  return plot;
-};
-
-/**
- * Updates plot details or pricing and invalidates plot cache.
- */
-export const updatePlotService = async (id: string, updateData: { price?: number; status?: string; facing?: string }) => {
-  const plot = await prisma.plot.findUnique({ where: { id } });
-  if (!plot) {
-    throw {
-      statusCode: 404,
-      name: 'NOT_FOUND',
-      message: `Plot '${id}' not found.`,
-    };
+  if (plot.status !== 'AVAILABLE') {
+    throw { statusCode: 400, message: `Plot ${plot.plotNumber} is currently in '${plot.status}' status and cannot be reserved.` };
   }
 
-  const data: any = {};
-  if (updateData.price !== undefined) data.price = updateData.price;
-  if (updateData.facing !== undefined) data.facing = updateData.facing;
-  if (updateData.status !== undefined) data.status = updateData.status.toUpperCase();
-  data.version = { increment: 1 };
-
-  const updatedPlot = await prisma.plot.update({
-    where: { id },
-    data,
+  const customer = await Customer.findOne({
+    $or: [{ _id: isValidObjectId(customerId) ? customerId : null }, { customerId: customerId }],
+    isDeleted: false,
   });
 
-  // Invalidate plot caches
-  await redisCache.invalidatePattern('plots:*');
-  await redisCache.invalidatePattern(`plot:detail:${id}`);
+  if (!customer) {
+    throw { statusCode: 404, message: 'Customer record not found for reservation.' };
+  }
 
-  return updatedPlot;
+  const holdExpiresAt = new Date();
+  holdExpiresAt.setHours(holdExpiresAt.getHours() + durationHours);
+
+  plot.status = 'HOLD';
+  plot.reservedByCustomer = customer._id as any;
+  plot.holdExpiresAt = holdExpiresAt;
+
+  await plot.save();
+
+  return {
+    message: `Plot ${plot.plotNumber} (${plot.block}) reserved on 24-hr HOLD for customer ${customer.fullName}.`,
+    plot,
+    holdExpiresAt,
+  };
 };
+
+export const releasePlotService = async (plotId: string, performedByUserId?: string) => {
+  const plot = await Plot.findOne({
+    $or: [{ _id: isValidObjectId(plotId) ? plotId : null }, { plotNumber: plotId }],
+    isDeleted: false,
+  });
+
+  if (!plot) {
+    throw { statusCode: 404, message: 'Plot not found.' };
+  }
+
+  if (plot.status !== 'HOLD' && plot.status !== 'RESERVED') {
+    throw { statusCode: 400, message: `Plot ${plot.plotNumber} is in '${plot.status}' status. Only HOLD/RESERVED plots can be released.` };
+  }
+
+  plot.status = 'AVAILABLE';
+  plot.reservedByCustomer = undefined;
+  plot.holdExpiresAt = undefined;
+
+  await plot.save();
+
+  return {
+    message: `Plot ${plot.plotNumber} (${plot.block}) released back to AVAILABLE inventory.`,
+    plot,
+  };
+};
+
+export const createPlotService = async (data: Partial<IPlot>) => {
+  const existing = await Plot.findOne({ plotNumber: data.plotNumber, block: data.block, isDeleted: false });
+  if (existing) {
+    throw { statusCode: 400, message: `Plot ${data.plotNumber} already exists in ${data.block}.` };
+  }
+
+  const plot = new Plot(data);
+  return await plot.save();
+};
+
+function isValidObjectId(id: string): boolean {
+  return mongoose.Types.ObjectId.isValid(id);
+}

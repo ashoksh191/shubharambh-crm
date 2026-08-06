@@ -1,25 +1,16 @@
 import { Router } from 'express';
-import { createBookingController, getBookingController, listBookingsController } from '../controllers/bookingController.js';
 import { authenticate } from '../middlewares/authMiddleware.js';
 import { authorize } from '../middlewares/rbacMiddleware.js';
+import * as bookingController from '../controllers/bookingController.js';
 
 const router = Router();
 
-// Protected Booking Endpoints with RBAC & DB-Driven Permissions
-router.post(
-  '/',
-  authenticate,
-  authorize({ roles: ['SUPER_ADMIN', 'SALES_MANAGER', 'ASSOCIATE'], permission: 'BOOKING_CREATE' }),
-  createBookingController
-);
+router.use(authenticate);
 
-router.get(
-  '/',
-  authenticate,
-  authorize({ roles: ['SUPER_ADMIN', 'SALES_MANAGER', 'ASSOCIATE', 'FINANCE', 'VIEWER'] }),
-  listBookingsController
-);
-
-router.get('/:id', authenticate, getBookingController);
+router.post('/', authorize({ roles: ['SUPER_ADMIN', 'ADMIN', 'SALES_MANAGER', 'SALES_EXECUTIVE'] }), bookingController.createBooking);
+router.get('/', bookingController.listBookings);
+router.get('/:id', bookingController.getBookingById);
+router.post('/:id/cancel', authorize({ roles: ['SUPER_ADMIN', 'ADMIN', 'SALES_MANAGER'] }), bookingController.cancelBooking);
+router.post('/:id/register', authorize({ roles: ['SUPER_ADMIN', 'ADMIN', 'FINANCE'] }), bookingController.registerBooking);
 
 export default router;

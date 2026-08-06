@@ -23,6 +23,9 @@ import approvalRoutes from './routes/approvalRoutes.js';
 import bookingRoutes from './routes/bookingRoutes.js';
 import plotRoutes from './routes/plotRoutes.js';
 import customerRoutes from './routes/customerRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
+import dashboardRoutes from './routes/dashboardRoutes.js';
+import { connectMongoDB } from './config/mongodb.js';
 
 const app = express();
 
@@ -134,14 +137,19 @@ app.use('/api/users', verifyCsrfToken, userRoutes);
 app.use('/api/audit', verifyCsrfToken, auditRoutes);
 app.use('/api/approvals', verifyCsrfToken, approvalRoutes);
 
-// Server-Authoritative Plot, Booking & Customer Routes
+// Server-Authoritative Plot, Booking, Customer, Payment & Dashboard Routes
 app.use('/api/booking', bookingRoutes);
-app.use('/api/v1/booking', bookingRoutes);
+app.use('/api/bookings', bookingRoutes);
+app.use('/api/v1/bookings', bookingRoutes);
 app.use('/api/plots', plotRoutes);
 app.use('/api/plot', plotRoutes);
 app.use('/api/v1/plots', plotRoutes);
 app.use('/api/customers', customerRoutes);
 app.use('/api/v1/customers', customerRoutes);
+app.use('/api/payments', paymentRoutes);
+app.use('/api/v1/payments', paymentRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/v1/dashboard', dashboardRoutes);
 
 // Global 404 Handler
 app.use('*', (req, res) => {
@@ -157,9 +165,14 @@ app.use(globalErrorHandler);
 
 // Start Express Server
 const PORT = config.port;
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, async () => {
   logger.info(`🚀 Enterprise Backend Engine running on http://localhost:${PORT}`);
   logger.info(`🛡️ Environment: ${config.nodeEnv} | CORS Client: ${config.clientUrl}`);
+  try {
+    await connectMongoDB();
+  } catch (err: any) {
+    logger.warn(`[MongoDB Notice] ${err?.message || 'MongoDB connection not available immediately'}`);
+  }
 });
 
 // Graceful Shutdown Handlers
