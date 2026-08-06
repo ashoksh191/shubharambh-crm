@@ -6,6 +6,10 @@ import { ProtectedRoute } from './components/Auth/ProtectedRoute';
 import { RoleGuard } from './components/Auth/RoleGuard';
 import { Sidebar, type NavTabId } from './components/Navigation/Sidebar';
 import { InteractiveMap } from './components/Map/InteractiveMap';
+import { BookingsDashboard } from './components/Booking/BookingsDashboard';
+import { PlotInventoryDashboard } from './components/Inventory/PlotInventoryDashboard';
+import { CustomerDirectoryDashboard } from './components/Customer/CustomerDirectoryDashboard';
+import { ExecutiveDashboardView } from './components/Dashboard/ExecutiveDashboardView';
 import { CommandPalette } from './components/UI/CommandPalette';
 import { ToastContainer, type ToastMessage } from './components/UI/ToastContainer';
 import {
@@ -16,14 +20,12 @@ import {
   TrendingUp,
   ArrowUpRight,
   ShieldCheck,
-  Zap,
   Search,
   Bell,
   Calendar as CalendarIcon,
   DollarSign,
   TrendingDown,
   UserCheck,
-  PieChart as PieChartIcon,
   MapPin,
   CreditCard,
   Sun,
@@ -234,19 +236,12 @@ const MainLayout: React.FC = () => {
   }, []);
 
   // Memoized Inventory Metrics
-  const { availableCount, bookedCount, soldCount, occupancyRate } = useMemo(() => {
+  const { availableCount } = useMemo(() => {
     let available = 0;
-    let booked = 0;
-    let sold = 0;
     for (let i = 0; i < plots.length; i++) {
-      const status = plots[i].status;
-      if (status === 'available') available++;
-      else if (status === 'booked') booked++;
-      else if (status === 'sold') sold++;
+      if (plots[i].status === 'available') available++;
     }
-    const total = plots.length || 1;
-    const rate = Math.round(((booked + sold) / total) * 100);
-    return { availableCount: available, bookedCount: booked, soldCount: sold, occupancyRate: rate };
+    return { availableCount: available };
   }, [plots]);
 
   const userName = authUser?.fullName || authUser?.username || 'Vikramaditya Singh';
@@ -262,16 +257,6 @@ const MainLayout: React.FC = () => {
       { id: 'collection', title: 'Collection Rate', value: 94.8, prefix: '', suffix: '%', trend: '+3.1%', isUp: true, icon: ShieldCheck, color: '#38BDF8', gradient: 'linear-gradient(135deg, #38BDF8, #0284C7)', desc: 'Installment UTR Efficiency', sparkline: 'M0,18 Q25,10 50,6 T100,2' },
     ];
   }, [availableCount]);
-
-  // Recent Activity Timeline
-  const recentActivities = useMemo(() => {
-    return [
-      { id: '1', title: 'New Plot 104 Booked', desc: 'Customer Ramesh Kumar paid ₹50,000 token via Bank HDFC UTR', time: '10 mins ago', badge: 'NEW BOOKING', color: '#10B981' },
-      { id: '2', title: 'Payment UTR Verified', desc: 'Accountant approved ₹4,50,000 second installment for Plot A-12', time: '35 mins ago', badge: 'PAYMENT RECEIVED', color: '#0EA5E9' },
-      { id: '3', title: 'Sub-Registrar Deed Executed', desc: 'Plot B-45 Registry Deed successfully completed & signed', time: '2 hours ago', badge: 'REGISTRY COMPLETED', color: '#A855F7' },
-      { id: '4', title: 'User Registration Pending', desc: 'Level-2 Associate request queued for Super Admin approval', time: '3 hours ago', badge: 'APPROVAL PENDING', color: '#F59E0B' },
-    ];
-  }, []);
 
   const formattedDate = currentTime.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
   const formattedTime = currentTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
@@ -490,87 +475,6 @@ const MainLayout: React.FC = () => {
           </div>
         )}
 
-        {/* SECOND ROW & RIGHT PANEL GRID (LIVE RECENT ACTIVITY) */}
-        {activeTab === 'map' && (
-          <div className="dashboard-second-row-grid">
-            {/* Live Activity Timeline Panel */}
-            <div className="activity-timeline-card glass">
-              <div className="timeline-header">
-                <h3 className="timeline-title">
-                  <Zap size={18} color="#F59E0B" /> Live Transaction Activity
-                </h3>
-                <span className="pulse-tag">Realtime Stream</span>
-              </div>
-
-              <div className="timeline-items-wrapper">
-                {recentActivities.map((act) => (
-                  <div key={act.id} className="timeline-item">
-                    <div className="timeline-dot-connector" style={{ background: act.color }}></div>
-                    <div className="timeline-content">
-                      <div className="timeline-badge-row">
-                        <span className="activity-badge" style={{ background: `${act.color}15`, color: act.color, border: `1px solid ${act.color}40` }}>
-                          {act.badge}
-                        </span>
-                        <span className="activity-time">{act.time}</span>
-                      </div>
-                      <strong className="activity-item-title">{act.title}</strong>
-                      <p className="activity-item-desc">{act.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* FOURTH ROW: PROJECT HEALTH PROGRESS RADIAL RINGS */}
-        {activeTab === 'map' && (
-          <div className="dashboard-fourth-row">
-            <div className="project-health-card glass">
-              <div className="health-header">
-                <h3 className="health-title">
-                  <PieChartIcon size={18} color="#0EA5E9" /> 60-Bigha Township Inventory & Project Health
-                </h3>
-                <span className="health-badge">Master Layout Allocation</span>
-              </div>
-
-              <div className="health-metrics-row">
-                <div className="health-progress-item">
-                  <div className="radial-progress green">
-                    <span>{occupancyRate}%</span>
-                  </div>
-                  <strong>Inventory Occupancy</strong>
-                  <p>{bookedCount + soldCount} of {plots.length} plots allocated</p>
-                </div>
-
-                <div className="health-progress-item">
-                  <div className="radial-progress red">
-                    <span>{Math.round((soldCount / plots.length) * 100)}%</span>
-                  </div>
-                  <strong>Executed Registries</strong>
-                  <p>{soldCount} Plots Sub-Registrar Signed</p>
-                </div>
-
-                <div className="health-progress-item">
-                  <div className="radial-progress amber">
-                    <span>{Math.round((bookedCount / plots.length) * 100)}%</span>
-                  </div>
-                  <strong>Tokens & UTR Hold</strong>
-                  <p>{bookedCount} Plots Awaiting Registry</p>
-                </div>
-
-                <div className="health-progress-item">
-                  <div className="radial-progress blue">
-                    <span>88%</span>
-                  </div>
-                  <strong>Construction Progress</strong>
-                  <p>Roads, Electricity & Gate complete</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Dynamic Module Content View */}
         <main className="main-content-body">
           <AnimatePresence mode="wait">
@@ -582,13 +486,40 @@ const MainLayout: React.FC = () => {
               transition={{ duration: 0.22, ease: 'easeInOut' }}
             >
               <Suspense fallback={<ComponentFallback />}>
-                {(activeTab === 'dashboard' || activeTab === 'map' || activeTab === 'inventory' || activeTab === 'bookings') && (
+                {activeTab === 'dashboard' && (
+                  <ExecutiveDashboardView
+                    onOpenBookingPlot={(plot) => setSelectedBookingPlot(plot)}
+                    onOpenReceipt={(bId) => setActiveReceiptBookingId(bId)}
+                    onOpenBond={(bId) => setActiveBondBookingId(bId)}
+                    onNavigateToTab={(tab) => setActiveTab(tab)}
+                  />
+                )}
+
+                {activeTab === 'map' && (
                   <InteractiveMap
                     onOpenBooking={(plot) => setSelectedBookingPlot(plot)}
                     onOpenReceipt={(bId) => setActiveReceiptBookingId(bId)}
                     onOpenBond={(bId) => setActiveBondBookingId(bId)}
                   />
                 )}
+
+                {activeTab === 'bookings' && (
+                  <BookingsDashboard
+                    onOpenBooking={() => setSelectedBookingPlot(plots.find((p) => p.status === 'available') || null)}
+                    onOpenReceipt={(bId) => setActiveReceiptBookingId(bId)}
+                    onOpenBond={(bId) => setActiveBondBookingId(bId)}
+                    onOpenQR={(bId) => setActiveQRBookingId(bId)}
+                  />
+                )}
+
+                {activeTab === 'inventory' && (
+                  <PlotInventoryDashboard
+                    onOpenBookingPlot={(plot) => setSelectedBookingPlot(plot)}
+                    onNavigateToMap={() => setActiveTab('map')}
+                  />
+                )}
+
+                {activeTab === 'customers' && <CustomerDirectoryDashboard />}
 
                 {activeTab === 'finance' && (
                   <RoleGuard
@@ -606,7 +537,7 @@ const MainLayout: React.FC = () => {
 
                 {(activeTab === 'profile' || activeTab === 'settings') && <UserProfileDashboard />}
 
-                {(activeTab === 'approvals' || activeTab === 'customers') && (
+                {activeTab === 'approvals' && (
                   <RoleGuard
                     requiredPermissions="users:manage_roles"
                     fallback={
