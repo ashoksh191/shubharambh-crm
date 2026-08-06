@@ -4,7 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { ProtectedRoute } from './components/Auth/ProtectedRoute';
 import { RoleGuard } from './components/Auth/RoleGuard';
-import { Sidebar } from './components/Navigation/Sidebar';
+import { Sidebar, type NavTabId } from './components/Navigation/Sidebar';
 import { InteractiveMap } from './components/Map/InteractiveMap';
 import { CommandPalette } from './components/UI/CommandPalette';
 import { ToastContainer, type ToastMessage } from './components/UI/ToastContainer';
@@ -22,22 +22,16 @@ import {
   Calendar as CalendarIcon,
   DollarSign,
   TrendingDown,
-  FileText,
   UserCheck,
   PieChart as PieChartIcon,
-  Award,
   MapPin,
-  FileCheck,
   CreditCard,
-  Building,
-  UserPlus,
-  CloudSun,
-  Database,
-  CheckCircle,
-  Download,
-  PlusCircle,
   Sun,
   Moon,
+  ArrowRight,
+  Lock,
+  Navigation,
+  Building,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Plot } from './types';
@@ -45,20 +39,11 @@ import type { EnhancedPlot } from './types/propertyMap';
 import './styles/App.css';
 
 // Lazy Loaded Heavy Modules & Views
-const AssociateDashboard = lazy(() =>
-  import('./components/MLM/AssociateDashboard').then((m) => ({ default: m.AssociateDashboard }))
-);
 const FinancialDashboard = lazy(() =>
   import('./components/Admin/FinancialDashboard').then((m) => ({ default: m.FinancialDashboard }))
 );
-const USPShowcase = lazy(() =>
-  import('./components/Public/USPShowcase').then((m) => ({ default: m.USPShowcase }))
-);
 const UserProfileDashboard = lazy(() =>
   import('./components/Dashboard/UserProfileDashboard').then((m) => ({ default: m.UserProfileDashboard }))
-);
-const AuditLogViewer = lazy(() =>
-  import('./components/Admin/AuditLogViewer').then((m) => ({ default: m.AuditLogViewer }))
 );
 const PendingApprovals = lazy(() =>
   import('./components/Admin/PendingApprovals').then((m) => ({ default: m.PendingApprovals }))
@@ -161,7 +146,7 @@ const KpiCardItem = memo<{ kpi: KpiData; index: number }>(({ kpi, index }) => {
       onMouseMove={handleMouseMove}
       className="enterprise-kpi-card-28px"
       style={{
-        background: `radial-gradient(circle at ${mousePos.x}px ${mousePos.y}px, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.75) 80%)`,
+        background: `radial-gradient(circle at ${mousePos.x}px ${mousePos.y}px, rgba(22, 32, 54, 0.75) 0%, rgba(13, 18, 30, 0.65) 80%)`,
         borderColor: `${kpi.color}35`,
       }}
     >
@@ -180,49 +165,32 @@ const KpiCardItem = memo<{ kpi: KpiData; index: number }>(({ kpi, index }) => {
 
       {/* Center Row: Extra Large Animated Count Value */}
       <div className="kpi-card-center-row">
-        <div className="kpi-hero-number-value" style={{ color: '#0F172A' }}>
+        <div className="kpi-hero-number-value" style={{ color: '#ffffff' }}>
           <AnimatedCount value={kpi.value} prefix={kpi.prefix} suffix={kpi.suffix} />
         </div>
         <span className="kpi-sub-caption-text">{kpi.desc}</span>
       </div>
 
-      {/* Bottom Row: Trend Pill & Animated SVG Sparkline */}
+      {/* Bottom Row: Trend Pill & Timestamp */}
       <div className="kpi-card-bottom-row">
         <div className={`kpi-change-indicator-pill ${kpi.isUp ? 'up' : 'down'}`}>
           {kpi.isUp ? <ArrowUpRight size={13} /> : <TrendingDown size={13} />}
-          <span>{kpi.trend}</span>
+          <span>▲ Trending {kpi.trend}</span>
         </div>
 
-        <svg className="kpi-animated-sparkline-svg" viewBox="0 0 100 28">
-          <defs>
-            <linearGradient id={`sparklineGrad-${kpi.id}`} x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor={kpi.color} stopOpacity="0.4" />
-              <stop offset="100%" stopColor={kpi.color} stopOpacity="1" />
-            </linearGradient>
-          </defs>
-          <motion.path
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 1.2, ease: 'easeOut', delay: index * 0.1 }}
-            d={kpi.sparkline}
-            fill="none"
-            stroke={`url(#sparklineGrad-${kpi.id})`}
-            strokeWidth="2.5"
-            strokeLinecap="round"
-          />
-        </svg>
+        <span className="kpi-updated-timestamp-tag">Updated 2 mins ago</span>
       </div>
     </motion.div>
   );
 });
 KpiCardItem.displayName = 'KpiCardItem';
 
+// Inside MainLayout component
 const MainLayout: React.FC = () => {
   const { plots } = useApp();
   const { user: authUser } = useAuth();
   const { resolvedTheme, toggleTheme } = useTheme();
-  const [activeTab, setActiveTab] = useState<'map' | 'mlm' | 'finance' | 'usps' | 'profile' | 'audit' | 'approvals'>('map');
-  const [chartTimeframe, setChartTimeframe] = useState<'7D' | '30D' | '90D' | '1Y'>('30D');
+  const [activeTab, setActiveTab] = useState<NavTabId>('dashboard');
 
   // Command Palette & Toast System States
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
@@ -305,18 +273,8 @@ const MainLayout: React.FC = () => {
     ];
   }, []);
 
-  // Top Performing Associates Leaderboard
-  const topAssociates = useMemo(() => {
-    return [
-      { rank: 1, name: 'Rajesh Sharma', level: 'Senior VP', sales: 14, revenue: '₹1.84 Cr', conversion: '32.4%', photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80' },
-      { rank: 2, name: 'Priya Verma', level: 'Vice President', sales: 11, revenue: '₹1.42 Cr', conversion: '28.1%', photo: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&auto=format&fit=crop&q=80' },
-      { rank: 3, name: 'Amitabh Gupta', level: 'Director', sales: 9, revenue: '₹1.15 Cr', conversion: '24.6%', photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80' },
-      { rank: 4, name: 'Sunita Yadav', level: 'Senior Associate', sales: 7, revenue: '₹88 Lakhs', conversion: '21.0%', photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80' },
-    ];
-  }, []);
-
   const formattedDate = currentTime.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-  const formattedTime = currentTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const formattedTime = currentTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
 
   return (
     <div className="sidebar-app-layout">
@@ -325,230 +283,217 @@ const MainLayout: React.FC = () => {
 
       {/* Right Main Viewport */}
       <div className="main-viewport-container">
-        {/* REDESIGNED EXECUTIVE COMMAND CENTER MAIN HEADER */}
-        <motion.header
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="executive-command-center-header"
-        >
-          {/* Ambient Soft Glowing Radial Blobs */}
-          <div className="header-ambient-glow-blob top-left"></div>
-          <div className="header-ambient-glow-blob bottom-right"></div>
-          <div className="header-subtle-grid-overlay"></div>
+        {/* CONDITIONAL RENDER: Simplified Hero Header section ONLY on Dashboard Home (activeTab === 'dashboard') */}
+        {activeTab === 'dashboard' ? (
+          <>
+            <motion.header
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="executive-command-center-header hero-redesign"
+            >
+              {/* Ambient Soft Glowing Radial Blobs */}
+              <div className="header-ambient-glow-blob top-left"></div>
+              <div className="header-ambient-glow-blob bottom-right"></div>
+              <div className="header-subtle-grid-overlay"></div>
 
-          {/* LEFT SIDE: HERO GREETING & SYNOPSIS */}
-          <div className="header-left-hero-block">
-            <div className="header-small-label-tag">
-              <span className="live-status-pulse-dot"></span>
-              EXECUTIVE COMMAND CENTER
-            </div>
-
-            <h1 className="header-hero-greeting-title">
-              Good Morning,<br />
-              <span className="greeting-user-name">{userName}</span>
-              <motion.span
-                animate={{ rotate: [0, 14, -8, 14, 0] }}
-                transition={{ repeat: Infinity, repeatDelay: 3, duration: 1.5 }}
-                style={{ display: 'inline-block', marginLeft: '10px', transformOrigin: '70% 70%' }}
-              >
-                👋
-              </motion.span>
-            </h1>
-
-            <p className="header-synopsis-sentence">
-              Real-time township monitoring, sales analytics, booking intelligence and financial overview.
-            </p>
-          </div>
-
-          {/* RIGHT SIDE: TELEMETRY GLASS PILLS & ANIMATED QUICK ACTIONS */}
-          <div className="header-right-telemetry-block">
-            {/* TOP ROW: TELEMETRY GLASS PILLS */}
-            <div className="header-top-telemetry-pills-row">
-              <div className="telemetry-glass-pill">
-                <CalendarIcon size={14} color="#0EA5E9" />
-                <span>{formattedDate}</span>
+              {/* LEFT SIDE: DASHBOARD TITLE, GREETING & SUBTITLE */}
+              <div className="header-left-hero-block">
+                <div className="header-breadcrumb-tag">Dashboard</div>
+                <h1 className="header-hero-greeting-title">
+                  Good Morning, <span className="greeting-user-name">{userName}</span> 👋
+                </h1>
+                <p className="header-synopsis-sentence">
+                  Welcome back. Here's today's township overview.
+                </p>
               </div>
 
-              <div className="telemetry-glass-pill">
-                <Clock size={14} color="#10B981" />
-                <strong>{formattedTime}</strong>
-              </div>
+              {/* RIGHT SIDE: CURRENT DATE & CURRENT TIME CHIPS ONLY */}
+              <div className="header-right-chips-only">
+                <div className="hero-telemetry-chip">
+                  <CalendarIcon size={14} color="#34D399" />
+                  <span>{formattedDate}</span>
+                </div>
 
-              <div className="telemetry-glass-pill">
-                <CloudSun size={14} color="#F59E0B" />
-                <span>⛅ 28°C Lucknow</span>
-              </div>
-
-              <div className="telemetry-glass-pill">
-                <span className="live-online-user-dot"></span>
-                <span>48 Active</span>
-              </div>
-
-              <div className="telemetry-glass-pill">
-                <Database size={13} color="#10B981" />
-                <span>🟢 Connected</span>
-              </div>
-
-              <div className="telemetry-glass-pill">
-                <CheckCircle size={13} color="#10B981" />
-                <span>🟢 Operational</span>
-              </div>
-
-              <div className="header-icon-actions-group">
-                {/* Theme Mode Toggle Button */}
-                <motion.button
-                  whileHover={{ scale: 1.08 }}
-                  whileTap={{ scale: 0.92 }}
-                  className="glass-icon-btn"
-                  onClick={toggleTheme}
-                  title={`Current Theme: ${resolvedTheme.toUpperCase()}. Click to switch.`}
-                >
-                  {resolvedTheme === 'dark' ? <Sun size={18} color="#F59E0B" /> : <Moon size={18} color="#0EA5E9" />}
-                </motion.button>
-
-                <motion.button
-                  whileHover={{ scale: 1.06 }}
-                  whileTap={{ scale: 0.94 }}
-                  className="glass-icon-btn notification"
-                  onClick={() => addToast('info', 'Notifications', '2 Pending User Approvals & 3 UTR Verifications queued.')}
-                  title="Notification Center"
-                >
-                  <Bell size={18} />
-                  <span className="glass-badge-counter">2</span>
-                </motion.button>
-
-                <div className="header-user-avatar-glass" title={`${userName} (Super Admin)`}>
-                  <span>{userName.charAt(0)}</span>
+                <div className="hero-telemetry-chip">
+                  <Clock size={14} color="#38BDF8" />
+                  <strong>{formattedTime}</strong>
                 </div>
               </div>
-            </div>
+            </motion.header>
 
-            {/* BELOW ROW: ANIMATED QUICK ACTION BUTTONS */}
-            <div className="header-below-quick-actions-row">
+            {/* QUICK ACTIONS TOOLBAR */}
+            <div className="bottom-quick-actions-bar">
               <motion.button
-                whileHover={{ scale: 1.04, y: -2 }}
-                whileTap={{ scale: 0.96 }}
-                className="header-quick-action-btn primary"
-                onClick={() => {
-                  setActiveTab('map');
-                  addToast('info', 'New Booking', 'Select an available plot on the layout map grid to book');
-                }}
-              >
-                <PlusCircle size={15} /> + New Booking
-              </motion.button>
-
-              <motion.button
-                whileHover={{ scale: 1.04, y: -2 }}
-                whileTap={{ scale: 0.96 }}
-                className="header-quick-action-btn"
-                onClick={() => {
-                  setActiveTab('approvals');
-                  addToast('info', 'Add Customer', 'Navigated to Pending User Approvals & Customer Registration');
-                }}
-              >
-                <UserPlus size={15} /> + Add Customer
-              </motion.button>
-
-              <motion.button
-                whileHover={{ scale: 1.04, y: -2 }}
-                whileTap={{ scale: 0.96 }}
-                className="header-quick-action-btn"
+                whileHover={{ y: -4 }}
+                whileTap={{ scale: 0.97 }}
+                className="quick-action-pill primary"
                 onClick={() => setActiveTab('map')}
               >
-                <MapPin size={15} /> Open GIS Map
+                <Sparkles size={16} /> + Book Plot
               </motion.button>
 
               <motion.button
-                whileHover={{ scale: 1.04, y: -2 }}
-                whileTap={{ scale: 0.96 }}
-                className="header-quick-action-btn"
-                onClick={() => {
-                  setActiveTab('finance');
-                  addToast('success', 'Report Generated', 'Master Financial & Inventory Report ready');
-                }}
+                whileHover={{ y: -4 }}
+                whileTap={{ scale: 0.97 }}
+                className="quick-action-pill"
+                onClick={() => setIsCommandPaletteOpen(true)}
               >
-                <FileText size={15} /> Generate Report
+                <Search size={16} /> Customer Search
               </motion.button>
 
               <motion.button
-                whileHover={{ scale: 1.04, y: -2 }}
-                whileTap={{ scale: 0.96 }}
-                className="header-quick-action-btn"
-                onClick={() => {
-                  addToast('info', 'Export Started', 'Exporting township inventory dataset to CSV...');
-                }}
+                whileHover={{ y: -4 }}
+                whileTap={{ scale: 0.97 }}
+                className="quick-action-pill"
+                onClick={() => setActiveTab('map')}
               >
-                <Download size={15} /> Export Data
+                <MapPin size={16} /> Layout Map
               </motion.button>
+
+              <motion.button
+                whileHover={{ y: -4 }}
+                whileTap={{ scale: 0.97 }}
+                className="quick-action-pill"
+                onClick={() => setActiveTab('finance')}
+              >
+                <CreditCard size={16} /> Payments
+              </motion.button>
+            </div>
+
+            {/* PROPERTY OVERVIEW CARD */}
+            <div className="property-overview-card glass">
+              <div className="property-overview-header">
+                <div className="property-brand-title-block">
+                  <div className="property-live-indicator-dot"></div>
+                  <div>
+                    <h2 className="property-township-name">Shubharambh Green City</h2>
+                    <span className="property-township-location">60-Bigha Premium Integrated Township • Lucknow</span>
+                  </div>
+                </div>
+
+                <motion.button
+                  whileHover={{ scale: 1.04, x: 3 }}
+                  whileTap={{ scale: 0.96 }}
+                  className="property-view-layout-btn"
+                  onClick={() => setActiveTab('map')}
+                >
+                  View Layout <ArrowRight size={15} />
+                </motion.button>
+              </div>
+
+              <div className="property-metrics-grid">
+                <div className="property-stat-box">
+                  <div className="property-stat-icon blue">
+                    <Building size={18} />
+                  </div>
+                  <div className="property-stat-info">
+                    <strong className="property-stat-value">980</strong>
+                    <span className="property-stat-label">Total Plots</span>
+                  </div>
+                </div>
+
+                <div className="property-stat-box">
+                  <div className="property-stat-icon green">
+                    <CheckCircle2 size={18} />
+                  </div>
+                  <div className="property-stat-info">
+                    <strong className="property-stat-value green">811</strong>
+                    <span className="property-stat-label">Available</span>
+                  </div>
+                </div>
+
+                <div className="property-stat-box">
+                  <div className="property-stat-icon amber">
+                    <Lock size={18} />
+                  </div>
+                  <div className="property-stat-info">
+                    <strong className="property-stat-value amber">169</strong>
+                    <span className="property-stat-label">Sold</span>
+                  </div>
+                </div>
+
+                <div className="property-badge-pill green">
+                  <ShieldCheck size={16} />
+                  <span>RERA Approved</span>
+                </div>
+
+                <div className="property-badge-pill cyan">
+                  <Navigation size={16} />
+                  <span>40 Ft Main Road</span>
+                </div>
+              </div>
+            </div>
+
+            {/* FIRST ROW: REDESIGNED ENTERPRISE ANALYTICS KPI CARDS (28px Glassmorphism) */}
+            <div className="kpi-cards-grid-28px">
+              {kpiCards.map((kpi, idx) => (
+                <KpiCardItem key={kpi.id} kpi={kpi} index={idx} />
+              ))}
+            </div>
+          </>
+        ) : (
+          /* SUB-PAGE COMPACT GLASS HEADER WITH BREADCRUMB */
+          <div className="subpage-top-header">
+            <div className="subpage-title-block">
+              <div className="subpage-breadcrumb-tag">
+                Dashboard &gt; {activeTab.toUpperCase()}
+              </div>
+              <h2>
+                {activeTab === 'bookings' && 'Township Plot Bookings'}
+                {activeTab === 'customers' && 'Customer Directory & KYC Queue'}
+                {activeTab === 'inventory' && 'Master Plot Inventory & Availability'}
+                {activeTab === 'map' && 'Interactive 60-Bigha Layout Map'}
+                {activeTab === 'finance' && 'Accounting & Payments Ledger'}
+                {activeTab === 'approvals' && 'Pending Registration Approvals'}
+                {activeTab === 'profile' && 'My Profile & Device Security'}
+                {activeTab === 'settings' && 'Account & System Preferences'}
+              </h2>
+              <p>
+                {activeTab === 'bookings' && 'Track advance token payments, customer allocation & booking statuses.'}
+                {activeTab === 'customers' && 'Manage registered buyers, verified leads & associate accounts.'}
+                {activeTab === 'inventory' && 'Real-time 980 plot status, area specifications & price list.'}
+                {activeTab === 'map' && 'Full-screen spatial GIS canvas of Shubharambh Green City.'}
+                {activeTab === 'finance' && 'Payment ledger, UTR verifications & automated receipt generation.'}
+                {activeTab === 'approvals' && 'KYC review & pending associate registration queue.'}
+                {activeTab === 'profile' && 'Manage personal details, security credentials & 2FA authentication.'}
+                {activeTab === 'settings' && 'System preferences, notification rules & role permissions.'}
+              </p>
+            </div>
+
+            <div className="header-icon-actions-group">
+              <motion.button
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.92 }}
+                className="glass-icon-btn"
+                onClick={toggleTheme}
+                title={`Current Theme: ${resolvedTheme.toUpperCase()}. Click to switch.`}
+              >
+                {resolvedTheme === 'dark' ? <Sun size={18} color="#F59E0B" /> : <Moon size={18} color="#0EA5E9" />}
+              </motion.button>
+
+              <motion.button
+                whileHover={{ scale: 1.06 }}
+                whileTap={{ scale: 0.94 }}
+                className="glass-icon-btn notification"
+                onClick={() => addToast('info', 'Notifications', '2 Pending User Approvals & 3 UTR Verifications queued.')}
+                title="Notification Center"
+              >
+                <Bell size={18} />
+                <span className="glass-badge-counter">2</span>
+              </motion.button>
+
+              <div className="header-user-avatar-glass" title={`${userName} (Super Admin)`}>
+                <span>{userName.charAt(0)}</span>
+              </div>
             </div>
           </div>
-        </motion.header>
+        )}
 
-        {/* FIRST ROW: REDESIGNED ENTERPRISE ANALYTICS KPI CARDS (28px Glassmorphism) */}
-        <div className="kpi-cards-grid-28px">
-          {kpiCards.map((kpi, idx) => (
-            <KpiCardItem key={kpi.id} kpi={kpi} index={idx} />
-          ))}
-        </div>
-
-        {/* SECOND ROW & RIGHT PANEL GRID (ANALYTICS AREA CHART + LIVE RECENT ACTIVITY) */}
+        {/* SECOND ROW & RIGHT PANEL GRID (LIVE RECENT ACTIVITY) */}
         {activeTab === 'map' && (
           <div className="dashboard-second-row-grid">
-            {/* Revenue & Booking Trend Area Chart Widget */}
-            <div className="analytics-chart-card glass">
-              <div className="chart-header">
-                <div>
-                  <h3 className="chart-title">Revenue & Booking Conversion Velocity</h3>
-                  <span className="chart-subtitle">Real-time revenue inflow vs monthly target benchmark</span>
-                </div>
-                <div className="chart-timeframe-selector">
-                  {(['7D', '30D', '90D', '1Y'] as const).map((tf) => (
-                    <button
-                      key={tf}
-                      className={`timeframe-chip ${chartTimeframe === tf ? 'active' : ''}`}
-                      onClick={() => setChartTimeframe(tf)}
-                    >
-                      {tf}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Large Area Chart Visualisation */}
-              <div className="area-chart-container">
-                <svg className="area-chart-svg" viewBox="0 0 800 220" preserveAspectRatio="none">
-                  <defs>
-                    <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#0EA5E9" stopOpacity="0.4" />
-                      <stop offset="100%" stopColor="#0EA5E9" stopOpacity="0.0" />
-                    </linearGradient>
-                  </defs>
-                  <path
-                    d="M 0,180 Q 100,120 200,150 T 400,80 T 600,100 T 800,20 L 800,220 L 0,220 Z"
-                    fill="url(#areaGradient)"
-                  />
-                  <motion.path
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 1.2, ease: 'easeOut' }}
-                    d="M 0,180 Q 100,120 200,150 T 400,80 T 600,100 T 800,20"
-                    fill="none"
-                    stroke="#0EA5E9"
-                    strokeWidth="3.5"
-                  />
-                </svg>
-                <div className="chart-x-axis-labels">
-                  <span>Week 1</span>
-                  <span>Week 2</span>
-                  <span>Week 3</span>
-                  <span>Week 4</span>
-                  <span>Week 5</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Activity Timeline Panel */}
+            {/* Live Activity Timeline Panel */}
             <div className="activity-timeline-card glass">
               <div className="timeline-header">
                 <h3 className="timeline-title">
@@ -570,45 +515,6 @@ const MainLayout: React.FC = () => {
                       </div>
                       <strong className="activity-item-title">{act.title}</strong>
                       <p className="activity-item-desc">{act.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* THIRD ROW: TOP PERFORMING ASSOCIATES LEADERBOARD */}
-        {activeTab === 'map' && (
-          <div className="dashboard-third-row">
-            <div className="associates-leaderboard-card glass">
-              <div className="leaderboard-header">
-                <h3 className="leaderboard-title">
-                  <Award size={18} color="#F59E0B" /> Top Performing Sales Associates
-                </h3>
-                <span className="leaderboard-badge">Monthly Revenue Rank</span>
-              </div>
-
-              <div className="associates-grid">
-                {topAssociates.map((assoc) => (
-                  <div key={assoc.rank} className="associate-rank-card">
-                    <div className="rank-badge-number">#{assoc.rank}</div>
-                    <img src={assoc.photo} alt={assoc.name} className="associate-avatar-img" />
-                    <div className="associate-info-block">
-                      <strong>{assoc.name}</strong>
-                      <span>{assoc.level}</span>
-                    </div>
-                    <div className="associate-stat-pill">
-                      <span className="stat-label">Sales</span>
-                      <strong className="stat-val">{assoc.sales} Plots</strong>
-                    </div>
-                    <div className="associate-stat-pill">
-                      <span className="stat-label">Revenue</span>
-                      <strong className="stat-val green">{assoc.revenue}</strong>
-                    </div>
-                    <div className="associate-stat-pill">
-                      <span className="stat-label">Conversion</span>
-                      <strong className="stat-val blue">{assoc.conversion}</strong>
                     </div>
                   </div>
                 ))}
@@ -665,81 +571,6 @@ const MainLayout: React.FC = () => {
           </div>
         )}
 
-        {/* BOTTOM FLOATING QUICK ACTIONS TOOLBAR */}
-        <div className="bottom-quick-actions-bar">
-          <motion.button
-            whileHover={{ scale: 1.04, y: -2 }}
-            whileTap={{ scale: 0.96 }}
-            className="quick-action-pill primary"
-            onClick={() => setActiveTab('map')}
-          >
-            <Sparkles size={16} /> Book Plot
-          </motion.button>
-
-          <motion.button
-            whileHover={{ scale: 1.04, y: -2 }}
-            whileTap={{ scale: 0.96 }}
-            className="quick-action-pill"
-            onClick={() => {
-              setActiveTab('map');
-              addToast('info', 'Receipt PDF', 'Select a plot or booking to generate PDF Receipt');
-            }}
-          >
-            <FileText size={16} /> Generate Receipt
-          </motion.button>
-
-          <motion.button
-            whileHover={{ scale: 1.04, y: -2 }}
-            whileTap={{ scale: 0.96 }}
-            className="quick-action-pill"
-            onClick={() => setIsCommandPaletteOpen(true)}
-          >
-            <Search size={16} /> Customer Search
-          </motion.button>
-
-          <motion.button
-            whileHover={{ scale: 1.04, y: -2 }}
-            whileTap={{ scale: 0.96 }}
-            className="quick-action-pill"
-            onClick={() => setActiveTab('map')}
-          >
-            <MapPin size={16} /> View Map
-          </motion.button>
-
-          <motion.button
-            whileHover={{ scale: 1.04, y: -2 }}
-            whileTap={{ scale: 0.96 }}
-            className="quick-action-pill"
-            onClick={() => setActiveTab('finance')}
-          >
-            <CreditCard size={16} /> Payment Entry
-          </motion.button>
-
-          <motion.button
-            whileHover={{ scale: 1.04, y: -2 }}
-            whileTap={{ scale: 0.96 }}
-            className="quick-action-pill"
-            onClick={() => {
-              setActiveTab('map');
-              addToast('info', 'Registry Status', 'Inspect plot sub-registrar status on GIS canvas');
-            }}
-          >
-            <Building size={16} /> Registry
-          </motion.button>
-
-          <motion.button
-            whileHover={{ scale: 1.04, y: -2 }}
-            whileTap={{ scale: 0.96 }}
-            className="quick-action-pill"
-            onClick={() => {
-              setActiveTab('map');
-              addToast('info', 'Agreement Bond', 'Agreement Bond Generator ready');
-            }}
-          >
-            <FileCheck size={16} /> Create Agreement
-          </motion.button>
-        </div>
-
         {/* Dynamic Module Content View */}
         <main className="main-content-body">
           <AnimatePresence mode="wait">
@@ -751,15 +582,13 @@ const MainLayout: React.FC = () => {
               transition={{ duration: 0.22, ease: 'easeInOut' }}
             >
               <Suspense fallback={<ComponentFallback />}>
-                {activeTab === 'map' && (
+                {(activeTab === 'dashboard' || activeTab === 'map' || activeTab === 'inventory' || activeTab === 'bookings') && (
                   <InteractiveMap
                     onOpenBooking={(plot) => setSelectedBookingPlot(plot)}
                     onOpenReceipt={(bId) => setActiveReceiptBookingId(bId)}
                     onOpenBond={(bId) => setActiveBondBookingId(bId)}
                   />
                 )}
-
-                {activeTab === 'mlm' && <AssociateDashboard />}
 
                 {activeTab === 'finance' && (
                   <RoleGuard
@@ -775,11 +604,9 @@ const MainLayout: React.FC = () => {
                   </RoleGuard>
                 )}
 
-                {activeTab === 'usps' && <USPShowcase />}
+                {(activeTab === 'profile' || activeTab === 'settings') && <UserProfileDashboard />}
 
-                {activeTab === 'profile' && <UserProfileDashboard />}
-
-                {activeTab === 'approvals' && (
+                {(activeTab === 'approvals' || activeTab === 'customers') && (
                   <RoleGuard
                     requiredPermissions="users:manage_roles"
                     fallback={
@@ -790,20 +617,6 @@ const MainLayout: React.FC = () => {
                     }
                   >
                     <PendingApprovals />
-                  </RoleGuard>
-                )}
-
-                {activeTab === 'audit' && (
-                  <RoleGuard
-                    requiredPermissions="audit_logs:read"
-                    fallback={
-                      <div className="access-denied-card">
-                        <h3>⛔ Access Denied</h3>
-                        <p>Only <strong>ADMIN</strong> and <strong>SUPER_ADMIN</strong> roles can inspect enterprise security audit trails.</p>
-                      </div>
-                    }
-                  >
-                    <AuditLogViewer />
                   </RoleGuard>
                 )}
               </Suspense>
@@ -873,28 +686,28 @@ const MainLayout: React.FC = () => {
               onClick={() => setActiveTab('map')}
             >
               <span style={{ fontSize: '1.2rem' }}>🗺️</span>
-              <span>Map Grid</span>
+              <span>Dashboard</span>
             </button>
             <button
-              className={`mobile-nav-btn ${activeTab === 'mlm' ? 'active' : ''}`}
-              onClick={() => setActiveTab('mlm')}
+              className={`mobile-nav-btn ${activeTab === 'finance' ? 'active' : ''}`}
+              onClick={() => setActiveTab('finance')}
             >
-              <span style={{ fontSize: '1.2rem' }}>👥</span>
-              <span>MLM Tree</span>
+              <span style={{ fontSize: '1.2rem' }}>💳</span>
+              <span>Payments</span>
+            </button>
+            <button
+              className={`mobile-nav-btn ${activeTab === 'approvals' ? 'active' : ''}`}
+              onClick={() => setActiveTab('approvals')}
+            >
+              <span style={{ fontSize: '1.2rem' }}>📋</span>
+              <span>Approvals</span>
             </button>
             <button
               className={`mobile-nav-btn ${activeTab === 'profile' ? 'active' : ''}`}
               onClick={() => setActiveTab('profile')}
             >
               <span style={{ fontSize: '1.2rem' }}>👤</span>
-              <span>Profile</span>
-            </button>
-            <button
-              className={`mobile-nav-btn ${activeTab === 'usps' ? 'active' : ''}`}
-              onClick={() => setActiveTab('usps')}
-            >
-              <span style={{ fontSize: '1.2rem' }}>🌟</span>
-              <span>USPs</span>
+              <span>My Profile</span>
             </button>
           </div>
         </div>

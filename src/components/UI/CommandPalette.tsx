@@ -2,13 +2,9 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Map,
-  Users,
   DollarSign,
-  Sparkles,
   User,
   CheckSquare,
-  FileText,
-  Building,
   QrCode,
   FileCheck,
   PhoneCall,
@@ -21,10 +17,12 @@ import { useApp } from '../../context/AppContext';
 import { useAuth } from '../../context/AuthContext';
 import type { EnhancedPlot } from '../../types/propertyMap';
 
+import type { NavTabId } from '../Navigation/Sidebar';
+
 interface CommandPaletteProps {
   isOpen: boolean;
   onClose: () => void;
-  onNavigateTab: (tab: 'map' | 'mlm' | 'finance' | 'usps' | 'profile' | 'audit' | 'approvals') => void;
+  onNavigateTab: (tab: NavTabId) => void;
   onSelectPlot?: (plot: EnhancedPlot) => void;
 }
 
@@ -54,13 +52,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   const items = useMemo(() => {
     const actions = [
       { id: 'nav-map', label: 'Go to Dashboard & Layout Map', category: 'Navigation', icon: Map, action: () => onNavigateTab('map') },
-      { id: 'nav-mlm', label: 'Go to MLM Associate Hierarchy', category: 'Navigation', icon: Users, action: () => onNavigateTab('mlm') },
       { id: 'nav-finance', label: 'Go to Accounting & Payments', category: 'Navigation', icon: DollarSign, action: () => onNavigateTab('finance') },
-      { id: 'nav-usps', label: 'Go to Project USPs & Gate', category: 'Navigation', icon: Sparkles, action: () => onNavigateTab('usps') },
-      { id: 'nav-profile', label: 'Go to Security Profile', category: 'Navigation', icon: User, action: () => onNavigateTab('profile') },
+      { id: 'nav-profile', label: 'Go to My Profile', category: 'Navigation', icon: User, action: () => onNavigateTab('profile') },
       { id: 'nav-approvals', label: 'Go to Pending Approvals', category: 'Navigation', icon: CheckSquare, action: () => onNavigateTab('approvals') },
-      { id: 'nav-audit', label: 'Go to Security Audit Logs', category: 'Navigation', icon: FileText, action: () => onNavigateTab('audit') },
-      { id: 'act-site-visit', label: 'Book Physical Site Visit', category: 'Quick Action', icon: Building, action: () => { onNavigateTab('usps'); } },
       { id: 'act-qr', label: 'QR Receipt Verification', category: 'Quick Action', icon: QrCode, action: () => { onNavigateTab('map'); } },
       { id: 'act-bond', label: 'Agreement Bond Generator', category: 'Quick Action', icon: FileCheck, action: () => { onNavigateTab('map'); } },
       { id: 'act-support', label: 'Call 24x7 Support Helpline', category: 'Quick Action', icon: PhoneCall, action: () => alert('Support: +91 98765 43210') },

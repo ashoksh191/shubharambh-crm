@@ -35,7 +35,7 @@ export const PasskeyLogin: React.FC<PasskeyLoginProps> = ({ onSuccess, onError }
     <button
       type="button"
       onClick={handlePasskeySignIn}
-      style={passkeyBtnStyle}
+      className="passkey-login-btn"
       disabled={loading}
       title="Sign in with Windows Hello, Touch ID, Face ID or YubiKey"
     >
@@ -43,22 +43,4 @@ export const PasskeyLogin: React.FC<PasskeyLoginProps> = ({ onSuccess, onError }
       <span>{loading ? 'Authenticating Passkey...' : 'Sign in with Passkey (Touch ID / Face ID)'}</span>
     </button>
   );
-};
-
-const passkeyBtnStyle: React.CSSProperties = {
-  width: '100%',
-  padding: '0.75rem',
-  borderRadius: '10px',
-  border: '1px solid rgba(16, 185, 129, 0.4)',
-  background: 'rgba(16, 185, 129, 0.12)',
-  color: '#6ee7b7',
-  fontWeight: 600,
-  fontSize: '0.88rem',
-  cursor: 'pointer',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  gap: '0.5rem',
-  transition: 'all 0.2s ease',
-  marginBottom: '0.75rem',
 };

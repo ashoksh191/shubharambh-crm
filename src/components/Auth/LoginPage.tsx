@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { ForgotPasswordModal } from './ForgotPasswordModal';
 import { RegisterModal } from './RegisterModal';
@@ -8,9 +8,39 @@ import { CaptchaWidget } from './CaptchaWidget';
 import { generateDeviceFingerprint } from '../../utils/fingerprint';
 import { dispatchRealSmsOtp } from '../../utils/fast2smsClient';
 import { Mail, Lock, ArrowLeft, LogIn, Sparkles, UserCheck, Eye, EyeOff } from 'lucide-react';
+import luxuryModernTownshipImg from '../../assets/luxury_modern_township.jpg';
+import luxuryVillasImg from '../../assets/luxury_villas.jpg';
+import luxuryTownshipImg from '../../assets/luxury_township.jpg';
 import '../../styles/LoginPage.css';
 
 const FAST2SMS_API_KEY = 'B57vxDy96JW4dtrlmUasIzQoenHj21Fk8XgRwqTNfYOiEZPpCSKETS7m53od4VMDfwZvsyqN90kYuej1';
+
+const CAROUSEL_SLIDES = [
+  {
+    id: 0,
+    image: luxuryModernTownshipImg,
+    tag: 'Luxury Township CRM',
+    titleLine1: 'Manage Every Plot.',
+    titleLine2: 'Manage Every Lead.',
+    subtext: 'Luxury Township CRM for complete property management.',
+  },
+  {
+    id: 1,
+    image: luxuryVillasImg,
+    tag: 'Premium Real Estate',
+    titleLine1: 'Premium Township.',
+    titleLine2: 'Premium Investment.',
+    subtext: 'Invest in 60-bigha master planned prime gated township.',
+  },
+  {
+    id: 2,
+    image: luxuryTownshipImg,
+    tag: 'Smart Township CRM',
+    titleLine1: 'Luxury Living.',
+    titleLine2: 'Smart Property Management.',
+    subtext: 'Real-time plot availability, automated agreement bonds & GIS engine.',
+  },
+];
 
 interface LoginPageProps {
   onBackToHome?: () => void;
@@ -18,6 +48,17 @@ interface LoginPageProps {
 
 export const LoginPage: React.FC<LoginPageProps> = ({ onBackToHome }) => {
   const { login } = useAuth();
+
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    if (isHovered) return;
+    const timer = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % CAROUSEL_SLIDES.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, [isHovered]);
 
   const [identifier, setIdentifier] = useState('superadmin');
   const [password, setPassword] = useState('Password@123456');
@@ -137,31 +178,66 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onBackToHome }) => {
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         className={`sgc-login-split-grid ${shake ? 'shake-animation' : ''}`}
       >
-        {/* LEFT COLUMN: 58% Luxury Apartment Showcase */}
-        <div className="sgc-login-left-showcase">
-          <img
-            src="./assets/luxury_apartments.jpg"
-            alt="Luxury Real Estate High-Rise Towers"
-            className="login-bg-showcase-img"
-          />
+        {/* LEFT COLUMN: Premium Hero Image & Text Carousel Showcase */}
+        <div
+          className="sgc-login-left-showcase"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          {/* Crossfade Images */}
+          <div className="login-carousel-images-container">
+            {CAROUSEL_SLIDES.map((slide, idx) => (
+              <motion.img
+                key={slide.id}
+                src={slide.image}
+                alt="Luxury Real Estate Showcase"
+                className="login-bg-showcase-img"
+                initial={false}
+                animate={{
+                  opacity: activeSlide === idx ? 1 : 0,
+                  scale: activeSlide === idx ? 1.08 : 1.02,
+                }}
+                transition={{
+                  opacity: { duration: 0.8, ease: 'easeInOut' },
+                  scale: { duration: 6, ease: 'linear' },
+                }}
+                style={{
+                  zIndex: activeSlide === idx ? 1 : 0,
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Dark Gradient Overlay */}
           <div className="login-bg-overlay" />
 
-          {/* Top Brand Tag */}
+          {/* Top Brand Badge */}
           <div className="mercury-pill-badge" style={{ alignSelf: 'flex-start' }}>
             <Sparkles size={13} color="#34d399" />
             SHUBHARAMBH GREEN CITY
           </div>
 
-          {/* Bottom-left Content Lockup */}
+          {/* Bottom-left Content Lockup with synchronized text animation */}
           <div className="login-left-content">
-            <div className="login-brand-subtitle-tag">Luxury Township CRM</div>
-            <h1 className="login-left-headline">
-              Manage Every Plot. <br />
-              <span className="hero-gradient-text">Manage Every Lead.</span>
-            </h1>
-            <p className="login-left-subtext">
-              Luxury Township CRM for complete property management.
-            </p>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={CAROUSEL_SLIDES[activeSlide].id}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}
+              >
+                <div className="login-brand-subtitle-tag">{CAROUSEL_SLIDES[activeSlide].tag}</div>
+                <h1 className="login-left-headline">
+                  {CAROUSEL_SLIDES[activeSlide].titleLine1} <br />
+                  <span className="hero-gradient-text">{CAROUSEL_SLIDES[activeSlide].titleLine2}</span>
+                </h1>
+                <p className="login-left-subtext">
+                  {CAROUSEL_SLIDES[activeSlide].subtext}
+                </p>
+              </motion.div>
+            </AnimatePresence>
 
             {/* 3 Premium Badges */}
             <div className="login-trust-chips">
@@ -177,6 +253,19 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onBackToHome }) => {
                 <span className="badge-check-icon">✓</span>
                 <span>Secure CRM</span>
               </div>
+            </div>
+
+            {/* 3 Manual Navigation Dots */}
+            <div className="hero-carousel-dots">
+              {CAROUSEL_SLIDES.map((slide, idx) => (
+                <button
+                  key={slide.id}
+                  type="button"
+                  className={`hero-carousel-dot ${activeSlide === idx ? 'active' : ''}`}
+                  onClick={() => setActiveSlide(idx)}
+                  aria-label={`Go to slide ${idx + 1}`}
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -216,7 +305,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onBackToHome }) => {
               className="login-fast-direct-btn"
               onClick={handleFastDirectLogin}
             >
-              <Sparkles size={16} color="#38bdf8" /> Fast Direct Sign In (Demo Access)
+              <Sparkles size={16} color="#34d399" /> Fast Direct Sign In (Demo Access)
             </motion.button>
 
             <div className="login-divider">
