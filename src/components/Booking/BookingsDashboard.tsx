@@ -7,14 +7,6 @@ import {
   CalendarCheck,
   Search,
   Filter,
-  FileText,
-  FileCheck,
-  QrCode,
-  User,
-  Phone,
-  CheckCircle2,
-  Clock,
-  Trash2,
   Plus,
 } from 'lucide-react';
 import '../../styles/App.css';
@@ -30,7 +22,6 @@ export const BookingsDashboard: React.FC<BookingsDashboardProps> = ({
   onOpenBooking,
   onOpenReceipt,
   onOpenBond,
-  onOpenQR,
 }) => {
   const { bookings, wipeOutBooking } = useApp();
   const { user: authUser } = useAuth();
@@ -90,7 +81,7 @@ export const BookingsDashboard: React.FC<BookingsDashboardProps> = ({
       {/* Top Section Header & Action */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
         <div>
-          <div className="subpage-breadcrumb-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', color: '#34d399', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <div className="subpage-breadcrumb-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', color: '#D4AF37', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             <CalendarCheck size={14} /> Township Sales & Bookings Ledger
           </div>
           <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#ffffff', margin: '4px 0 0 0', letterSpacing: '-0.02em' }}>
@@ -106,64 +97,63 @@ export const BookingsDashboard: React.FC<BookingsDashboardProps> = ({
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             onClick={onOpenBooking}
-            className="btn-primary-gradient"
             style={{
               padding: '12px 22px',
-              borderRadius: '14px',
-              fontWeight: 700,
+              borderRadius: '12px',
+              fontWeight: 800,
               fontSize: '0.9rem',
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+              background: '#07291F',
               color: '#ffffff',
-              border: 'none',
+              border: '1px solid #D4AF37',
               cursor: 'pointer',
-              boxShadow: '0 8px 24px rgba(16, 185, 129, 0.35)',
+              boxShadow: '0 4px 14px rgba(7, 41, 31, 0.3)',
             }}
           >
-            <Plus size={18} /> New Plot Booking
+            <Plus size={18} color="#D4AF37" /> New Plot Booking
           </motion.button>
         )}
       </div>
 
-      {/* Metric Cards Row */}
+      {/* Metric Cards Row (20px Rounded Cards with Thin Gold Borders) */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
-        <div style={{ background: 'rgba(15, 22, 36, 0.75)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '18px', padding: '18px 20px', backdropFilter: 'blur(16px)' }}>
-          <span style={{ fontSize: '0.78rem', color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase' }}>TOTAL BOOKINGS</span>
+        <div style={{ background: 'rgba(7, 41, 31, 0.85)', border: '1px solid rgba(212, 175, 55, 0.25)', borderRadius: '20px', padding: '18px 20px', backdropFilter: 'blur(16px)', boxShadow: '0 10px 30px rgba(7, 41, 31, 0.06)' }}>
+          <span style={{ fontSize: '0.78rem', color: '#A3B1AC', fontWeight: 600, textTransform: 'uppercase' }}>TOTAL BOOKINGS</span>
           <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#ffffff', marginTop: '4px' }}>{stats.totalCount}</div>
-          <span style={{ fontSize: '0.75rem', color: '#34d399' }}>{stats.confirmedCount} Verified Confirmed</span>
+          <span style={{ fontSize: '0.75rem', color: '#E8C96A' }}>{stats.confirmedCount} Verified Confirmed</span>
         </div>
 
-        <div style={{ background: 'rgba(15, 22, 36, 0.75)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '18px', padding: '18px 20px', backdropFilter: 'blur(16px)' }}>
-          <span style={{ fontSize: '0.78rem', color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase' }}>TOTAL BOOKING VOLUME</span>
-          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#34d399', marginTop: '4px' }}>
+        <div style={{ background: 'rgba(7, 41, 31, 0.85)', border: '1px solid rgba(212, 175, 55, 0.25)', borderRadius: '20px', padding: '18px 20px', backdropFilter: 'blur(16px)', boxShadow: '0 10px 30px rgba(7, 41, 31, 0.06)' }}>
+          <span style={{ fontSize: '0.78rem', color: '#A3B1AC', fontWeight: 600, textTransform: 'uppercase' }}>TOTAL BOOKING VOLUME</span>
+          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#E8C96A', marginTop: '4px' }}>
             ₹{(stats.totalVolume / 100000).toFixed(2)} Lakh
           </div>
-          <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Gross contracted value</span>
+          <span style={{ fontSize: '0.75rem', color: '#A3B1AC' }}>Gross contracted value</span>
         </div>
 
-        <div style={{ background: 'rgba(15, 22, 36, 0.75)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '18px', padding: '18px 20px', backdropFilter: 'blur(16px)' }}>
-          <span style={{ fontSize: '0.78rem', color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase' }}>ADVANCE COLLECTED</span>
-          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#38bdf8', marginTop: '4px' }}>
+        <div style={{ background: 'rgba(7, 41, 31, 0.85)', border: '1px solid rgba(212, 175, 55, 0.25)', borderRadius: '20px', padding: '18px 20px', backdropFilter: 'blur(16px)', boxShadow: '0 10px 30px rgba(7, 41, 31, 0.06)' }}>
+          <span style={{ fontSize: '0.78rem', color: '#A3B1AC', fontWeight: 600, textTransform: 'uppercase' }}>ADVANCE COLLECTED</span>
+          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#D4AF37', marginTop: '4px' }}>
             ₹{(stats.totalAdvance / 100000).toFixed(2)} Lakh
           </div>
-          <span style={{ fontSize: '0.75rem', color: '#38bdf8' }}>Received token & instalments</span>
+          <span style={{ fontSize: '0.75rem', color: '#D4AF37' }}>Received token & instalments</span>
         </div>
 
-        <div style={{ background: 'rgba(15, 22, 36, 0.75)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '18px', padding: '18px 20px', backdropFilter: 'blur(16px)' }}>
-          <span style={{ fontSize: '0.78rem', color: '#94a3b8', fontWeight: 600, textTransform: 'uppercase' }}>OUTSTANDING BALANCE</span>
-          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#f59e0b', marginTop: '4px' }}>
+        <div style={{ background: 'rgba(7, 41, 31, 0.85)', border: '1px solid rgba(212, 175, 55, 0.25)', borderRadius: '20px', padding: '18px 20px', backdropFilter: 'blur(16px)', boxShadow: '0 10px 30px rgba(7, 41, 31, 0.06)' }}>
+          <span style={{ fontSize: '0.78rem', color: '#A3B1AC', fontWeight: 600, textTransform: 'uppercase' }}>OUTSTANDING BALANCE</span>
+          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#F87171', marginTop: '4px' }}>
             ₹{(stats.totalDue / 100000).toFixed(2)} Lakh
           </div>
-          <span style={{ fontSize: '0.75rem', color: '#f59e0b' }}>Due at registry execution</span>
+          <span style={{ fontSize: '0.75rem', color: '#F87171' }}>Due at registry execution</span>
         </div>
       </div>
 
       {/* Search & Filter Toolbar */}
-      <div style={{ background: 'rgba(15, 22, 36, 0.75)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '20px', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '14px', backdropFilter: 'blur(16px)' }}>
+      <div style={{ background: 'rgba(7, 41, 31, 0.85)', border: '1px solid rgba(212, 175, 55, 0.25)', borderRadius: '20px', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '14px', backdropFilter: 'blur(16px)' }}>
         <div style={{ position: 'relative', flex: '1', minWidth: '260px' }}>
-          <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
+          <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#A3B1AC' }} />
           <input
             type="text"
             placeholder="Search by Plot No (e.g. A-101), Buyer Name, Phone or ID..."
@@ -174,8 +164,8 @@ export const BookingsDashboard: React.FC<BookingsDashboardProps> = ({
               height: '42px',
               padding: '0 14px 0 40px',
               borderRadius: '12px',
-              background: 'rgba(10, 14, 26, 0.6)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              background: 'rgba(4, 25, 19, 0.7)',
+              border: '1px solid rgba(212, 175, 55, 0.25)',
               color: '#ffffff',
               fontSize: '0.88rem',
               outline: 'none',
@@ -185,8 +175,8 @@ export const BookingsDashboard: React.FC<BookingsDashboardProps> = ({
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Filter size={15} color="#94a3b8" />
-          <span style={{ fontSize: '0.82rem', color: '#94a3b8', fontWeight: 600 }}>Status:</span>
+          <Filter size={15} color="#D4AF37" />
+          <span style={{ fontSize: '0.82rem', color: '#A3B1AC', fontWeight: 600 }}>Status:</span>
           {(['ALL', 'VERIFIED', 'PENDING', 'CANCELLED'] as const).map((st) => (
             <button
               key={st}
@@ -196,9 +186,9 @@ export const BookingsDashboard: React.FC<BookingsDashboardProps> = ({
                 borderRadius: '10px',
                 fontSize: '0.78rem',
                 fontWeight: 700,
-                border: statusFilter === st ? '1px solid rgba(52, 211, 153, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
-                background: statusFilter === st ? 'rgba(52, 211, 153, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-                color: statusFilter === st ? '#34d399' : '#94a3b8',
+                border: statusFilter === st ? '1px solid #D4AF37' : '1px solid rgba(212, 175, 55, 0.15)',
+                background: statusFilter === st ? '#07291F' : 'transparent',
+                color: statusFilter === st ? '#E8C96A' : '#A3B1AC',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
               }}
@@ -212,18 +202,18 @@ export const BookingsDashboard: React.FC<BookingsDashboardProps> = ({
       {/* Main Table + Detail Panel Split Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: selectedBooking ? '1fr 380px' : '1fr', gap: '20px', transition: 'all 0.3s ease' }}>
         {/* Bookings Table Card */}
-        <div style={{ background: 'rgba(15, 22, 36, 0.75)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '22px', overflow: 'hidden', backdropFilter: 'blur(16px)' }}>
-          <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ background: 'rgba(7, 41, 31, 0.85)', border: '1px solid rgba(212, 175, 55, 0.25)', borderRadius: '20px', overflow: 'hidden', backdropFilter: 'blur(16px)' }}>
+          <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(212, 175, 55, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#ffffff' }}>
               Booking Records ({filteredBookings.length})
             </h3>
-            <span style={{ fontSize: '0.78rem', color: '#64748b' }}>Click any row to inspect details</span>
+            <span style={{ fontSize: '0.78rem', color: '#A3B1AC' }}>Click any row to inspect details</span>
           </div>
 
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
               <thead>
-                <tr style={{ background: 'rgba(10, 14, 26, 0.4)', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', color: '#94a3b8', fontSize: '0.76rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <tr style={{ background: '#07291F', borderBottom: '1px solid rgba(212, 175, 55, 0.2)', color: '#E8C96A', fontSize: '0.76rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   <th style={{ padding: '14px 18px' }}>Plot No & Block</th>
                   <th style={{ padding: '14px 18px' }}>Buyer Name</th>
                   <th style={{ padding: '14px 18px' }}>Contact</th>
@@ -237,7 +227,7 @@ export const BookingsDashboard: React.FC<BookingsDashboardProps> = ({
               <tbody>
                 {filteredBookings.length === 0 ? (
                   <tr>
-                    <td colSpan={8} style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>
+                    <td colSpan={8} style={{ padding: '40px', textAlign: 'center', color: '#A3B1AC' }}>
                       No booking records found matching your filters.
                     </td>
                   </tr>
@@ -250,85 +240,57 @@ export const BookingsDashboard: React.FC<BookingsDashboardProps> = ({
                         key={b.bookingId}
                         onClick={() => setSelectedBooking(b)}
                         style={{
-                          borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-                          background: isSelected ? 'rgba(52, 211, 153, 0.08)' : 'transparent',
+                          background: isSelected ? 'rgba(11, 61, 46, 0.9)' : 'transparent',
+                          borderBottom: '1px solid rgba(212, 175, 55, 0.1)',
                           cursor: 'pointer',
                           transition: 'background 0.15s ease',
                         }}
                       >
-                        <td style={{ padding: '14px 18px', fontWeight: 700, color: '#34d399' }}>
-                          {b.plotNo} <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 400 }}>({b.block})</span>
-                        </td>
-                        <td style={{ padding: '14px 18px', fontWeight: 600, color: '#ffffff' }}>
-                          {b.customerName}
-                        </td>
-                        <td style={{ padding: '14px 18px', color: '#cbd5e1' }}>
-                          {b.customerPhone}
-                        </td>
-                        <td style={{ padding: '14px 18px', color: '#94a3b8' }}>
-                          {new Date(b.bookingDate).toLocaleDateString()}
-                        </td>
-                        <td style={{ padding: '14px 18px', fontWeight: 700, color: '#ffffff' }}>
-                          ₹{b.totalAmount.toLocaleString()}
-                        </td>
-                        <td style={{ padding: '14px 18px', fontWeight: 700, color: '#38bdf8' }}>
-                          ₹{(b.bookingAmount || 0).toLocaleString()}
-                        </td>
+                        <td style={{ padding: '14px 18px', fontWeight: 800, color: '#E8C96A' }}>{b.plotNo} ({b.block})</td>
+                        <td style={{ padding: '14px 18px', color: '#ffffff', fontWeight: 600 }}>{b.customerName}</td>
+                        <td style={{ padding: '14px 18px', color: '#A3B1AC' }}>{b.customerPhone}</td>
+                        <td style={{ padding: '14px 18px', color: '#A3B1AC', fontSize: '0.8rem' }}>{b.bookingDate}</td>
+                        <td style={{ padding: '14px 18px', color: '#ffffff', fontWeight: 700 }}>₹{b.totalAmount?.toLocaleString()}</td>
+                        <td style={{ padding: '14px 18px', color: '#D4AF37', fontWeight: 800 }}>₹{b.bookingAmount?.toLocaleString()}</td>
                         <td style={{ padding: '14px 18px' }}>
                           <span
                             style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '4px',
-                              padding: '4px 10px',
+                              padding: '3px 10px',
                               borderRadius: '9999px',
-                              fontSize: '0.74rem',
-                              fontWeight: 700,
-                              background: isVerified ? 'rgba(52, 211, 153, 0.15)' : b.status === 'pending_verification' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                              color: isVerified ? '#34d399' : b.status === 'pending_verification' ? '#f59e0b' : '#ef4444',
-                              border: `1px solid ${isVerified ? 'rgba(52, 211, 153, 0.3)' : b.status === 'pending_verification' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
+                              fontSize: '0.72rem',
+                              fontWeight: 800,
+                              background: isVerified ? 'rgba(11, 61, 46, 0.6)' : 'rgba(212, 175, 55, 0.2)',
+                              color: isVerified ? '#E8C96A' : '#D4AF37',
+                              border: `1px solid ${isVerified ? 'rgba(212, 175, 55, 0.4)' : 'rgba(212, 175, 55, 0.3)'}`,
                             }}
                           >
-                            {isVerified ? <CheckCircle2 size={12} /> : <Clock size={12} />}
-                            {b.status.toUpperCase().replace('_', ' ')}
+                            {isVerified ? 'CONFIRMED' : 'PENDING'}
                           </span>
                         </td>
-                        <td style={{ padding: '14px 18px', textAlign: 'right' }}>
-                          <div style={{ display: 'inline-flex', gap: '6px' }} onClick={(e) => e.stopPropagation()}>
+                        <td style={{ padding: '14px 18px', textAlign: 'right' }} onClick={(e) => e.stopPropagation()}>
+                          <div style={{ display: 'inline-flex', gap: '6px' }}>
                             {onOpenReceipt && (
                               <button
                                 onClick={() => onOpenReceipt(b.bookingId)}
-                                title="View Payment Receipt"
-                                style={{ padding: '6px', borderRadius: '8px', background: 'rgba(56, 189, 248, 0.12)', border: '1px solid rgba(56, 189, 248, 0.3)', color: '#38bdf8', cursor: 'pointer' }}
+                                style={{ padding: '4px 10px', borderRadius: '8px', background: '#FFFFFF', border: '1px solid #D4AF37', color: '#07291F', fontSize: '0.74rem', fontWeight: 800, cursor: 'pointer' }}
                               >
-                                <FileText size={14} />
+                                Receipt
                               </button>
                             )}
                             {onOpenBond && (
                               <button
                                 onClick={() => onOpenBond(b.bookingId)}
-                                title="Generate Agreement Bond"
-                                style={{ padding: '6px', borderRadius: '8px', background: 'rgba(52, 211, 153, 0.12)', border: '1px solid rgba(52, 211, 153, 0.3)', color: '#34d399', cursor: 'pointer' }}
+                                style={{ padding: '4px 10px', borderRadius: '8px', background: '#07291F', border: '1px solid #D4AF37', color: '#FFFFFF', fontSize: '0.74rem', fontWeight: 800, cursor: 'pointer' }}
                               >
-                                <FileCheck size={14} />
-                              </button>
-                            )}
-                            {onOpenQR && (
-                              <button
-                                onClick={() => onOpenQR(b.bookingId)}
-                                title="Verify QR Code"
-                                style={{ padding: '6px', borderRadius: '8px', background: 'rgba(168, 85, 247, 0.12)', border: '1px solid rgba(168, 85, 247, 0.3)', color: '#a855f7', cursor: 'pointer' }}
-                              >
-                                <QrCode size={14} />
+                                Bond
                               </button>
                             )}
                             {isAdminOrFinance && (
                               <button
                                 onClick={() => handleWipeout(b.plotId, b.plotNo)}
-                                title="Wipeout / Cancel Booking"
-                                style={{ padding: '6px', borderRadius: '8px', background: 'rgba(239, 68, 68, 0.12)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', cursor: 'pointer' }}
+                                style={{ padding: '4px 8px', borderRadius: '8px', background: 'rgba(128, 0, 32, 0.2)', border: '1px solid rgba(128, 0, 32, 0.4)', color: '#F87171', fontSize: '0.74rem', cursor: 'pointer' }}
                               >
-                                <Trash2 size={14} />
+                                Cancel
                               </button>
                             )}
                           </div>
@@ -342,77 +304,60 @@ export const BookingsDashboard: React.FC<BookingsDashboardProps> = ({
           </div>
         </div>
 
-        {/* Selected Booking Details Side Drawer */}
+        {/* Selected Booking Inspector Drawer Panel */}
         {selectedBooking && (
-          <div style={{ background: 'rgba(15, 22, 36, 0.85)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '22px', padding: '20px', backdropFilter: 'blur(20px)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '12px' }}>
-              <div>
-                <span style={{ fontSize: '0.75rem', color: '#34d399', fontWeight: 700 }}>BOOKING DOSSIER</span>
-                <h4 style={{ margin: '2px 0 0 0', fontSize: '1.2rem', fontWeight: 800, color: '#ffffff' }}>
-                  Plot {selectedBooking.plotNo}
-                </h4>
-              </div>
-              <button
-                onClick={() => setSelectedBooking(null)}
-                style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '1.2rem', cursor: 'pointer' }}
-              >
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} style={{ background: 'rgba(7, 41, 31, 0.85)', border: '1px solid rgba(212, 175, 55, 0.25)', borderRadius: '20px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px', backdropFilter: 'blur(16px)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(212, 175, 55, 0.2)', paddingBottom: '12px' }}>
+              <h4 style={{ margin: 0, color: '#ffffff', fontSize: '1rem', fontWeight: 800 }}>
+                Booking Dossier {selectedBooking.bookingId}
+              </h4>
+              <button onClick={() => setSelectedBooking(null)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}>
                 ✕
               </button>
             </div>
 
-            {/* Buyer Info Block */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', background: 'rgba(10, 14, 26, 0.5)', padding: '14px', borderRadius: '14px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: '#ffffff', fontWeight: 700 }}>
-                <User size={15} color="#34d399" /> {selectedBooking.customerName}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.84rem' }}>
+              <div style={{ background: 'rgba(4, 25, 19, 0.5)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(212, 175, 55, 0.15)' }}>
+                <span style={{ color: '#A3B1AC', fontSize: '0.75rem' }}>Plot Number</span>
+                <strong style={{ display: 'block', color: '#E8C96A', fontSize: '1.1rem' }}>Plot {selectedBooking.plotNo} ({selectedBooking.block})</strong>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: '#cbd5e1' }}>
-                <Phone size={14} color="#38bdf8" /> {selectedBooking.customerPhone}
+
+              <div>
+                <span style={{ color: '#A3B1AC' }}>Buyer Name:</span>
+                <strong style={{ color: '#ffffff', display: 'block' }}>{selectedBooking.customerName}</strong>
               </div>
-              {selectedBooking.customerAadhaar && (
-                <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
-                  Aadhaar / KYC: <strong style={{ color: '#ffffff' }}>{selectedBooking.customerAadhaar}</strong>
+
+              <div>
+                <span style={{ color: '#A3B1AC' }}>Mobile Phone:</span>
+                <strong style={{ color: '#ffffff', display: 'block' }}>{selectedBooking.customerPhone}</strong>
+              </div>
+
+              <div>
+                <span style={{ color: '#A3B1AC' }}>Bank UTR Reference:</span>
+                <strong style={{ color: '#D4AF37', display: 'block' }}>{selectedBooking.utrNumber} ({selectedBooking.paymentMode})</strong>
+              </div>
+
+              <div>
+                <span style={{ color: '#A3B1AC' }}>Assigned Executive:</span>
+                <strong style={{ color: '#ffffff', display: 'block' }}>{selectedBooking.associateName} ({selectedBooking.associateId})</strong>
+              </div>
+
+              <div style={{ background: 'rgba(4, 25, 19, 0.5)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(212, 175, 55, 0.15)', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: '#A3B1AC' }}>Agreement Value:</span>
+                  <strong style={{ color: '#ffffff' }}>₹{selectedBooking.totalAmount?.toLocaleString()}</strong>
                 </div>
-              )}
-            </div>
-
-            {/* Financial Ledger Breakdown */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <span style={{ fontSize: '0.78rem', color: '#94a3b8', fontWeight: 700 }}>PAYMENT BREAKDOWN</span>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#cbd5e1' }}>
-                <span>Total Contract Price:</span>
-                <strong style={{ color: '#ffffff' }}>₹{selectedBooking.totalAmount.toLocaleString()}</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#38bdf8' }}>
-                <span>Advance Token Received:</span>
-                <strong>₹{(selectedBooking.bookingAmount || 0).toLocaleString()}</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem', color: '#f59e0b', fontWeight: 700, paddingTop: '6px', borderTop: '1px dashed rgba(255, 255, 255, 0.1)' }}>
-                <span>Balance Payable:</span>
-                <span>₹{selectedBooking.balanceDue.toLocaleString()}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: '#D4AF37' }}>Paid Token:</span>
+                  <strong style={{ color: '#D4AF37' }}>₹{selectedBooking.bookingAmount?.toLocaleString()}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '6px', borderTop: '1px dashed rgba(212, 175, 55, 0.2)' }}>
+                  <span style={{ color: '#F87171' }}>Balance Due:</span>
+                  <strong style={{ color: '#F87171' }}>₹{selectedBooking.balanceDue?.toLocaleString()}</strong>
+                </div>
               </div>
             </div>
-
-            {/* Action Buttons */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: 'auto', paddingTop: '12px' }}>
-              {onOpenReceipt && (
-                <button
-                  onClick={() => onOpenReceipt(selectedBooking.bookingId)}
-                  className="btn-primary-gradient"
-                  style={{ width: '100%', height: '38px', borderRadius: '12px', fontSize: '0.82rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', cursor: 'pointer' }}
-                >
-                  <FileText size={15} /> Download Payment Receipt PDF
-                </button>
-              )}
-              {onOpenBond && (
-                <button
-                  onClick={() => onOpenBond(selectedBooking.bookingId)}
-                  style={{ width: '100%', height: '38px', borderRadius: '12px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.12)', color: '#ffffff', fontSize: '0.82rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', cursor: 'pointer' }}
-                >
-                  <FileCheck size={15} /> Open Agreement Bond Deed
-                </button>
-              )}
-            </div>
-          </div>
+          </motion.div>
         )}
       </div>
     </div>

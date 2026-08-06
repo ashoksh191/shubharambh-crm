@@ -151,9 +151,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             position: 'relative',
             width: '100%',
             maxWidth: '640px',
-            background: 'rgba(15, 23, 42, 0.96)',
+            background: 'rgba(7, 41, 31, 0.96)',
             backdropFilter: 'blur(24px)',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
+            border: '1px solid #D4AF37',
             borderRadius: '24px',
             boxShadow: '0 25px 70px rgba(0, 0, 0, 0.7)',
             overflow: 'hidden',
@@ -165,14 +165,14 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
           <div
             style={{
               padding: '16px 20px',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+              borderBottom: '1px solid rgba(212, 175, 55, 0.25)',
               display: 'flex',
               alignItems: 'center',
               gap: '12px',
-              background: 'rgba(30, 41, 59, 0.5)',
+              background: '#07291F',
             }}
           >
-            <Command size={20} color="#0284c7" />
+            <Command size={20} color="#D4AF37" />
             <input
               ref={inputRef}
               type="text"

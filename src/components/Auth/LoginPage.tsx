@@ -422,7 +422,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onBackToHome }) => {
                 </div>
 
                 {otpNotice && (
-                  <div style={{ background: 'rgba(56, 189, 248, 0.15)', border: '1px solid rgba(56, 189, 248, 0.4)', color: '#38bdf8', padding: '0.85rem', borderRadius: '14px', fontSize: '0.85rem', textAlign: 'center' }}>
+                  <div style={{ background: '#07291F', border: '1px solid #D4AF37', color: '#E8C96A', padding: '0.85rem', borderRadius: '14px', fontSize: '0.85rem', textAlign: 'center' }}>
                     <div style={{ fontWeight: 800, fontSize: '1.3rem', letterSpacing: '3px', margin: '0.3rem 0', color: '#ffffff' }}>
                       OTP CODE: {generatedOtp}
                     </div>
