@@ -80,15 +80,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
 
   const navItems: NavItem[] = useMemo(() => {
     return [
-      { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, color: '#10b981' },
-      { id: 'bookings', label: 'Bookings', icon: CalendarCheck, color: '#38bdf8' },
-      { id: 'customers', label: 'Customers', icon: Users, color: '#a855f7' },
-      { id: 'inventory', label: 'Plot Inventory', icon: Layers, color: '#0ea5e9' },
-      { id: 'map', label: 'Layout Map', icon: Map, color: '#34d399' },
-      { id: 'finance', label: 'Accounting & Payments', icon: DollarSign, permission: 'payments:approve', color: '#f59e0b' },
-      { id: 'approvals', label: 'Pending Approvals', icon: CheckSquare, badge: '2', permission: 'users:manage_roles', color: '#ef4444' },
-      { id: 'profile', label: 'My Profile', icon: User, color: '#0284c7' },
-      { id: 'settings', label: 'Settings', icon: Settings, color: '#64748b' },
+      { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, color: '#D4AF37' },
+      { id: 'bookings', label: 'Bookings', icon: CalendarCheck, color: '#D4AF37' },
+      { id: 'customers', label: 'Customers', icon: Users, color: '#D4AF37' },
+      { id: 'inventory', label: 'Plot Inventory', icon: Layers, color: '#D4AF37' },
+      { id: 'map', label: 'Layout Map', icon: Map, color: '#D4AF37' },
+      { id: 'finance', label: 'Accounting & Payments', icon: DollarSign, permission: 'payments:approve', color: '#D4AF37' },
+      { id: 'approvals', label: 'Pending Approvals', icon: CheckSquare, badge: '2', permission: 'users:manage_roles', color: '#D4AF37' },
+      { id: 'profile', label: 'My Profile', icon: User, color: '#D4AF37' },
+      { id: 'settings', label: 'Settings', icon: Settings, color: '#D4AF37' },
     ];
   }, []);
 
@@ -98,19 +98,24 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
       style={{
         width: isCollapsed ? '84px' : '300px',
         transition: 'width 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+        background: 'rgba(7, 41, 31, 0.94)',
+        backdropFilter: 'blur(20px)',
+        borderRight: '1px solid rgba(212, 175, 55, 0.25)',
       }}
     >
       {/* Top Header & Brand Logo */}
-      <div className="sidebar-top-brand">
-        <div className="sidebar-brand-logo-container">
+      <div className="sidebar-top-brand" style={{ borderBottom: '1px solid rgba(212, 175, 55, 0.2)' }}>
+        <div className="sidebar-brand-logo-container" style={{ border: '1px solid #D4AF37', background: '#07291F' }}>
           <img src="./assets/logo_and_entrance.jpg" alt="Shubharambh Logo" className="sidebar-brand-img" />
-          <span className="sidebar-online-indicator-dot" title="Server Connection Active"></span>
+          <span className="sidebar-online-indicator-dot" style={{ background: '#D4AF37', borderColor: '#07291F', boxShadow: 'none' }} title="Server Connection Active"></span>
         </div>
 
         {!isCollapsed && (
           <div className="sidebar-brand-text-block">
-            <h2 className="sidebar-brand-main-title">SHUBHARAMBH</h2>
-            <span className="sidebar-brand-sub-title">Green City Township</span>
+            <h2 className="sidebar-brand-main-title" style={{ background: 'linear-gradient(110deg, #FFFFFF 0%, #E8C96A 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              SHUBHARAMBH
+            </h2>
+            <span className="sidebar-brand-sub-title" style={{ color: '#E8C96A', fontWeight: 600 }}>Green City Township</span>
           </div>
         )}
 
@@ -121,6 +126,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
           onClick={() => setIsCollapsed((prev) => !prev)}
           title={isCollapsed ? 'Expand Sidebar (\\)' : 'Collapse Sidebar (\\)'}
           aria-label="Toggle Sidebar Navigation"
+          style={{ color: '#E8C96A', background: 'rgba(212, 175, 55, 0.1)', border: '1px solid rgba(212, 175, 55, 0.25)' }}
         >
           <motion.div
             animate={{ rotate: isCollapsed ? 180 : 0 }}
@@ -138,15 +144,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
           <button
             className="workspace-switcher-card"
             onClick={() => setShowWorkspaceMenu((prev) => !prev)}
+            style={{ background: 'rgba(11, 61, 46, 0.6)', border: '1px solid rgba(212, 175, 55, 0.25)', borderRadius: '14px' }}
           >
-            <div className="workspace-icon-box">
-              <Layers size={15} color="#0EA5E9" />
+            <div className="workspace-icon-box" style={{ background: 'rgba(212, 175, 55, 0.15)', color: '#E8C96A' }}>
+              <Layers size={15} color="#E8C96A" />
             </div>
             <div className="workspace-info">
-              <span className="workspace-caption">CURRENT WORKSPACE</span>
-              <strong className="workspace-current-name">{activeWorkspace}</strong>
+              <span className="workspace-caption" style={{ color: '#A3B1AC' }}>TOWNSHIP CRM</span>
+              <strong className="workspace-current-name" style={{ color: '#F8F7F3' }}>{activeWorkspace}</strong>
             </div>
-            <ChevronDown size={14} className={`chevron-arrow ${showWorkspaceMenu ? 'open' : ''}`} />
+            <ChevronDown size={14} className={`chevron-arrow ${showWorkspaceMenu ? 'open' : ''}`} style={{ color: '#E8C96A' }} />
           </button>
 
           <AnimatePresence>
@@ -157,6 +164,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
                 exit={{ opacity: 0, y: -6, scale: 0.98 }}
                 transition={{ duration: 0.15 }}
                 className="workspace-dropdown-card"
+                style={{ background: '#07291F', border: '1px solid rgba(212, 175, 55, 0.3)', borderRadius: '16px' }}
               >
                 {['Shubharambh Green City', 'Sector A & B (Residential)', 'Sector C & D (Commercial)'].map((ws) => (
                   <div
@@ -166,9 +174,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
                       setActiveWorkspace(ws);
                       setShowWorkspaceMenu(false);
                     }}
+                    style={{ color: activeWorkspace === ws ? '#E8C96A' : '#F8F7F3' }}
                   >
                     <span>{ws}</span>
-                    {activeWorkspace === ws && <ChevronRight size={14} color="#0EA5E9" />}
+                    {activeWorkspace === ws && <ChevronRight size={14} color="#D4AF37" />}
                   </div>
                 ))}
               </motion.div>
@@ -192,43 +201,41 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
                 onMouseLeave={() => setHoveredTab(null)}
                 className={`sidebar-nav-link-btn ${isActive ? 'active-gradient-pill' : ''}`}
                 onClick={() => setActiveTab(item.id)}
+                style={{
+                  background: isActive ? 'rgba(11, 61, 46, 0.9)' : isHovered ? 'rgba(212, 175, 55, 0.08)' : 'transparent',
+                  border: isActive ? '1px solid rgba(212, 175, 55, 0.4)' : '1px solid transparent',
+                  borderRadius: '14px',
+                  color: isActive ? '#E8C96A' : '#F8F7F3',
+                }}
               >
                 {/* Active Left Indicator Bar */}
-                {isActive && <div className="active-left-indicator-bar"></div>}
+                {isActive && <div className="active-left-indicator-bar" style={{ background: '#D4AF37', boxShadow: 'none' }}></div>}
 
                 <div
                   className="nav-link-icon-box"
                   style={{
-                    color: isActive ? '#34d399' : undefined,
-                    filter: isActive ? 'drop-shadow(0 0 8px rgba(52, 211, 153, 0.6))' : isHovered ? 'drop-shadow(0 0 6px rgba(52, 211, 153, 0.4))' : 'none',
+                    color: isActive ? '#E8C96A' : isHovered ? '#D4AF37' : '#A3B1AC',
                     transition: 'all 200ms ease',
                   }}
                 >
                   <IconComp size={isActive ? 20 : 18} />
                 </div>
 
-                {!isCollapsed && <span className="nav-link-label-text">{item.label}</span>}
+                {!isCollapsed && <span className="nav-link-label-text" style={{ color: isActive ? '#FFFFFF' : undefined }}>{item.label}</span>}
 
                 {!isCollapsed && item.badge && (
                   <span
                     className="nav-link-badge-pill"
                     style={{
-                      background: 'rgba(239, 68, 68, 0.15)',
-                      color: '#ef4444',
-                      border: '1px solid rgba(239, 68, 68, 0.35)',
+                      background: 'rgba(212, 175, 55, 0.2)',
+                      color: '#E8C96A',
+                      border: '1px solid rgba(212, 175, 55, 0.4)',
                     }}
                   >
                     {item.badge}
                   </span>
                 )}
               </motion.button>
-
-              {/* Collapsed Mode Floating Tooltip */}
-              {isCollapsed && isHovered && (
-                <div className="collapsed-sidebar-tooltip">
-                  <span>{item.label}</span>
-                </div>
-              )}
             </div>
           );
 
@@ -244,66 +251,45 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
         })}
       </nav>
 
-      {/* Bottom Profile Card Footer */}
-      <div className="sidebar-bottom-profile-card">
-        {authUser && (
-          <div className="profile-user-info-row">
-            <div className="profile-avatar-box" title={authUser.fullName || authUser.username}>
-              <span>{authUser.username?.charAt(0).toUpperCase() || 'A'}</span>
-              <span className="profile-online-dot"></span>
-            </div>
-
-            {!isCollapsed && (
-              <div className="profile-text-meta">
-                <strong className="profile-user-name">{authUser.fullName || authUser.username || 'Ashok Kumar'}</strong>
-                <span className="profile-user-role">{authUser.role}</span>
-              </div>
-            )}
-
-            {!isCollapsed && (
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="sidebar-logout-btn-circular"
-                onClick={logout}
-                title="Sign Out"
-                aria-label="Sign Out"
-              >
-                <LogOut size={16} />
-              </motion.button>
-            )}
+      {/* Role Switcher */}
+      {!isCollapsed && (
+        <div style={{ padding: '8px', background: 'rgba(11, 61, 46, 0.4)', borderRadius: '14px', border: '1px solid rgba(212, 175, 55, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '6px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Shield size={14} color="#D4AF37" />
+            <span style={{ fontSize: '0.72rem', color: '#E8C96A', fontWeight: 700 }}>ROLE: {authUser?.role}</span>
           </div>
-        )}
 
-        {isCollapsed && (
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="sidebar-logout-btn-circular"
-            onClick={logout}
-            title="Sign Out"
-            aria-label="Sign Out"
-          >
-            <LogOut size={16} />
-          </motion.button>
-        )}
-
-        {!isCollapsed && authUser && (
-          <div className="profile-role-selector-row">
-            <Shield size={13} color="#34D399" />
+          {(authUser?.role === 'SUPER_ADMIN' || authUser?.role === 'ADMIN') && (
             <select
               value={authUser.role}
               onChange={(e) => switchRolePreset(e.target.value as any)}
-              className="profile-role-select"
+              style={{ background: '#07291F', border: '1px solid rgba(212, 175, 55, 0.3)', color: '#F8F7F3', fontSize: '0.7rem', borderRadius: '8px', padding: '2px 4px', cursor: 'pointer', outline: 'none' }}
             >
-              <option value="SUPER_ADMIN">👑 Super Admin</option>
-              <option value="ADMIN">🛡️ Admin</option>
-              <option value="SALES_MANAGER">💼 Sales Manager</option>
-              <option value="FINANCE">💰 Finance</option>
-              <option value="ASSOCIATE">🤝 Associate</option>
+              <option value="SUPER_ADMIN">SUPER_ADMIN</option>
+              <option value="ADMIN">ADMIN</option>
+              <option value="SALES_EXECUTIVE">SALES</option>
+              <option value="ACCOUNTANT">FINANCE</option>
             </select>
+          )}
+        </div>
+      )}
+
+      {/* User Footer Profile & Logout */}
+      <div className="sidebar-user-footer-card" style={{ borderTop: '1px solid rgba(212, 175, 55, 0.2)', paddingTop: '12px' }}>
+        <div className="sidebar-user-avatar-circle" style={{ background: '#07291F', border: '1px solid #D4AF37', color: '#E8C96A' }}>
+          {(authUser?.name || 'V')[0]}
+        </div>
+
+        {!isCollapsed && (
+          <div className="sidebar-user-details">
+            <strong className="sidebar-user-name" style={{ color: '#F8F7F3' }}>{authUser?.name || 'Vikramaditya'}</strong>
+            <span className="sidebar-user-role-label" style={{ color: '#E8C96A' }}>{authUser?.email || 'sales@shubharambh.com'}</span>
           </div>
         )}
+
+        <button className="sidebar-logout-btn" onClick={logout} title="Sign Out" style={{ color: '#A3B1AC' }}>
+          <LogOut size={16} />
+        </button>
       </div>
     </aside>
   );

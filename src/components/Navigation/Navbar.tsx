@@ -12,40 +12,58 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
   const { user: authUser, logout, switchRolePreset } = useAuth();
 
   return (
-    <header className="navbar">
+    <header className="navbar" style={{ background: 'rgba(7, 41, 31, 0.94)', borderBottom: '1px solid rgba(212, 175, 55, 0.25)', backdropFilter: 'blur(20px)' }}>
       <div className="navbar-inner">
         {/* Official Brand Logo */}
         <a href="#" className="brand-logo" onClick={(e) => { e.preventDefault(); setActiveTab('map'); }}>
-          <div style={{ width: '42px', height: '42px', borderRadius: '10px', overflow: 'hidden', border: '1px solid rgba(245, 158, 11, 0.4)', background: '#0b0f19', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: '42px', height: '42px', borderRadius: '10px', overflow: 'hidden', border: '1px solid #D4AF37', background: '#07291F', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <img src="./assets/logo_and_entrance.jpg" alt="Shubharambh Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
           <div className="brand-text">
-            <h1 style={{ background: 'linear-gradient(135deg, #f59e0b 0%, #10b981 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            <h1 style={{ background: 'linear-gradient(135deg, #FFFFFF 0%, #E8C96A 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               SHUBHARAMBH
             </h1>
-            <span>Green City Township • Lucknow</span>
+            <span style={{ color: '#E8C96A', fontWeight: 600 }}>Green City Township • Lucknow</span>
           </div>
         </a>
 
-        {/* Module Navigation Tabs (Main Working Portal Only) */}
+        {/* Module Navigation Tabs */}
         <nav className="nav-links">
           <button
             className={`nav-btn ${activeTab === 'map' ? 'active' : ''}`}
             onClick={() => setActiveTab('map')}
+            style={{
+              background: activeTab === 'map' ? '#0B3D2E' : 'transparent',
+              border: activeTab === 'map' ? '1px solid #D4AF37' : '1px solid transparent',
+              color: activeTab === 'map' ? '#E8C96A' : '#F8F7F3',
+              borderRadius: '10px',
+            }}
           >
             <Map size={16} /> Architectural Layout Map
           </button>
           <button
             className={`nav-btn ${activeTab === 'mlm' ? 'active' : ''}`}
             onClick={() => setActiveTab('mlm')}
+            style={{
+              background: activeTab === 'mlm' ? '#0B3D2E' : 'transparent',
+              border: activeTab === 'mlm' ? '1px solid #D4AF37' : '1px solid transparent',
+              color: activeTab === 'mlm' ? '#E8C96A' : '#F8F7F3',
+              borderRadius: '10px',
+            }}
           >
-            <Users size={16} /> MLM Hierarchy
+            <Users size={16} /> Network Team
           </button>
 
           <RoleGuard requiredPermissions="payments:approve">
             <button
               className={`nav-btn ${activeTab === 'finance' ? 'active' : ''}`}
               onClick={() => setActiveTab('finance')}
+              style={{
+                background: activeTab === 'finance' ? '#0B3D2E' : 'transparent',
+                border: activeTab === 'finance' ? '1px solid #D4AF37' : '1px solid transparent',
+                color: activeTab === 'finance' ? '#E8C96A' : '#F8F7F3',
+                borderRadius: '10px',
+              }}
             >
               <DollarSign size={16} /> Accounting Panel
             </button>
@@ -54,33 +72,54 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
           <button
             className={`nav-btn ${activeTab === 'usps' ? 'active' : ''}`}
             onClick={() => setActiveTab('usps')}
+            style={{
+              background: activeTab === 'usps' ? '#0B3D2E' : 'transparent',
+              border: activeTab === 'usps' ? '1px solid #D4AF37' : '1px solid transparent',
+              color: activeTab === 'usps' ? '#E8C96A' : '#F8F7F3',
+              borderRadius: '10px',
+            }}
           >
-            <Sparkles size={16} /> Project USPs & Gate
+            <Sparkles size={16} /> Project Features
           </button>
 
-          {/* Security & Active Sessions Tab */}
           <button
             className={`nav-btn ${activeTab === 'profile' ? 'active' : ''}`}
             onClick={() => setActiveTab('profile')}
+            style={{
+              background: activeTab === 'profile' ? '#0B3D2E' : 'transparent',
+              border: activeTab === 'profile' ? '1px solid #D4AF37' : '1px solid transparent',
+              color: activeTab === 'profile' ? '#E8C96A' : '#F8F7F3',
+              borderRadius: '10px',
+            }}
           >
-            <User size={16} /> Security Profile
+            <User size={16} /> My Profile
           </button>
 
-          {/* Pending Registration Approvals Tab */}
           <RoleGuard requiredPermissions="users:manage_roles">
             <button
               className={`nav-btn ${activeTab === 'approvals' ? 'active' : ''}`}
               onClick={() => setActiveTab('approvals')}
+              style={{
+                background: activeTab === 'approvals' ? '#0B3D2E' : 'transparent',
+                border: activeTab === 'approvals' ? '1px solid #D4AF37' : '1px solid transparent',
+                color: activeTab === 'approvals' ? '#E8C96A' : '#F8F7F3',
+                borderRadius: '10px',
+              }}
             >
               <CheckSquare size={16} /> Approvals
             </button>
           </RoleGuard>
 
-          {/* Audit Trail Tab for Admins */}
           <RoleGuard requiredPermissions="audit_logs:read">
             <button
               className={`nav-btn ${activeTab === 'audit' ? 'active' : ''}`}
               onClick={() => setActiveTab('audit')}
+              style={{
+                background: activeTab === 'audit' ? '#0B3D2E' : 'transparent',
+                border: activeTab === 'audit' ? '1px solid #D4AF37' : '1px solid transparent',
+                color: activeTab === 'audit' ? '#E8C96A' : '#F8F7F3',
+                borderRadius: '10px',
+              }}
             >
               <FileText size={16} /> Audit Logs
             </button>
@@ -90,47 +129,44 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
         {/* Role & Auth Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {authUser && (
-            <div className="role-switcher-container">
-              <Shield size={16} color="var(--accent-gold)" />
-              <span className="role-badge" style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#10b981', padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600 }}>
+            <div className="role-switcher-container" style={{ background: '#07291F', border: '1px solid rgba(212, 175, 55, 0.3)', borderRadius: '10px', padding: '4px 8px' }}>
+              <Shield size={16} color="#D4AF37" />
+              <span className="role-badge" style={{ background: 'rgba(212, 175, 55, 0.2)', color: '#E8C96A', padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 700 }}>
                 {authUser.role}
               </span>
-              <select
-                className="role-select"
-                value={authUser.role}
-                onChange={(e) => switchRolePreset(e.target.value as any)}
-                title="Switch Active Role Preset"
-              >
-                <option value="SUPER_ADMIN">👑 Super Admin</option>
-                <option value="ADMIN">🛡️ Admin</option>
-                <option value="SALES_MANAGER">💼 Sales Manager</option>
-                <option value="SALES_EXECUTIVE">🎯 Sales Executive</option>
-                <option value="FINANCE">💰 Finance</option>
-                <option value="ASSOCIATE">🤝 Associate</option>
-                <option value="CUSTOMER_SUPPORT">🎧 Support</option>
-                <option value="VIEWER">👁️ Viewer</option>
-              </select>
+              {(authUser.role === 'SUPER_ADMIN' || authUser.role === 'ADMIN') && (
+                <select
+                  className="role-select"
+                  value={authUser.role}
+                  onChange={(e) => switchRolePreset(e.target.value as any)}
+                  style={{ background: '#0B3D2E', color: '#F8F7F3', border: '1px solid #D4AF37', borderRadius: '6px' }}
+                >
+                  <option value="SUPER_ADMIN">SUPER_ADMIN</option>
+                  <option value="ADMIN">ADMIN</option>
+                  <option value="SALES_EXECUTIVE">SALES_EXECUTIVE</option>
+                  <option value="ACCOUNTANT">ACCOUNTANT</option>
+                </select>
+              )}
             </div>
           )}
 
           <button
             onClick={logout}
             style={{
-              background: 'rgba(239, 68, 68, 0.2)',
-              color: '#fca5a5',
-              border: '1px solid rgba(239, 68, 68, 0.4)',
-              padding: '8px 14px',
-              borderRadius: 'var(--radius-md)',
+              background: '#FFFFFF',
+              color: '#07291F',
+              border: '1px solid #D4AF37',
+              borderRadius: '10px',
+              padding: '6px 12px',
+              fontWeight: 700,
               fontSize: '0.8rem',
+              cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              cursor: 'pointer',
-              fontWeight: 600,
             }}
-            title="Sign out of Shubharambh CRM"
           >
-            <LogOut size={14} /> Sign Out
+            <LogOut size={14} /> Logout
           </button>
         </div>
       </div>

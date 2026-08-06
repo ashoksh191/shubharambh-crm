@@ -205,28 +205,28 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = memo(({
                     gap: '5px',
                     background:
                       plot.enhancedStatus === 'available'
-                        ? 'rgba(52, 211, 153, 0.15)'
+                        ? 'rgba(11, 61, 46, 0.4)'
                         : plot.enhancedStatus === 'booked'
-                        ? 'rgba(56, 189, 248, 0.15)'
+                        ? 'rgba(128, 0, 32, 0.4)'
                         : plot.enhancedStatus === 'reserved'
-                        ? 'rgba(245, 158, 11, 0.15)'
-                        : 'rgba(148, 163, 184, 0.15)',
+                        ? 'rgba(212, 175, 55, 0.4)'
+                        : 'rgba(71, 85, 105, 0.4)',
                     color:
                       plot.enhancedStatus === 'available'
-                        ? '#34d399'
+                        ? '#E8C96A'
                         : plot.enhancedStatus === 'booked'
-                        ? '#38bdf8'
+                        ? '#F87171'
                         : plot.enhancedStatus === 'reserved'
-                        ? '#f59e0b'
-                        : '#94a3b8',
+                        ? '#E8C96A'
+                        : '#94A3B8',
                     border: `1px solid ${
                       plot.enhancedStatus === 'available'
-                        ? 'rgba(52, 211, 153, 0.35)'
+                        ? 'rgba(212, 175, 55, 0.4)'
                         : plot.enhancedStatus === 'booked'
-                        ? 'rgba(56, 189, 248, 0.35)'
+                        ? 'rgba(128, 0, 32, 0.6)'
                         : plot.enhancedStatus === 'reserved'
-                        ? 'rgba(245, 158, 11, 0.35)'
-                        : 'rgba(148, 163, 184, 0.35)'
+                        ? 'rgba(212, 175, 55, 0.6)'
+                        : 'rgba(71, 85, 105, 0.6)'
                     }`,
                   }}
                 >
@@ -639,7 +639,7 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = memo(({
               zIndex: 2,
             }}
           >
-            {/* Primary CTA: Book Plot */}
+            {/* Primary CTA: Book Plot (Dark Green Primary) */}
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -648,26 +648,26 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = memo(({
               style={{
                 flex: 2,
                 height: '48px',
-                borderRadius: '14px',
+                borderRadius: '12px',
                 background: plot.enhancedStatus === 'sold'
-                  ? 'rgba(148, 163, 184, 0.2)'
-                  : 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
-                color: '#ffffff',
+                  ? 'rgba(71, 85, 105, 0.4)'
+                  : '#07291F',
+                color: '#FFFFFF',
                 fontWeight: 800,
                 fontSize: '0.95rem',
-                border: 'none',
+                border: '1px solid #D4AF37',
                 cursor: plot.enhancedStatus === 'sold' ? 'not-allowed' : 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '8px',
-                boxShadow: plot.enhancedStatus === 'sold' ? 'none' : '0 6px 24px rgba(16, 185, 129, 0.4)',
+                boxShadow: '0 4px 14px rgba(7, 41, 31, 0.3)',
               }}
             >
-              <Sparkles size={18} /> {plot.enhancedStatus === 'sold' ? 'Plot Sold Out' : 'Book Plot'}
+              <Sparkles size={18} color="#D4AF37" /> {plot.enhancedStatus === 'sold' ? 'Plot Sold Out' : 'Book Plot'}
             </motion.button>
 
-            {/* Secondary CTA: Reserve Plot */}
+            {/* Secondary CTA: Reserve Plot (White with Gold Border) */}
             {plot.enhancedStatus === 'available' && (
               <motion.button
                 whileHover={{ scale: 1.02 }}
@@ -676,11 +676,11 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = memo(({
                 style={{
                   flex: 1,
                   height: '48px',
-                  borderRadius: '14px',
-                  background: 'rgba(255, 255, 255, 0.06)',
-                  border: '1px solid rgba(255, 255, 255, 0.14)',
-                  color: '#ffffff',
-                  fontWeight: 700,
+                  borderRadius: '12px',
+                  background: '#FFFFFF',
+                  border: '1px solid #D4AF37',
+                  color: '#07291F',
+                  fontWeight: 800,
                   fontSize: '0.88rem',
                   cursor: 'pointer',
                   display: 'flex',
@@ -690,7 +690,7 @@ export const PlotDrawer: React.FC<PlotDrawerProps> = memo(({
                   whiteSpace: 'nowrap',
                 }}
               >
-                <BookmarkPlus size={17} color="#f59e0b" /> Reserve Plot
+                <BookmarkPlus size={17} color="#D4AF37" /> Reserve Plot
               </motion.button>
             )}
           </div>

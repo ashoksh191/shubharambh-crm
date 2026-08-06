@@ -695,7 +695,7 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({ plot, onClos
                   borderTop: '1px solid rgba(255, 255, 255, 0.08)',
                 }}
               >
-                {/* Previous Button */}
+                {/* Previous Button (Secondary: White with Gold Border) */}
                 {currentStep > 1 ? (
                   <button
                     type="button"
@@ -704,24 +704,24 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({ plot, onClos
                     style={{
                       padding: '10px 18px',
                       borderRadius: '12px',
-                      background: 'rgba(255, 255, 255, 0.06)',
-                      border: '1px solid rgba(255, 255, 255, 0.14)',
-                      color: '#ffffff',
+                      background: '#FFFFFF',
+                      border: '1px solid #D4AF37',
+                      color: '#07291F',
                       fontSize: '0.85rem',
-                      fontWeight: 700,
+                      fontWeight: 800,
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '6px',
                     }}
                   >
-                    <ArrowLeft size={16} /> Previous
+                    <ArrowLeft size={16} color="#07291F" /> Previous
                   </button>
                 ) : (
                   <div></div>
                 )}
 
-                {/* Next / Submit Button */}
+                {/* Next / Submit Button (Primary: Dark Green with Gold Accent) */}
                 {currentStep < 4 ? (
                   <button
                     type="button"
@@ -729,19 +729,19 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({ plot, onClos
                     style={{
                       padding: '10px 22px',
                       borderRadius: '12px',
-                      background: '#0ea5e9',
-                      color: '#ffffff',
+                      background: '#07291F',
+                      color: '#FFFFFF',
                       fontSize: '0.88rem',
                       fontWeight: 800,
-                      border: 'none',
+                      border: '1px solid #D4AF37',
                       cursor: 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '6px',
-                      boxShadow: '0 4px 14px rgba(14, 165, 233, 0.4)',
+                      boxShadow: '0 4px 14px rgba(7, 41, 31, 0.3)',
                     }}
                   >
-                    Next Step <ArrowRight size={16} />
+                    Next Step <ArrowRight size={16} color="#D4AF37" />
                   </button>
                 ) : (
                   <motion.button
@@ -752,25 +752,25 @@ export const BookingFormModal: React.FC<BookingFormModalProps> = ({ plot, onClos
                     style={{
                       padding: '12px 26px',
                       borderRadius: '12px',
-                      background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
-                      color: '#ffffff',
+                      background: '#07291F',
+                      color: '#FFFFFF',
                       fontSize: '0.9rem',
                       fontWeight: 800,
-                      border: 'none',
+                      border: '1px solid #D4AF37',
                       cursor: isSubmitting ? 'not-allowed' : 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '8px',
-                      boxShadow: '0 6px 24px rgba(16, 185, 129, 0.4)',
+                      boxShadow: '0 6px 20px rgba(7, 41, 31, 0.4)',
                     }}
                   >
                     {isSubmitting ? (
                       <>
-                        <Loader2 size={18} className="animate-spin" /> Confirming Transaction...
+                        <Loader2 size={18} className="animate-spin" color="#D4AF37" /> Confirming Transaction...
                       </>
                     ) : (
                       <>
-                        <CheckCircle2 size={18} /> Confirm Booking & Issue Receipt
+                        <CheckCircle2 size={18} color="#D4AF37" /> Confirm Booking & Issue Receipt
                       </>
                     )}
                   </motion.button>

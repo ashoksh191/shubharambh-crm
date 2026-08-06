@@ -1,74 +1,84 @@
-/* Complete Enterprise Design System Tokens for Shubharambh Green City CRM */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+/* ==========================================================================
+   SHUBHARAMBH GREEN CITY — LUXURY REAL ESTATE CRM DESIGN SYSTEM
+   Inspired by Lodha, DLF, Sobha, and Godrej Properties
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap');
 
 :root {
-  /* ─── SPACING SCALE ─── */
-  --space-4: 4px;
-  --space-8: 8px;
-  --space-12: 12px;
-  --space-16: 16px;
-  --space-20: 20px;
-  --space-24: 24px;
-  --space-32: 32px;
-  --space-40: 40px;
-  --space-48: 48px;
-  --space-64: 64px;
+  /* ─── LUXURY REAL ESTATE COLOR PALETTE ─── */
+  --primary-green: #0B3D2E;
+  --dark-green: #07291F;
+  --gold: #D4AF37;
+  --light-gold: #E8C96A;
+  --ivory-bg: #F8F7F3;
+  --white-card: #FFFFFF;
+  --dark-text: #143126;
+  --muted-text: #6F7B76;
+
+  /* ─── STATUS COLORS ─── */
+  --status-available: #0B3D2E;  /* Forest Green */
+  --status-reserved: #D4AF37;   /* Gold */
+  --status-booked: #800020;     /* Burgundy */
+  --status-sold: #475569;       /* Slate Gray */
+
+  /* ─── CORE DESIGN TOKENS ─── */
+  --color-primary: #0B3D2E;
+  --color-secondary: #07291F;
+  --color-accent: #D4AF37;
+  --color-accent-light: #E8C96A;
+
+  --color-surface: #FFFFFF;
+  --color-bg-main: #F8F7F3;
+  --color-glass: rgba(255, 255, 255, 0.88);
+  --color-border: rgba(212, 175, 55, 0.25); /* Thin gold border */
+  --color-text-main: #143126;
+  --color-text-muted: #6F7B76;
+
+  /* Legacy Compat Variables */
+  --primary-forest: #0B3D2E;
+  --primary-forest-dark: #07291F;
+  --accent-gold: #D4AF37;
+  --accent-gold-light: #E8C96A;
+  --bg-main: #F8F7F3;
+  --bg-card: #FFFFFF;
+  --text-main: #143126;
+  --text-muted: #6F7B76;
+  --border-color: rgba(212, 175, 55, 0.25);
+  --glass-bg: rgba(255, 255, 255, 0.88);
 
   /* ─── BORDER RADIUS STANDARDS ─── */
-  --radius-btn: 14px;
-  --radius-input: 16px;
-  --radius-card: 24px;
-  --radius-dialog: 28px;
-  --radius-drawer: 32px;
-  --radius-map: 32px;
+  --radius-btn: 12px;
+  --radius-input: 12px;
+  --radius-card: 20px;       /* Exact 20px rounded cards */
+  --radius-dialog: 24px;
+  --radius-drawer: 24px;
+  --radius-map: 24px;
 
-  /* ─── LIGHT MODE COLOR SYSTEM ─── */
-  --color-primary: #0ea5e9;
-  --color-secondary: #2563eb;
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-danger: #ef4444;
-  --color-surface: #ffffff;
-  --color-bg-main: #f7f9fc;
-  --color-glass: rgba(255, 255, 255, 0.72);
-  --color-border: rgba(226, 232, 240, 0.8);
-  --color-text-main: #0f172a;
-  --color-text-muted: #64748b;
-
-  /* Legacy Compat Tokens */
-  --primary-forest: #0ea5e9;
-  --primary-forest-dark: #0284c7;
-  --accent-gold: #f59e0b;
-  --bg-main: #f7f9fc;
-  --bg-card: #ffffff;
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --border-color: #e2e8f0;
-  --glass-bg: rgba(255, 255, 255, 0.72);
-
-  /* ─── GLOBAL SHADOWS ─── */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.08);
-  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.12);
-  --shadow-2xl: 0 30px 70px rgba(0, 0, 0, 0.2);
+  /* ─── SOFT LUXURY SHADOWS (NO NEON GLOW) ─── */
+  --shadow-sm: 0 2px 8px rgba(7, 41, 31, 0.04);
+  --shadow-md: 0 8px 24px rgba(7, 41, 31, 0.06);
+  --shadow-card: 0 10px 30px rgba(7, 41, 31, 0.06);
+  --shadow-lg: 0 15px 35px rgba(7, 41, 31, 0.09);
+  --shadow-xl: 0 25px 60px rgba(7, 41, 31, 0.14);
 }
 
-/* ─── DARK MODE COLOR SYSTEM OVERRIDES ─── */
+/* ─── DARK LUXURY THEME OVERRIDES ─── */
 [data-theme="dark"] {
-  --color-surface: #0f172a;
-  --color-bg-main: #0b0f19;
-  --color-glass: rgba(15, 23, 42, 0.85);
-  --color-border: rgba(255, 255, 255, 0.12);
-  --color-text-main: #f8fafc;
-  --color-text-muted: #94a3b8;
+  --color-surface: #07291F;
+  --color-bg-main: #041913;
+  --color-glass: rgba(7, 41, 31, 0.94);
+  --color-border: rgba(212, 175, 55, 0.3);
+  --color-text-main: #F8F7F3;
+  --color-text-muted: #A3B1AC;
 
-  --bg-main: #0b0f19;
-  --bg-card: #0f172a;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --border-color: rgba(255, 255, 255, 0.12);
-  --glass-bg: rgba(15, 23, 42, 0.85);
+  --bg-main: #041913;
+  --bg-card: #07291F;
+  --text-main: #F8F7F3;
+  --text-muted: #A3B1AC;
+  --border-color: rgba(212, 175, 55, 0.3);
+  --glass-bg: rgba(7, 41, 31, 0.94);
+
+  --shadow-card: 0 12px 40px rgba(0, 0, 0, 0.35);
 }
 
 * {
@@ -78,15 +88,72 @@
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   background-color: var(--color-bg-main);
   color: var(--color-text-main);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.25s ease, color 0.25s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* ─── CUSTOM MODERN THIN ROUNDED SCROLLBARS ─── */
+/* Luxury Headings Typography */
+h1, h2, h3, .luxury-heading {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* ─── LUXURY BUTTON SYSTEM ─── */
+.btn-primary, button.btn-primary {
+  background: var(--dark-green) !important;
+  color: #FFFFFF !important;
+  border: 1px solid var(--gold) !important;
+  border-radius: var(--radius-btn) !important;
+  padding: 10px 20px !important;
+  font-weight: 700 !important;
+  font-size: 0.88rem !important;
+  cursor: pointer !important;
+  transition: all 0.25s ease !important;
+  box-shadow: 0 4px 14px rgba(7, 41, 31, 0.2) !important;
+}
+
+.btn-primary:hover {
+  background: var(--primary-green) !important;
+  border-color: var(--light-gold) !important;
+  transform: translateY(-1px);
+}
+
+.btn-secondary, button.btn-secondary {
+  background: #FFFFFF !important;
+  color: var(--dark-text) !important;
+  border: 1px solid var(--gold) !important;
+  border-radius: var(--radius-btn) !important;
+  padding: 10px 20px !important;
+  font-weight: 700 !important;
+  font-size: 0.88rem !important;
+  cursor: pointer !important;
+  transition: all 0.25s ease !important;
+}
+
+.btn-secondary:hover {
+  background: var(--ivory-bg) !important;
+  border-color: var(--light-gold) !important;
+  transform: translateY(-1px);
+}
+
+/* ─── LUXURY CARD BASE ─── */
+.luxury-card, .dashboard-card, .kpi-card, .quick-action-btn {
+  border-radius: 20px !important;
+  box-shadow: var(--shadow-card) !important;
+  border: 1px solid rgba(212, 175, 55, 0.25) !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease !important;
+}
+
+.luxury-card:hover {
+  border-color: var(--gold) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+/* ─── CUSTOM THIN ELEGANT SCROLLBARS ─── */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -97,20 +164,10 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.35);
+  background: rgba(212, 175, 55, 0.3);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(14, 165, 233, 0.6);
-}
-
-/* Reduced Motion Accessibility */
-@media (prefers-reduced-motion: reduce) {
-  *, ::before, ::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+  background: var(--gold);
 }
